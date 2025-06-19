@@ -43,7 +43,7 @@ class CartModel extends BaseEntityModel {
     // Create and return the Money object with the currency code string
     return Money.fromNum(
       finalAmount,
-      code: currentCurrencyCode,
+      isoCode: currentCurrencyCode,
     );
   }
 }

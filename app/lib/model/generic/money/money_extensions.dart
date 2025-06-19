@@ -6,7 +6,7 @@ extension MoneyExtensions on Money {
   bool get isZero => amount == Fixed.zero;
 
   Money withAmount(num newAmount) =>
-      Money.fromNum(newAmount, code: currency.code);
+      Money.fromNum(newAmount, isoCode: currency.isoCode);
 }
 
 /// Get the current currency code based on system locale
@@ -23,8 +23,8 @@ String get currentCurrencySymbol {
 }
 
 /// Get a Money object with zero amount in the current system currency
-Money get zeroMoney => Money.fromNum(0, code: currentCurrencyCode);
+Money get zeroMoney => Money.fromNum(0, isoCode: currentCurrencyCode);
 
 /// Create a Money object with the specified amount in the current system currency
 Money fromAmount(num amount) =>
-    Money.fromNum(amount, code: currentCurrencyCode);
+    Money.fromNum(amount, isoCode: currentCurrencyCode);

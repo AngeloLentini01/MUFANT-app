@@ -12,7 +12,7 @@ void main() {
       // Expected Result: isZero should be true
 
       // Arrange
-      final money = Money.fromNum(0, code: 'USD');
+      final money = Money.fromNum(0, isoCode: 'USD');
 
       // Act & Assert
       expect(money.isZero, isTrue);
@@ -26,7 +26,7 @@ void main() {
       // Expected Result: isZero should be false
 
       // Arrange
-      final money = Money.fromNum(10.5, code: 'USD');
+      final money = Money.fromNum(10.5, isoCode: 'USD');
 
       // Act & Assert
       expect(money.isZero, isFalse);
@@ -41,12 +41,12 @@ void main() {
       // Expected Result: New Money object should have new amount and same currency
 
       // Arrange
-      final originalMoney = Money.fromNum(10, code: 'EUR'); // Act
+      final originalMoney = Money.fromNum(10, isoCode: 'EUR'); // Act
       final newMoney = originalMoney.withAmount(20);
 
       // Assert
       expect(newMoney.amount.toString(), equals('20.00'));
-      expect(newMoney.currency.code, equals('EUR'));
+      expect(newMoney.currency.isoCode, equals('EUR'));
     });
 
     test('zeroMoney - creates Money with zero amount and current currency', () {
@@ -59,7 +59,7 @@ void main() {
 
       // Assert
       expect(money.amount.toString(), equals('0.00'));
-      expect(money.currency.code, equals(currentCurrencyCode));
+      expect(money.currency.isoCode, equals(currentCurrencyCode));
     });
 
     test('fromAmount - creates Money with specified amount and current currency', () {
@@ -75,7 +75,7 @@ void main() {
       // Act
       final money = fromAmount(amount); // Assert
       expect(money.amount.toString(), equals('15.75'));
-      expect(money.currency.code, equals(currentCurrencyCode));
+      expect(money.currency.isoCode, equals(currentCurrencyCode));
     });
 
     test('currentCurrencyCode - returns non-empty string', () {
