@@ -14,8 +14,8 @@ class HomePageBottomNavBar extends StatelessWidget {
       backgroundColor: backgroundColor,
       selectedItemColor: Colors.white,
       unselectedItemColor: Colors.white70,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),

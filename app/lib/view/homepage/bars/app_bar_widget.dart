@@ -1,4 +1,4 @@
-import 'package:app/view/search_icon_button.dart';
+import 'package:app/view/homepage/others/search_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
