@@ -1,4 +1,4 @@
-import 'package:app/view/homepage/scrollViews/items/event_card.dart';
+import 'package:app/presentation/components/scrollViews/items/event_card.dart';
 import 'package:flutter/material.dart';
 
 class UpcomingEventsWidget extends StatelessWidget {

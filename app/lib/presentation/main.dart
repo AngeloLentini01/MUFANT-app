@@ -1,6 +1,5 @@
-
-import 'package:app/view/homepage/home_page.dart';
-import 'package:app/my_app.dart';
+import 'package:app/presentation/views/home_page.dart';
+import 'package:app/presentation/my_app.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
