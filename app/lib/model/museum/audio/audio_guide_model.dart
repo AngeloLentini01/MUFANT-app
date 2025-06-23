@@ -1,6 +1,6 @@
 import 'package:app/model/generic/base_entity_model.dart';
 import 'package:app/model/generic/details_model.dart';
-import 'package:app/model/museum/museumActivity/museum_activity_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 
 /// Represents an audio guide available for museum visitors.
 /// Audio guides provide narrated information about exhibits and attractions.

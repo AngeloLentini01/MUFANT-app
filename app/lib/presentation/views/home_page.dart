@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import 'package:app/presentation/components/bars/app_bar_widget.dart';
-import 'package:app/presentation/components/bars/home_page_bottom_nav_bar.dart';
-import 'package:app/presentation/components/scrollViews/rooms_widget.dart';
-import 'package:app/presentation/components/scrollViews/upcoming_events_widget.dart';
-import 'package:app/presentation/components/others/visitors_guide_widget.dart';
+import 'package:app/presentation/widgets/bars/app_bar_widget.dart';
+import 'package:app/presentation/widgets/bars/home_page_bottom_nav_bar.dart';
+import 'package:app/presentation/widgets/scrollViews/rooms_widget.dart';
+import 'package:app/presentation/widgets/scrollViews/upcoming_events_widget.dart';
+import 'package:app/presentation/widgets/others/visitors_guide_widget.dart';
 
 final _logger = Logger('MufantApp'); // Define a logger
 const pinkColor = Color(0xFFFF8EB4);

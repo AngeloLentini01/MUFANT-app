@@ -1,12 +1,12 @@
 import 'package:app/model/generic/base_entity_model.dart';
-import 'package:app/model/museum/guidedVisit/guided_visit_model.dart';
+import 'package:app/model/museum/visit/guided/guided_visit_model.dart';
 import 'package:ulid/ulid.dart';
 
 /// Represents the count of participants for a guided visit.
 /// This is used to track and manage attendance for guided visits.
 ///
 /// @property id Unique identifier for this record
-/// @property guidedVisit The associated guided visit
+/// @property guided The associated guided visit
 /// @property actualParticipants The actual number of participants that attended
 /// @property registeredParticipants The number of participants that registered in advance
 /// @property createdAt When this record was created
@@ -48,7 +48,7 @@ class GuidedVisitNumberOfParticipantsModel extends BaseEntityModel {
 
   @override
   String toString() =>
-      'GuidedVisitNumberOfParticipantsModel(id: $id, guidedVisit: $guidedVisit, '
+      'GuidedVisitNumberOfParticipantsModel(id: $id, guided: $guidedVisit, '
       'actualParticipants: $actualParticipants, registeredParticipants: $registeredParticipants, '
       'createdAt: $createdAt, updatedAt: $updatedAt)';
 

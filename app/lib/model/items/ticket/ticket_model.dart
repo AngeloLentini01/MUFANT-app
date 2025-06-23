@@ -1,12 +1,12 @@
 import 'package:app/model/cart/cart_item_model.dart';
-import 'package:app/model/museum/museumActivity/museum_activity_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 import 'package:app/model/items/ticket/museum_activity_charging_rates.dart';
 import 'package:money2/money2.dart';
 
 /// Represents a ticket that can be purchased for a museum activity.
 /// Extends CartItemModel to inherit properties for cart items.
 ///
-/// @property museumActivity The museum activity this ticket grants access to
+/// @property activity The museum activity this ticket grants access to
 class TicketModel extends CartItemModel {
   final MuseumActivityModel museumActivity;
   final MuseumActivityChargingRates chargingRate;

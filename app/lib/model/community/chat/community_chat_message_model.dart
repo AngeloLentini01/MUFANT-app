@@ -1,4 +1,4 @@
-import 'package:app/model/communityChat/community_chat_model.dart';
+import 'package:app/model/community/chat/community_chat_model.dart';
 import 'package:app/model/generic/base_entity_model.dart';
 import 'package:app/model/generic/people/user_model.dart';
 

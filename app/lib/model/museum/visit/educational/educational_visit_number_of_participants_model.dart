@@ -4,7 +4,7 @@ import 'package:app/model/generic/base_entity_model.dart';
 /// This is used to track and manage attendance for educational visits.
 ///
 /// @property id Unique identifier for this record
-/// @property educationalVisit The associated educational visit
+/// @property educational The associated educational visit
 /// @property actualParticipants The actual number of participants that attended
 /// @property registeredParticipants The number of participants that registered in advance
 /// @property numberOfTeachers The number of teachers/chaperones accompanying the students
