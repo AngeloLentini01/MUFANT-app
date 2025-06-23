@@ -1,18 +1,22 @@
+import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/styles/colors/skeleton.dart';
+import 'package:app/presentation/styles/spacing.dart';
+import 'package:app/presentation/styles/animation_durations.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import 'package:app/presentation/components/bars/app_bar_widget.dart';
-import 'package:app/presentation/components/bars/home_page_bottom_nav_bar.dart';
-import 'package:app/presentation/components/scrollViews/rooms_widget.dart';
-import 'package:app/presentation/components/scrollViews/upcoming_events_widget.dart';
-import 'package:app/presentation/components/others/visitors_guide_widget.dart';
+import 'package:app/presentation/widgets/bars/app_bar_widget.dart';
+import 'package:app/presentation/widgets/bars/home_page_bottom_nav_bar.dart';
+import 'package:app/presentation/widgets/scrollViews/rooms_widget.dart';
+import 'package:app/presentation/widgets/scrollViews/upcoming_events_widget.dart';
+import 'package:app/presentation/widgets/others/visitors_guide_widget.dart';
 
-final _logger = Logger('MufantApp'); // Define a logger
-const pinkColor = Color(0xFFFF8EB4);
-const blackColor = Color(0xFF2D2D35);
-const kWhiteSpace = SizedBox(height: 24);
+final homepageGreeting = 'HELLO THERE';
+// Replace with actual username logic
 
+final _logger = Logger('MufantApp');
+// TODO: Implement logic to retrieve the actual username from user profile or authentication state.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -21,36 +25,45 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isLoading = true;
+  bool isSkeletonLoading = true;
+  final _username = 'USER'; // Replace with actual username logic
+
+  String get homePageMessage => '$homepageGreeting,\n$_username!';
 
   @override
   void initState() {
     super.initState();
 
     // Set isLoading to false after 6 seconds
-    Future.delayed(const Duration(seconds: 6), () {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+    _mockDataLoadingUISkeletonEffect();
+  }
+
+  void _mockDataLoadingUISkeletonEffect() {
+    Future.delayed(
+      const Duration(seconds: kSkeletonLoadingDurationSeconds),
+      () {
+        if (mounted) {
+          setState(() {
+            isSkeletonLoading = false;
+          });
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    const kBodyPadding = EdgeInsets.all(16.0);
     return Skeletonizer(
-      enabled: isLoading,
+      enabled: isSkeletonLoading,
       effect: ShimmerEffect(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        duration: Duration(seconds: 2),
+        baseColor: kSkeletonBaseColor,
+        highlightColor: kSkeletonHighlightColor,
+        duration: Duration(seconds: kSkeletonLoadingWaveSeconds),
       ), // Wrap the home page with Skeletonizer
       child: Scaffold(
         appBar: AppBarWidget(
-          textColor: pinkColor,
-          backgroundColor: blackColor,
+          textColor: kPinkColor,
+          backgroundColor: kBlackColor,
           logger: _logger,
         ),
         body: SingleChildScrollView(
@@ -58,21 +71,16 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                direction: Axis.vertical,
-                children: [
-                  Text(
-                    'HELLO THERE,\nUSER!',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: pinkColor,
-                    ),
-                  ),
-                ],
-              ), // Wrap to ensure both texts are on the same line
+              Text(
+                homePageMessage,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: kPinkColor,
+                ),
+              ),
               // Add some space between the greeting and the next section
-              kWhiteSpace,
+              kBlankSpaceWidget,
               const Text(
                 'Discover our rooms',
                 style: TextStyle(
@@ -85,18 +93,18 @@ class _HomePageState extends State<HomePage> {
               // Use constraints to ensure proper width
               Container(
                 constraints: const BoxConstraints(
-                  maxWidth: double.infinity, // Allow full width
+                  maxWidth: kFullWidth, // Allow full width
                 ),
                 child: const RoomsWidget(),
               ),
-              kWhiteSpace,
-              const UpcomingEventsWidget(textColor: pinkColor),
-              kWhiteSpace,
-              const VisitorsGuideWidget(textColor: pinkColor),
+              kBlankSpaceWidget,
+              const UpcomingEventsWidget(textColor: kPinkColor),
+              kBlankSpaceWidget,
+              const VisitorsGuideWidget(textColor: kPinkColor),
             ],
           ),
         ),
-        bottomNavigationBar: HomePageBottomNavBar(backgroundColor: blackColor),
+        bottomNavigationBar: HomePageBottomNavBar(backgroundColor: kBlackColor),
       ),
     );
   }

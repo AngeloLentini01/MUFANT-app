@@ -1,5 +1,5 @@
 import 'package:app/model/cart/cart_item_model.dart';
-import 'package:app/model/museum/museumActivity/museum_activity_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 import 'package:app/model/items/ticket/museum_activity_charging_rates.dart';
 import 'package:money2/money2.dart';
 

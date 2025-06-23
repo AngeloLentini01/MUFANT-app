@@ -1,5 +1,5 @@
 import 'package:app/model/generic/base_entity_model.dart';
-import 'package:app/model/museum/guidedVisit/guided_visit_model.dart';
+import 'package:app/model/museum/visit/guided/guided_visit_model.dart';
 import 'package:ulid/ulid.dart';
 
 /// Represents the count of participants for a guided visit.

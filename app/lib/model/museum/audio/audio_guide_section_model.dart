@@ -1,8 +1,8 @@
 import 'package:app/model/generic/base_entity_model.dart';
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/model/generic/supported_language_model.dart';
-import 'package:app/model/museum/audioActivity/audio_guide_model.dart';
-import 'package:app/model/museum/audioActivity/voice_character_model.dart';
+import 'package:app/model/museum/audio/audio_guide_model.dart';
+import 'package:app/model/museum/audio/voice_character_model.dart';
 
 /// Represents a section of an audio guide.
 /// Each audio guide is divided into sections, each covering a specific exhibit or topic.

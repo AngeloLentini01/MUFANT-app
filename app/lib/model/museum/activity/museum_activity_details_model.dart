@@ -1,6 +1,6 @@
 import 'package:app/model/generic/base_entity_model.dart';
 import 'package:app/model/generic/details_model.dart';
-import 'package:app/model/museum/museumActivity/museum_activity_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 import 'package:app/model/generic/supported_language_model.dart';
 import 'package:ulid/ulid.dart';
 
@@ -18,17 +18,13 @@ import 'package:ulid/ulid.dart';
 class MuseumActivityDetailsModel extends BaseEntityModel {
   final MuseumActivityModel activity;
   final SupportedLanguageModel language;
-  final DetailsModel extendedDescription;
-  final String accessibilityInformation;
-  final String highlights;
+  final DetailsModel details;
 
   MuseumActivityDetailsModel({
     required super.id,
     required this.activity,
     required this.language,
-    required this.extendedDescription,
-    required this.accessibilityInformation,
-    required this.highlights,
+    required this.details,
     super.createdAt,
     required super.updatedAt,
   });
@@ -41,9 +37,6 @@ class MuseumActivityDetailsModel extends BaseEntityModel {
           id == other.id &&
           activity == other.activity &&
           language == other.language &&
-          extendedDescription == other.extendedDescription &&
-          accessibilityInformation == other.accessibilityInformation &&
-          highlights == other.highlights &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt;
 
@@ -52,26 +45,21 @@ class MuseumActivityDetailsModel extends BaseEntityModel {
       id.hashCode ^
       activity.hashCode ^
       language.hashCode ^
-      extendedDescription.hashCode ^
-      accessibilityInformation.hashCode ^
-      highlights.hashCode ^
       createdAt.hashCode ^
       updatedAt.hashCode;
 
   @override
   String toString() =>
       'MuseumActivityDetailsModel(id: $id, activity: $activity, '
-      'language: $language, extendedDescription: $extendedDescription, '
-      'accessibilityInformation: $accessibilityInformation, '
-      'highlights: $highlights, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'language: $language, '
+      'details: $details, '
+      'createdAt: $createdAt, updatedAt: $updatedAt)';
 
   MuseumActivityDetailsModel copyWith({
     Ulid? id,
     MuseumActivityModel? activity,
     SupportedLanguageModel? language,
-    DetailsModel? extendedDescription,
-    String? accessibilityInformation,
-    String? highlights,
+    DetailsModel? details,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -79,10 +67,7 @@ class MuseumActivityDetailsModel extends BaseEntityModel {
       id: id ?? this.id,
       activity: activity ?? this.activity,
       language: language ?? this.language,
-      extendedDescription: extendedDescription ?? this.extendedDescription,
-      accessibilityInformation:
-          accessibilityInformation ?? this.accessibilityInformation,
-      highlights: highlights ?? this.highlights,
+      details: details ?? this.details,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

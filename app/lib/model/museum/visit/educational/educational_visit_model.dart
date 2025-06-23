@@ -1,6 +1,6 @@
 import 'package:app/model/generic/base_entity_model.dart';
 import 'package:app/model/generic/details_model.dart';
-import 'package:app/model/museum/museumActivity/museum_activity_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 import 'package:app/model/generic/people/staff/staff_member_model.dart';
 import 'package:flutter/material.dart';
 
