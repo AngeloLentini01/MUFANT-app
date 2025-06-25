@@ -39,6 +39,10 @@ dependencies:
   cached_network_image: ^3.3.1
   google_fonts: ^6.1.0
   skeletonizer: ^2.0.1
+
+#aggiunta di una dipendenza per gli screen di introduzione
+  introduction_screen: ^3.1.17
+
   # Add other dependencies as needed
 
 dev_dependencies:
