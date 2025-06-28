@@ -65,14 +65,14 @@ void main() {
 
       // Assert
       expect(
-        model.createdAt.isAfter(beforeCreation) ||
-            model.createdAt.isAtSameMomentAs(beforeCreation),
+        model.createdAt!.isAfter(beforeCreation) ||
+            model.createdAt!.isAtSameMomentAs(beforeCreation),
         isTrue,
         reason: 'createdAt should be after or equal to beforeCreation time',
       );
       expect(
-        model.createdAt.isBefore(afterCreation) ||
-            model.createdAt.isAtSameMomentAs(afterCreation),
+        model.createdAt!.isBefore(afterCreation) ||
+            model.createdAt!.isAtSameMomentAs(afterCreation),
         isTrue,
         reason: 'createdAt should be before or equal to afterCreation time',
       );

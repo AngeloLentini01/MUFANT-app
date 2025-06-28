@@ -11,18 +11,18 @@ import 'base_entity_model.dart';
 /// @property updatedAt When this entity was last updated
 class DetailsModel extends BaseEntityModel {
   final String name;
-  final String description;
-  final String notes;
+  final String? description;
+  final String? notes;
   final String? imageUrlOrPath;
 
   DetailsModel({
     required this.name,
-    required this.description,
-    required this.notes,
+    this.description,
+    this.notes,
     this.imageUrlOrPath,
-    required super.id,
+    super.id,
     super.createdAt,
-    required super.updatedAt,
+    super.updatedAt,
   });
 
   @override

@@ -1,10 +1,10 @@
-import 'package:app/presentation/views/home_page.dart';
+
 import 'package:app/presentation/my_app.dart';
+import 'package:app/presentation/styles/colors/generic.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
- // Add this import
 
 
 
@@ -20,7 +20,7 @@ void main() {
   // Set system UI overlay style to ensure status bar matches app theme
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: blackColor,
+      statusBarColor: kBlackColor,
       statusBarIconBrightness: Brightness.light,
     ),
   );

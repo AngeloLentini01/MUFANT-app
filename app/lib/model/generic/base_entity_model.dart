@@ -6,9 +6,9 @@ import 'package:ulid/ulid.dart';
 /// @property createdAt When this entity was created, defaults to current time
 /// @property updatedAt When this entity was last updated
 class BaseEntityModel {
-  final Ulid id;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final Ulid? id;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   BaseEntityModel({
     required this.id,

@@ -176,8 +176,8 @@ class UserTableManager extends TableManager<UserModel> {
       'description': entity.details.description,
       'notes': entity.details.notes,
       'image_url_or_path': entity.details.imageUrlOrPath,
-      'created_at': entity.createdAt.toIso8601String(),
-      'updated_at': entity.updatedAt.toIso8601String(),
+      'created_at': entity.createdAt!.toIso8601String(),
+      'updated_at': entity.updatedAt!.toIso8601String(),
     };
   }
 
@@ -206,8 +206,8 @@ class UserTableManager extends TableManager<UserModel> {
         'email': entity.email,
         'password_hash': entity.passwordHash,
         'details_name': entity.details.name,
-        'created_at': entity.createdAt.toIso8601String(),
-        'updated_at': entity.updatedAt.toIso8601String(),
+        'created_at': entity.createdAt!.toIso8601String(),
+        'updated_at': entity.updatedAt!.toIso8601String(),
       });
       return true;
     } catch (e) {
