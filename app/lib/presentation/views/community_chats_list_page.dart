@@ -5,7 +5,7 @@ import 'package:app/model/generic/details_model.dart';
 import 'package:app/model/generic/people/staff/staff_member_model.dart';
 import 'package:app/model/generic/people/staff/staff_roles.dart';
 import 'package:app/model/cart/cart_model.dart';
-import 'package:app/presentation/views/community_chat_page.dart';
+import 'package:app/presentation/views/community/community_chat_page.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:ulid/ulid.dart';
 import 'package:logging/logging.dart';

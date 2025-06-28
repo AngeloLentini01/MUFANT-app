@@ -78,8 +78,8 @@ class _HomePageState extends State<HomePage> {
             child: CustomScrollView(
               slivers: [
                 AppBarWidget(
-                  textColor: kPinkColor,
-                  backgroundColor: kBlackColor, // Use solid black background
+                  textColor: kWhiteColor,
+                  backgroundColor: kBlackColor,
                   logger: _logger,
                 ),
                 SliverPadding(
@@ -95,8 +95,7 @@ class _HomePageState extends State<HomePage> {
                             name: 'Sailor Moon\'s Anniversary',
                             description:
                                 'Un evento speciale per celebrare i 30 anni di Sailor Moon.',
-                            notes:
-                                '01-28 nov•MUFANT Museum\nFree entry',
+                            notes: '01-28 nov•MUFANT Museum\nFree entry',
                             imageUrlOrPath:
                                 'assets/images/locandine/sailor-moon.jpg',
                           ),
@@ -112,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                             name: 'Artificial Prophecies',
                             description:
                                 'Un evento che esplora le profezie legate all\'intelligenza artificiale.',
-                           notes: '01-28 nov•MUFANT Museum\nComing soon',
+                            notes: '01-28 nov•MUFANT Museum\nComing soon',
                             imageUrlOrPath:
                                 'assets/images/locandine/profezie-artificiali.jpg',
                           ),

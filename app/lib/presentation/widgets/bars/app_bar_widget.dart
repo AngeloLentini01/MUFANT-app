@@ -22,7 +22,7 @@ class AppBarWidget extends StatelessWidget {
           : backgroundColor,
       floating: true, // App bar will appear when scrolling up
       snap: true, // App bar will snap in/out quickly
-      pinned: false, // Don't pin the app bar at the top
+      pinned: false,
       expandedHeight: kToolbarHeight,
       elevation: 0, // Remove default elevation, we'll add custom shadow
       shadowColor: Colors.transparent, // Remove default shadow

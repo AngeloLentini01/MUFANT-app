@@ -15,9 +15,7 @@ class CustomListWidget extends StatelessWidget {
   final List<DetailsModel> activities;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -31,6 +29,7 @@ class CustomListWidget extends StatelessWidget {
           const SizedBox(height: 6),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
             child: Row(
               children: activities
                   .map(
@@ -44,7 +43,6 @@ class CustomListWidget extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }
