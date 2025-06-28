@@ -1,3 +1,4 @@
+import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
@@ -68,13 +69,13 @@ class EventCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: kBlackColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         _extractBadgeText(),
                         style: const TextStyle(
-                          color: Colors.black,
+                          color: kWhiteColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
