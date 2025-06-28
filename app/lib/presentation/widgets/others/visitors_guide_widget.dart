@@ -14,9 +14,9 @@ class VisitorsGuideWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'VISITOR\'S GUIDE',
+          'Visitor\'s Guide',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
@@ -30,7 +30,7 @@ class VisitorsGuideWidget extends StatelessWidget {
               'Opening hours',
               style: TextStyle(
                 color: textColor,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -75,10 +75,10 @@ class VisitorsGuideWidget extends StatelessWidget {
             Icon(Icons.location_on, color: textColor),
             const SizedBox(width: 8),
             Text(
-              'How to reach us',
+              'Where to reach us',
               style: TextStyle(
                 color: textColor,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),

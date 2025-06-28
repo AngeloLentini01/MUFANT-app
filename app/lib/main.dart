@@ -4,8 +4,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:logging/logging.dart'; // Import styling constants
- // Add this import
+import 'package:logging/logging.dart';
 
 
 
