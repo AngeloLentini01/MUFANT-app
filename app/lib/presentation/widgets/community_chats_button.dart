@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:app/presentation/views/community_chats_list_page.dart';
+import 'package:app/presentation/views/community/community_chats_list_page.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 
 /// Widget that provides easy access to community chats
