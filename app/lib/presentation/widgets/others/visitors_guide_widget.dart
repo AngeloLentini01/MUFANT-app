@@ -1,10 +1,8 @@
+import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 
 class VisitorsGuideWidget extends StatelessWidget {
-  const VisitorsGuideWidget({
-    super.key,
-    required this.textColor,
-  });
+  const VisitorsGuideWidget({super.key, required this.textColor});
 
   final Color textColor;
 
@@ -13,15 +11,7 @@ class VisitorsGuideWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'VISITOR\'S GUIDE',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 16),
+        Text('Visitor\'s Guide', style: TextStyle(fontSize: 20)),
         Row(
           children: [
             Icon(Icons.access_time, color: textColor),
@@ -29,41 +19,65 @@ class VisitorsGuideWidget extends StatelessWidget {
             Text(
               'Opening hours',
               style: TextStyle(
-                color: textColor,
-                fontSize: 18,
+                color: kWhiteColor,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.only(left: 32.0),
+        SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 32.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  SizedBox(
-                    width: 100,
+                  Expanded(
+                    flex: 2,
                     child: Text(
                       'Mon - Wed',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
                   ),
-                  Text('Closed', style: TextStyle(color: Colors.white)),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Closed',
+                      style: TextStyle(
+                        color: Colors.red,
+                        decoration: TextDecoration.none,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
+              const SizedBox(height: 4),
               Row(
                 children: [
-                  SizedBox(
-                    width: 100,
+                  Expanded(
+                    flex: 2,
                     child: Text(
                       'Thu - Sun',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: kWhiteColor),
                     ),
                   ),
-                  Text('15.30 - 19.00', style: TextStyle(color: Colors.white)),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      '15.30 - 19.00',
+                      style: TextStyle(
+                        color: kWhiteColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -75,21 +89,27 @@ class VisitorsGuideWidget extends StatelessWidget {
             Icon(Icons.location_on, color: textColor),
             const SizedBox(width: 8),
             Text(
-              'How to reach us',
+              'Where to reach us',
               style: TextStyle(
-                color: textColor,
-                fontSize: 18,
+                color: kWhiteColor,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
+                decoration: TextDecoration.none,
               ),
             ),
           ],
         ),
         const SizedBox(height: 8),
-        const Padding(
-          padding: EdgeInsets.only(left: 32.0),
+        Padding(
+          padding: const EdgeInsets.only(left: 32.0),
           child: Text(
             'P.za Riccardo Valla, 5, 10148 Torino TO',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(
+              color: kWhiteColor,
+              decoration: TextDecoration.none,
+            ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ),
       ],

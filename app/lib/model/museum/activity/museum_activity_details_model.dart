@@ -51,7 +51,9 @@ class MuseumActivityDetailsModel extends BaseEntityModel {
   @override
   String toString() =>
       'MuseumActivityDetailsModel(id: $id, activity: $activity, '
-      'language: $language, details: $details, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'language: $language, '
+      'details: $details, '
+      'createdAt: $createdAt, updatedAt: $updatedAt)';
 
   MuseumActivityDetailsModel copyWith({
     Ulid? id,

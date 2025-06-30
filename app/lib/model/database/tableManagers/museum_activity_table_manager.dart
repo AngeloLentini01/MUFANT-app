@@ -154,10 +154,10 @@ class MuseumActivityTableManager {
       'type_name': entity.type.details.name,
       'type_description': entity.type.details.description,
       'type_notes': entity.type.details.notes,
-      'type_updated_at': entity.type.details.updatedAt.toIso8601String(),
+      'type_updated_at': entity.type.details.updatedAt!.toIso8601String(),
       'start_date': entity.activeTimePeriod.start.toIso8601String(),
       'end_date': entity.activeTimePeriod.end.toIso8601String(),
-      'updated_at': entity.details.updatedAt.toIso8601String(),
+      'updated_at': entity.details.updatedAt!.toIso8601String(),
     };
   }
 }

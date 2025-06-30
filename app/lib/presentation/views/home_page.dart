@@ -1,18 +1,24 @@
+import 'package:app/model/generic/details_model.dart';
+import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/styles/colors/skeleton.dart';
+import 'package:app/presentation/styles/spacing.dart';
+import 'package:app/presentation/styles/animation_durations.dart';
+import 'package:app/presentation/widgets/others/community_chat_section_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:app/presentation/widgets/bars/app_bar_widget.dart';
-import 'package:app/presentation/widgets/bars/home_page_bottom_nav_bar.dart';
-import 'package:app/presentation/widgets/scrollViews/rooms_widget.dart';
-import 'package:app/presentation/widgets/scrollViews/upcoming_events_widget.dart';
+
+import 'package:app/presentation/widgets/scrollViews/custom_list_widget.dart';
 import 'package:app/presentation/widgets/others/visitors_guide_widget.dart';
 
-final _logger = Logger('MufantApp'); // Define a logger
-const pinkColor = Color(0xFFFF8EB4);
-const blackColor = Color(0xFF2D2D35);
-const kWhiteSpace = SizedBox(height: 24);
+final homepageGreeting = 'HELLO THERE'; // Replace with actual greeting logic
+// Replace with actual username logic
 
+final _logger = Logger('MufantApp');
+
+// TODO: Implement logic to retrieve the actual username from user profile or authentication state.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -21,82 +27,124 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isLoading = true;
+  bool isSkeletonLoading = true;
+  final _username = 'USER'; // Replace with actual username logic
+
+  String get homePageMessage => '$homepageGreeting, $_username!';
 
   @override
   void initState() {
     super.initState();
 
     // Set isLoading to false after 6 seconds
-    Future.delayed(const Duration(seconds: 6), () {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+    _mockDataLoadingUISkeletonEffect();
+  }
+
+  void _mockDataLoadingUISkeletonEffect() {
+    Future.delayed(
+      const Duration(seconds: kSkeletonLoadingDurationSeconds),
+      () {
+        if (mounted) {
+          setState(() {
+            isSkeletonLoading = false;
+          });
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    const kBodyPadding = EdgeInsets.all(16.0);
     return Skeletonizer(
-      enabled: isLoading,
+      enabled: isSkeletonLoading,
       effect: ShimmerEffect(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        duration: Duration(seconds: 2),
+        baseColor: kSkeletonBaseColor,
+        highlightColor: kSkeletonHighlightColor,
+        duration: Duration(seconds: kSkeletonLoadingWaveSeconds),
       ), // Wrap the home page with Skeletonizer
-      child: Scaffold(
-        appBar: AppBarWidget(
-          textColor: pinkColor,
-          backgroundColor: blackColor,
-          logger: _logger,
-        ),
-        body: SingleChildScrollView(
-          padding: kBodyPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                direction: Axis.vertical,
-                children: [
-                  Text(
-                    'HELLO THERE,\nUSER!',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: pinkColor,
+      child: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [kBlackColor, Colors.grey[900]!],
+            ),
+          ),
+          child: CustomScrollView(
+            slivers: [
+              AppBarWidget(
+                textColor: kWhiteColor,
+                backgroundColor: kBlackColor,
+                logger: _logger,
+              ),
+              SliverPadding(
+                padding: kBodyPadding,
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    // Removed homePageMessage text since it's now in the app bar
+                    CustomListWidget(
+                      title: "Upcoming Events",
+                      textColor: kPinkColor,
+                      activities: [
+                        DetailsModel(
+                          name: 'Sailor Moon\'s Anniversary',
+                          description:
+                              'Un evento speciale per celebrare i 30 anni di Sailor Moon.',
+                          notes: '01-28 nov•MUFANT Museum\nFree entry',
+                          imageUrlOrPath:
+                              'assets/images/locandine/sailor-moon.jpg',
+                        ),
+                        DetailsModel(
+                          name: 'Ufo Pop',
+                          description:
+                              'Un evento dedicato alla cultura pop degli UFO e degli alieni.',
+                          notes: '01-28 nov•MUFANT Museum\nStarting from 5€',
+                          imageUrlOrPath: 'assets/images/locandine/ufo-pop.png',
+                        ),
+                        DetailsModel(
+                          name: 'Artificial Prophecies',
+                          description:
+                              'Un evento che esplora le profezie legate all\'intelligenza artificiale.',
+                          notes: '01-28 nov•MUFANT Museum\nComing soon',
+                          imageUrlOrPath:
+                              'assets/images/locandine/profezie-artificiali.jpg',
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ), // Wrap to ensure both texts are on the same line
-              // Add some space between the greeting and the next section
-              kWhiteSpace,
-              const Text(
-                'Discover our rooms',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                    kBlankSpaceWidget,
+                    CustomListWidget(
+                      title: "Discover Our Rooms",
+                      textColor: kPinkColor,
+                      activities: [
+                        DetailsModel(
+                          name: 'Star Wars',
+                          description: 'Enter the Star Wars universe',
+                          imageUrlOrPath: 'assets/images/starwars.jpg',
+                        ),
+                        DetailsModel(
+                          name: 'Riccardo Valla\'s Library',
+                          description: 'Quiet reading space',
+                          imageUrlOrPath: 'assets/images/library.jpg',
+                        ),
+                        DetailsModel(
+                          name: 'Superheroes',
+                          description: 'Superhero themed room',
+                          imageUrlOrPath: 'assets/images/superhero.jpg',
+                        ),
+                      ],
+                    ), // Replace with actual data
+                    kBlankSpaceWidget,
+                    // Community Chat Section
+                    CommunityChatSectionWidget(),
+                    kBlankSpaceWidget,
+                    const VisitorsGuideWidget(textColor: kPinkColor),
+                  ]),
                 ),
               ),
-
-              // Use constraints to ensure proper width
-              Container(
-                constraints: const BoxConstraints(
-                  maxWidth: double.infinity, // Allow full width
-                ),
-                child: const RoomsWidget(),
-              ),
-              kWhiteSpace,
-              const UpcomingEventsWidget(textColor: pinkColor),
-              kWhiteSpace,
-              const VisitorsGuideWidget(textColor: pinkColor),
             ],
           ),
         ),
-        bottomNavigationBar: HomePageBottomNavBar(backgroundColor: blackColor),
       ),
     );
   }
