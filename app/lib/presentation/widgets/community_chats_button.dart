@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:app/presentation/views/community_chats_list_page.dart';
+import 'package:app/presentation/views/community/community_chats_list_page.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 
 /// Widget that provides easy access to community chats
@@ -21,7 +21,7 @@ class CommunityChatsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       child: ElevatedButton.icon(
         onPressed: onPressed ?? () => _navigateToChats(context),
         style: ElevatedButton.styleFrom(
@@ -30,7 +30,7 @@ class CommunityChatsButton extends StatelessWidget {
           elevation: 3,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(24),
           ),
         ),
         icon: Icon(icon ?? Icons.chat_bubble_outline, size: 20),
@@ -71,7 +71,7 @@ class CommunityChatsFloatingButton extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: onPressed ?? () => _navigateToChats(context),
       backgroundColor: kPinkColor,
-      foregroundColor: Colors.white,
+      foregroundColor: kWhiteColor,
       tooltip: tooltip,
       icon: const Icon(Icons.forum),
       label: const Text('Chat', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -115,7 +115,7 @@ class CommunityChatsAppBarAction extends StatelessWidget {
             child: const Text(
               '3', // This would come from a notification service
               style: TextStyle(
-                color: Colors.white,
+                color: kWhiteColor,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
