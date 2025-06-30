@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
-
+typedef MySystem = SystemChrome;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ void main() {
   });
 
   // Set system UI overlay style to ensure status bar matches app theme
-  SystemChrome.setSystemUIOverlayStyle(
+  MySystem.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: kBlackColor,
       statusBarIconBrightness: Brightness.light,

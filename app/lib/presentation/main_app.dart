@@ -1,7 +1,7 @@
-import 'package:app/presentation/views/profile_page.dart';
+import 'package:app/presentation/views/tabBarPages/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:app/presentation/views/home_page.dart';
-import 'package:app/presentation/views/shop_page.dart';
+import 'package:app/presentation/views/tabBarPages/home_page.dart';
+import 'package:app/presentation/views/tabBarPages/shop_page.dart';
 import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 

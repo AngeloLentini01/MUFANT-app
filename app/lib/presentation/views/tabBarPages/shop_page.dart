@@ -384,6 +384,7 @@ class _ShopPageState extends State<ShopPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              //todo: add clear button to remove all items from cart
               Text(
                 '$totalItems item${totalItems > 1 ? 's' : ''}',
                 style: TextStyle(color: Colors.grey[400], fontSize: 12),
