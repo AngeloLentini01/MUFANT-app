@@ -1,4 +1,5 @@
-import 'package:app/presentation/views/home_page.dart';
+import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/texts/text_detail_room.dart';
 import 'package:app/presentation/widgets/bars/home_page_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -6,8 +7,8 @@ class DetailRoom extends StatelessWidget {
   static const blueColor = Color.fromARGB(255, 28, 28, 50);
   static const backText = Color(0x9A545165);
   static const lightBlack = Color(0x56000000);
-  static const textStarWars =
-      "Welcome to a galaxy far, far away!\nThis room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basic Net, and a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\nA journey through myth, collecting, and nostalgic wonder.";
+  static const kBlankSpaceWidget = SizedBox(height: 24);
+
   final String title;
   const DetailRoom({super.key, required this.title});
 
@@ -19,7 +20,7 @@ class DetailRoom extends StatelessWidget {
         title: Text(
           title,
           style: TextStyle(
-            color: pinkColor,
+            color: kPinkColor,
             fontSize: 28,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -32,10 +33,7 @@ class DetailRoom extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
-              child: Image.asset(
-                "assets/images/starwarsbackground.png",
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(assetStarWarsBG, fit: BoxFit.cover),
             ), //background image
             Positioned.fill(child: Container(color: lightBlack)),
             SingleChildScrollView(
@@ -43,12 +41,9 @@ class DetailRoom extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.asset(
-                      "assets/images/starwarsmap.jpg",
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.asset(assetStarWarsMap, fit: BoxFit.cover),
                   ),
-                  kWhiteSpace,
+                  kBlankSpaceWidget,
                   Center(
                     child: Wrap(
                       children: [
@@ -61,7 +56,7 @@ class DetailRoom extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: pinkColor, // Border color
+                                color: kPinkColor, // Border color
                                 width: 1, // Border width
                               ),
                               borderRadius: BorderRadius.circular(18),
@@ -71,12 +66,12 @@ class DetailRoom extends StatelessWidget {
                               children: [
                                 Icon(
                                   Icons.volume_up_outlined,
-                                  color: pinkColor,
+                                  color: kPinkColor,
                                   size: 30,
                                 ),
                                 SizedBox(width: 8),
                                 const Text(
-                                  "listen to the text-to-spech",
+                                  buttonText,
                                   style: TextStyle(fontSize: 20),
                                 ),
                               ],
@@ -86,7 +81,7 @@ class DetailRoom extends StatelessWidget {
                       ],
                     ),
                   ),
-                  kWhiteSpace,
+                  kBlankSpaceWidget,
                   Padding(
                     padding: EdgeInsets.all(25),
                     child: Container(
@@ -113,7 +108,7 @@ class DetailRoom extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: HomePageBottomNavBar(backgroundColor: blackColor),
+      bottomNavigationBar: HomePageBottomNavBar(backgroundColor: kBlackColor),
     );
   }
 }
