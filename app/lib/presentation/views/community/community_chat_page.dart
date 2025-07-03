@@ -166,6 +166,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 controller: _scrollController,
                 padding: const EdgeInsets.all(16),
                 itemCount: _messages.length,
+                reverse: true,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
                   final isCurrentUser = message.sender.id == _currentUser.id;
@@ -243,7 +244,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    _formatTime(message.createdAt?? DateTime.now()),
+                    _formatTime(message.createdAt ?? DateTime.now()),
                     style: TextStyle(fontSize: 10, color: Colors.grey[400]),
                   ),
                 ),

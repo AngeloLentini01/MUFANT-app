@@ -1,5 +1,8 @@
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/styles/spacing/section.dart';
+import 'package:app/presentation/widgets/all.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 
 // Color constants
 const pinkColor = kPinkColor;
@@ -13,84 +16,54 @@ class ProfilePage extends StatefulWidget {
   State createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State {
+class _ProfilePageState extends State<ProfilePage> {
+  static final Logger _logger = Logger('ProfilePage');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: blackColor,
-
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+        child: CustomScrollView(
+          slivers: [
+            AppBarWidget(
+              text: 'Settings',
+              textColor: kWhiteColor,
+              backgroundColor: kBlackColor,
+              logger: _logger,
+              iconImage: Icons.settings,
+              onButtonPressed: () {},
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(16.0),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // Settings button row
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+                  kSpaceBetweenSections,
+                  // User Avatar Section
+                  _buildUserAvatarSection(),
 
-            children: [
-              // Header with greeting and settings
-              _buildHeader(),
+                  kSpaceBetweenSections,
 
-              const SizedBox(height: 32),
+                  // My Tickets Section
+                  _buildMyTicketsSection(),
 
-              // User Avatar Section
-              _buildUserAvatarSection(),
+                  kSpaceBetweenSections,
 
-              const SizedBox(height: 32),
+                  // My Badges Section
+                  _buildMyBadgesSection(),
 
-              // My Tickets Section
-              _buildMyTicketsSection(),
+                  kSpaceBetweenSections,
 
-              const SizedBox(height: 32),
-
-              // My Badges Section
-              _buildMyBadgesSection(),
-
-              const SizedBox(height: 32),
-
-              // Wallpaper Section
-              _buildWallpaperSection(),
-            ],
-          ),
+                  // Wallpaper Section
+                  _buildWallpaperSection(),
+                ]),
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-      children: [
-        const Text(
-          'Hello there, User!',
-
-          style: TextStyle(
-            color: kWhiteColor,
-
-            fontSize: 20,
-
-            fontWeight: FontWeight.bold,
-
-            letterSpacing: 1.2,
-          ),
-        ),
-
-        IconButton(
-          onPressed: () {
-            // TODO: Navigate to settings page
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Settings page not yet implemented'),
-
-                backgroundColor: greyColor,
-              ),
-            );
-          },
-
-          icon: const Icon(Icons.settings, color: pinkColor, size: 28),
-        ),
-      ],
     );
   }
 
@@ -109,7 +82,10 @@ class _ProfilePageState extends State {
 
               color: greyColor.withValues(alpha: 0.3),
 
-              border: Border.all(color: greyColor.withValues(alpha: 0.5), width: 2),
+              border: Border.all(
+                color: greyColor.withValues(alpha: 0.5),
+                width: 2,
+              ),
             ),
 
             child: Center(
@@ -409,7 +385,10 @@ class _ProfilePageState extends State {
 
         borderRadius: BorderRadius.circular(12),
 
-        border: Border.all(color: lightGreyColor.withValues(alpha: 0.3), width: 1),
+        border: Border.all(
+          color: lightGreyColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
 
       child: Icon(icon, color: color, size: 30),
@@ -426,7 +405,7 @@ class _ProfilePageState extends State {
 
           children: [
             const Text(
-              'Wallpaper',
+              'My Wallpapers',
 
               style: TextStyle(
                 color: pinkColor,

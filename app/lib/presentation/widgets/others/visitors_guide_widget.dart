@@ -111,7 +111,7 @@ class VisitorsGuideWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 32.0),
           child: Text(
-            'P.za Riccardo Valla, 5, 10148 Torino TO',
+            'Piazza Riccardo Valla, 5, 10148 Torino TO',
             style: TextStyle(
               color: kWhiteColor,
               decoration: TextDecoration.none,

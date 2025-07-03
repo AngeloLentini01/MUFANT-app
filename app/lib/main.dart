@@ -1,5 +1,5 @@
 
-import 'package:app/presentation/my_app.dart';
+import 'package:app/presentation/app_pre_configurator.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 
 import 'package:flutter/material.dart';
@@ -24,7 +24,7 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ),
   );
-  runApp(const MyApp());
+  runApp(const AppPreConfigurator());
 }
 
 
