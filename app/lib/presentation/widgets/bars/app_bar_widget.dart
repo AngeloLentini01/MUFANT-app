@@ -8,11 +8,17 @@ class AppBarWidget extends StatelessWidget {
     required this.textColor,
     required this.backgroundColor,
     required this.logger,
+    required this.iconImage,
+    required this.onButtonPressed,
+    required this.text,
   });
 
   final Color textColor;
   final Color backgroundColor;
   final Logger logger;
+  final IconData iconImage;
+  final VoidCallback onButtonPressed;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +36,14 @@ class AppBarWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(right: 16.0, top: 14.0),
           child: IconButton(
-            icon: const Icon(Icons.search),
-            color: Colors.white,
+            icon: Icon(iconImage),
+            color: kWhiteColor,
             onPressed: () {
               // TODO: Implement search functionality
-              logger.info('Search button pressed');
+              logger.info('button pressed');
+              onButtonPressed();
             },
-            tooltip: 'Search',
+            tooltip: '',
           ),
         ),
       ],
@@ -89,7 +96,7 @@ class AppBarWidget extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: Text(
-                      'Hello there, User!',
+                      text,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,

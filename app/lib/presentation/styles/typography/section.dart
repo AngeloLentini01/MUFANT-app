@@ -3,7 +3,7 @@ import 'package:flutter/painting.dart';
 
 final double _kSectionTitleFontSize = 20;
 
-var kSectionTitleTextStyle = TextStyle(
+final kSectionTitleTextStyle = TextStyle(
   fontSize: _kSectionTitleFontSize,
   fontWeight: FontWeight.bold,
   color: kSectionTitleTextColor,

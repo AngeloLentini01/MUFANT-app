@@ -8,7 +8,7 @@ import 'package:app/presentation/styles/all.dart';
 
 import 'package:app/presentation/widgets/all.dart';
 
-final homepageGreeting = 'HELLO THERE'; // Replace with actual greeting logic
+final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
 // Replace with actual username logic
 
 final _logger = Logger('MufantApp');
@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isSkeletonLoading = true;
-  final _username = 'USER'; // Replace with actual username logic
+  final _username = 'User'; // Replace with actual username logic
 
   String get homePageMessage => '$homepageGreeting, $_username!';
 
@@ -72,6 +72,9 @@ class _HomePageState extends State<HomePage> {
                 textColor: kWhiteColor,
                 backgroundColor: kBlackColor,
                 logger: _logger,
+                iconImage: Icons.search,
+                text: homePageMessage,
+                onButtonPressed: () {},
               ),
               SliverPadding(
                 padding: kBodyPadding,
