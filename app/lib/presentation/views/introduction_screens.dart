@@ -11,7 +11,7 @@ const Color white = Color(0xFFFFFFFF); // Colore bianco per il testo del pulsant
 const kSpaceBeetwen = SizedBox(height: 24); // Spazio tra gli elementi della pagina
 
 class IntroductionScreens extends StatelessWidget {
-  const IntroductionScreens({Key? key}) : super(key: key);
+  const IntroductionScreens({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class IntroductionScreens extends StatelessWidget {
       PageViewModel(
         title: "Welcome to Mufant",
         body: "Stay connected to geek communities and events",
-        image: Image.asset('assets/images/robot1.png', width: 100, height: 100),
+        image: Image.asset('assets/images/robot1.png', width: 250, height: 250),
         decoration: const PageDecoration(
           pageColor: Colors.deepPurple // Colore di sfondo della pagina
         ),
@@ -31,7 +31,7 @@ class IntroductionScreens extends StatelessWidget {
       PageViewModel(
         title: "Buy Your Ticket in a click",
         body: "Fast, safe, and fully digital",
-        image: Image.asset('assets/images/robot2.png', width: 100, height: 100),
+        image: Image.asset('assets/images/robot2.png', width: 250, height: 250),
         decoration: const PageDecoration(
           pageColor: Colors.deepPurple // Colore di sfondo della pagina
         ),
@@ -67,7 +67,7 @@ class IntroductionScreens extends StatelessWidget {
             ),
           ],
         ),
-        image: Image.asset('assets/images/robot3.png', width: 100, height: 100), //immagine della terza pagina
+        image: Image.asset('assets/images/robot3.png', width: 250, height: 250), //immagine della terza pagina
         decoration: const PageDecoration(
           pageColor: Colors.deepPurple // Colore di sfondo della pagina
         ),
@@ -80,7 +80,7 @@ class IntroductionScreens extends StatelessWidget {
       next: const Text("Next"), // Testo del pulsante per la pagina successiva
       done: const Text("Sign up"), // Testo del pulsante per il sign up
       onDone: () {
-        //evento quando l’utente completa la schermata di introduzione
+        //evento: quando l’utente completa la schermata di introduzione
         //navigazione alla pagina di registrazione
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(

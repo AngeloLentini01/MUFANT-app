@@ -1,4 +1,5 @@
 import 'package:app/presentation/views/home_page.dart';
+import 'package:app/presentation/views/introduction_screens.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
           secondary: pinkColor,
         ),
       ),
-      home: const HomePage(),
+      home: const IntroductionScreens(), //viene mostrata la schermata di introduzione
     );
   }
 }
