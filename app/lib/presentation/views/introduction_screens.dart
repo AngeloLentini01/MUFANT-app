@@ -1,7 +1,5 @@
 //implementazione dei pacchetti necessari per la schermata di introduzione
 import 'package:app/presentation/views/home_page.dart';
-import 'package:app/presentation/views/sign_in.dart';
-import 'package:app/presentation/views/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 const Color deepPurple = Color(0xFF673AB7); // Colore viola scuro per lo sfondo della pagina
