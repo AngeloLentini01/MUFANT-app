@@ -1,12 +1,16 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:app/data/services/chat_service.dart';
-import 'package:app/model/community/chat/community_chat_model.dart';
-import 'package:app/model/community/chat/community_chat_message_model.dart';
+
+import 'package:app/model/community/chat/all.dart';
+
 import 'package:app/model/generic/people/user_model.dart';
 import 'package:app/model/generic/details_model.dart';
+
 import 'package:app/model/cart/cart_model.dart';
+
 import 'package:app/presentation/styles/colors/generic.dart';
+
 import 'package:ulid/ulid.dart';
 import 'package:logging/logging.dart';
 
@@ -21,9 +25,10 @@ class CommunityChatPage extends StatefulWidget {
 
 class _CommunityChatPageState extends State<CommunityChatPage> {
   static final Logger _logger = Logger('CommunityChatPage');
-  
+
   late final ChatService _chatService;
   late final UserModel _currentUser;
+
   List<CommunityChatMessageModel> _messages = [];
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -138,12 +143,12 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         title: Text(
           widget.community.details.name,
           style: const TextStyle(
-            color: Colors.white,
+            color: kWhiteColor,
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: kBlackColor,
-        foregroundColor: Colors.white,
+        foregroundColor: kWhiteColor,
         elevation: 1,
       ),
       body: Column(
@@ -161,6 +166,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 controller: _scrollController,
                 padding: const EdgeInsets.all(16),
                 itemCount: _messages.length,
+                reverse: true,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
                   final isCurrentUser = message.sender.id == _currentUser.id;
@@ -238,7 +244,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    _formatTime(message.createdAt?? DateTime.now()),
+                    _formatTime(message.createdAt ?? DateTime.now()),
                     style: TextStyle(fontSize: 10, color: Colors.grey[400]),
                   ),
                 ),

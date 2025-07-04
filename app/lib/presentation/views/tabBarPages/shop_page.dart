@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
+import 'dart:async';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -13,6 +15,8 @@ class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
+  Timer? _incrementTimer;
+  Timer? _decrementTimer;
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
@@ -92,40 +96,34 @@ class _ShopPageState extends State<ShopPage> {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        child: Column(
-          children: [
-            _buildHeader(),
-            _buildSearchBar(),
-            _buildCategoryTabs(),
-            Expanded(child: _buildItemsList()),
-            if (totalItems > 0) _buildCartSummary(),
+        child: CustomScrollView(
+          slivers: [
+            AppBarWidget(
+              textColor: kWhiteColor,
+              backgroundColor: kBlackColor,
+              logger: _logger,
+              iconImage: Icons.shopping_cart,
+              text: 'Shop',
+              onButtonPressed: () {
+                _logger.info('Shop app bar button pressed');
+                // TODO: Implement shop-specific action
+              },
+            ),
+            SliverToBoxAdapter(
+              child: Column(
+                children: [_buildSearchBar(), _buildCategoryTabs()],
+              ),
+            ),
+            SliverFillRemaining(
+              child: Column(
+                children: [
+                  Expanded(child: _buildItemsList()),
+                  if (totalItems > 0) _buildCartSummary(),
+                ],
+              ),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Image.asset(
-            'assets/images/logo_senza_scritta.png',
-            height: 40,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) {
-              return Text(
-                'MUFANT',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -255,6 +253,7 @@ class _ShopPageState extends State<ShopPage> {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -264,6 +263,8 @@ class _ShopPageState extends State<ShopPage> {
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (item.subtitle.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -288,8 +289,9 @@ class _ShopPageState extends State<ShopPage> {
               if (isInCart)
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTapDown: (_) {
+                        // Immediate decrement on tap
                         setState(() {
                           if (quantity > 1) {
                             cartItems[item.id] = quantity - 1;
@@ -297,11 +299,21 @@ class _ShopPageState extends State<ShopPage> {
                             cartItems.remove(item.id);
                           }
                         });
+                        // Start continuous decrement after delay
+                        Timer(const Duration(milliseconds: 500), () {
+                          _startDecrementing(item.id);
+                        });
                       },
-                      icon: const Icon(Icons.remove),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                      onTapUp: (_) => _stopTimers(),
+                      onTapCancel: () => _stopTimers(),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[700],
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.remove, color: Colors.white),
                       ),
                     ),
                     Padding(
@@ -315,16 +327,27 @@ class _ShopPageState extends State<ShopPage> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
+                    GestureDetector(
+                      onTapDown: (_) {
+                        // Immediate increment on tap
                         setState(() {
                           cartItems[item.id] = quantity + 1;
                         });
+                        // Start continuous increment after delay
+                        Timer(const Duration(milliseconds: 500), () {
+                          _startIncrementing(item.id);
+                        });
                       },
-                      icon: const Icon(Icons.add),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.grey[700],
-                        foregroundColor: Colors.white,
+                      onTapUp: (_) => _stopTimers(),
+                      onTapCancel: () => _stopTimers(),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[700],
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.add, color: Colors.white),
                       ),
                     ),
                   ],
@@ -384,6 +407,7 @@ class _ShopPageState extends State<ShopPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              //todo: add clear button to remove all items from cart
               Text(
                 '$totalItems item${totalItems > 1 ? 's' : ''}',
                 style: TextStyle(color: Colors.grey[400], fontSize: 12),
@@ -391,27 +415,100 @@ class _ShopPageState extends State<ShopPage> {
             ],
           ),
           const Spacer(),
-          ElevatedButton(
-            onPressed: () {
-              _logger.info('Proceeding to cart with $totalItems items');
-              // TODO: Navigate to cart page or checkout
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kPinkColor,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
+          Row(
+            children: [
+              // Clear cart button
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    cartItems.clear();
+                  });
+                  _logger.info('Cart cleared');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey[700],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text(
+                  'Clear',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            child: const Text(
-              'Cart',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+              const SizedBox(width: 12),
+              // Checkout button
+              ElevatedButton(
+                onPressed: () {
+                  _logger.info('Proceeding to cart with $totalItems items');
+                  // TODO: Navigate to cart page or checkout
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPinkColor,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text(
+                  'Checkout',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _incrementTimer?.cancel();
+    _decrementTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startIncrementing(String itemId) {
+    _incrementTimer?.cancel();
+    _incrementTimer = Timer.periodic(const Duration(milliseconds: 150), (
+      timer,
+    ) {
+      setState(() {
+        cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
+      });
+    });
+  }
+
+  void _startDecrementing(String itemId) {
+    _decrementTimer?.cancel();
+    _decrementTimer = Timer.periodic(const Duration(milliseconds: 150), (
+      timer,
+    ) {
+      setState(() {
+        final currentQuantity = cartItems[itemId] ?? 0;
+        if (currentQuantity > 1) {
+          cartItems[itemId] = currentQuantity - 1;
+        } else {
+          cartItems.remove(itemId);
+          _decrementTimer?.cancel();
+        }
+      });
+    });
+  }
+
+  void _stopTimers() {
+    _incrementTimer?.cancel();
+    _decrementTimer?.cancel();
   }
 }
 

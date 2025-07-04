@@ -1,4 +1,6 @@
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/styles/spacing/visitors_guide.dart';
+import 'package:app/presentation/styles/typography/section.dart';
 import 'package:flutter/material.dart';
 
 class VisitorsGuideWidget extends StatelessWidget {
@@ -13,14 +15,9 @@ class VisitorsGuideWidget extends StatelessWidget {
       children: [
         Text(
           'Visitor\'s Guide',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-            decoration: TextDecoration.none,
-          ),
+          style: kSectionTitleTextStyle,
         ),
-        const SizedBox(height: 16),
+        kSpaceBetweenVisitorsGuideTitleAndTimeTable,
         Row(
           children: [
             Icon(Icons.access_time, color: textColor),
@@ -36,7 +33,7 @@ class VisitorsGuideWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        kSpaceBetweenVisitorsGuideDetailsTitleAndDates,
         Padding(
           padding: const EdgeInsets.only(left: 32.0),
           child: Column(
@@ -114,7 +111,7 @@ class VisitorsGuideWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 32.0),
           child: Text(
-            'P.za Riccardo Valla, 5, 10148 Torino TO',
+            'Piazza Riccardo Valla, 5, 10148 Torino TO',
             style: TextStyle(
               color: kWhiteColor,
               decoration: TextDecoration.none,

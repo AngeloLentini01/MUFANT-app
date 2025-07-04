@@ -1,19 +1,14 @@
-import 'package:app/model/generic/details_model.dart';
-import 'package:app/presentation/styles/colors/generic.dart';
-import 'package:app/presentation/styles/colors/skeleton.dart';
-import 'package:app/presentation/styles/spacing.dart';
-import 'package:app/presentation/styles/animation_durations.dart';
-import 'package:app/presentation/widgets/others/community_chat_section_widget.dart';
+import 'package:app/presentation/styles/spacing/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import 'package:app/presentation/widgets/bars/app_bar_widget.dart';
+import 'package:app/model/generic/details_model.dart';
+import 'package:app/presentation/styles/all.dart';
 
-import 'package:app/presentation/widgets/scrollViews/custom_list_widget.dart';
-import 'package:app/presentation/widgets/others/visitors_guide_widget.dart';
+import 'package:app/presentation/widgets/all.dart';
 
-final homepageGreeting = 'HELLO THERE'; // Replace with actual greeting logic
+final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
 // Replace with actual username logic
 
 final _logger = Logger('MufantApp');
@@ -28,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isSkeletonLoading = true;
-  final _username = 'USER'; // Replace with actual username logic
+  final _username = 'User'; // Replace with actual username logic
 
   String get homePageMessage => '$homepageGreeting, $_username!';
 
@@ -77,6 +72,9 @@ class _HomePageState extends State<HomePage> {
                 textColor: kWhiteColor,
                 backgroundColor: kBlackColor,
                 logger: _logger,
+                iconImage: Icons.search,
+                text: homePageMessage,
+                onButtonPressed: () {},
               ),
               SliverPadding(
                 padding: kBodyPadding,
@@ -84,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                   delegate: SliverChildListDelegate([
                     // Removed homePageMessage text since it's now in the app bar
                     CustomListWidget(
-                      title: "Upcoming Events",
+                      title: "Our Events",
                       textColor: kPinkColor,
                       activities: [
                         DetailsModel(
@@ -112,9 +110,9 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    kBlankSpaceWidget,
+                    kSpaceBetweenSections,
                     CustomListWidget(
-                      title: "Discover Our Rooms",
+                      title: "Discover the Rooms",
                       textColor: kPinkColor,
                       activities: [
                         DetailsModel(
@@ -134,10 +132,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ), // Replace with actual data
-                    kBlankSpaceWidget,
+                    kSpaceBetweenSections,
                     // Community Chat Section
                     CommunityChatSectionWidget(),
-                    kBlankSpaceWidget,
+                    kSpaceBetweenSections,
                     const VisitorsGuideWidget(textColor: kPinkColor),
                   ]),
                 ),

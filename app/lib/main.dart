@@ -1,12 +1,12 @@
 
-import 'package:app/presentation/my_app.dart';
+import 'package:app/presentation/app_pre_configurator.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 
-
+typedef MySystem = SystemChrome;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +18,13 @@ void main() {
   });
 
   // Set system UI overlay style to ensure status bar matches app theme
-  SystemChrome.setSystemUIOverlayStyle(
+  MySystem.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: kBlackColor,
       statusBarIconBrightness: Brightness.light,
     ),
   );
-  runApp(const MyApp());
+  runApp(const AppPreConfigurator());
 }
 
 
