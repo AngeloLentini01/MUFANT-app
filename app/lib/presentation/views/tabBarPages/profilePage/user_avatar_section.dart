@@ -8,7 +8,7 @@ class UserAvatarSection extends StatelessWidget {
   final BuildContext context;
 
   // Dynamic avatar image path - can be changed to implement avatar switching
-  final String avatarImagePath = 'assets/images/avatar_robot.png';
+  final String avatarImagePath = 'assets/images/avatar/avatar_robot.png';
 
   @override
   Widget build(BuildContext context) {
