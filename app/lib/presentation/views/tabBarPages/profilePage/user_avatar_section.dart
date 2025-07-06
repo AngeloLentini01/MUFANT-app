@@ -3,12 +3,12 @@ import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart
 import 'package:flutter/material.dart';
 
 class UserAvatarSection extends StatelessWidget {
-  const UserAvatarSection({
-    super.key,
-    required this.context,
-  });
+  const UserAvatarSection({super.key, required this.context});
 
   final BuildContext context;
+
+  // Dynamic avatar image path - can be changed to implement avatar switching
+  final String avatarImagePath = 'assets/images/avatar_robot.png';
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,14 @@ class UserAvatarSection extends StatelessWidget {
 
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-
-              color: greyColor.withValues(alpha: 0.3),
-
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0x87FF84B2), // #FF84B2 with 53% opacity at the top
+                  Color(0x00999999), // #999999 with 0% opacity at the bottom
+                ],
+              ),
               border: Border.all(
                 color: greyColor.withValues(alpha: 0.5),
                 width: 2,
@@ -38,13 +43,14 @@ class UserAvatarSection extends StatelessWidget {
 
                 height: 120,
 
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-
-                  color: pinkColor.withValues(alpha: 0.2),
+                child: ClipOval(
+                  child: Image.asset(
+                    avatarImagePath,
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-
-                child: const Icon(Icons.android, size: 80, color: pinkColor),
               ),
             ),
           ),

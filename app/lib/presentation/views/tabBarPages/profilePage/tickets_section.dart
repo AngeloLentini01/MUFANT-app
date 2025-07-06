@@ -4,9 +4,13 @@ import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart
 import 'package:flutter/material.dart';
 
 class TicketsSection extends StatelessWidget {
-  const TicketsSection({
-    super.key,
-  });
+  const TicketsSection({super.key});
+
+  // Dynamic ticket content variables
+  final String eventDate = '29, May 2025';
+  final String eventTime = '15:30 - 19:00';
+  final String eventName = '30 ANNI DI SAILOR';
+  final String eventLocation = 'piazza Riccardo Valle 5, Torino';
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +22,7 @@ class TicketsSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
           children: [
-            Text(
-              'My tickets',
-
-              style: kSectionTitleTextStyle,
-            ),
+            Text('My tickets', style: kSectionTitleTextStyle),
 
             TextButton(
               onPressed: () {
@@ -58,66 +58,36 @@ class TicketsSection extends StatelessWidget {
 
         Container(
           padding: const EdgeInsets.all(16),
-
           decoration: BoxDecoration(
-            color: greyColor,
-
             borderRadius: BorderRadius.circular(16),
-
             boxShadow: [
               BoxShadow(
                 color: kBlackColor.withValues(alpha: 0.2),
-
                 blurRadius: 8,
-
                 offset: const Offset(0, 4),
               ),
             ],
+            image: const DecorationImage(
+              image: AssetImage('assets/images/Ticket.png'),
+              fit: BoxFit.cover,
+            ),
           ),
 
           child: Row(
             children: [
               // Barcode
-              Container(
-                width: 60,
-
-                height: 80,
-
-                decoration: BoxDecoration(
-                  color: Colors.white,
-
-                  borderRadius: BorderRadius.circular(8),
-                ),
-
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-
-                        child: Column(
-                          children: List.generate(
-                            15,
-                            (index) => Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 1),
-
-                                color: index % 2 == 0
-                                    ? Colors.black
-                                    : Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+              Transform.translate(
+                offset: const Offset(-8, 0), // Sposta 8 pixel verso sinistra
+                child: Container(
+                  width: 60,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/barcode-ticket.png'),
+                      fit: BoxFit.cover,
                     ),
-                  ],
+                  ),
                 ),
               ),
 
@@ -126,43 +96,41 @@ class TicketsSection extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-
                   children: [
-                    const Text(
-                      '29, May 2025',
-
-                      style: TextStyle(color: lightGreyColor, fontSize: 14),
+                    // Date and time on the same line
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          eventDate,
+                          style: TextStyle(color: kBlackColor, fontSize: 14),
+                        ),
+                        Text(
+                          eventTime,
+                          style: TextStyle(color: kBlackColor, fontSize: 12),
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 4),
 
-                    const Text(
-                      '30 ANNI DI SAILOR',
-
+                    Text(
+                      eventName,
                       style: TextStyle(
-                        color: Colors.white,
-
+                        color: kBlackColor,
                         fontSize: 16,
-
                         fontWeight: FontWeight.bold,
                       ),
                     ),
 
                     const SizedBox(height: 8),
 
-                    const Text(
-                      'piazza Riccardo Valle 5, Torino',
-
-                      style: TextStyle(color: lightGreyColor, fontSize: 12),
+                    Text(
+                      eventLocation,
+                      style: TextStyle(color: kBlackColor, fontSize: 12),
                     ),
                   ],
                 ),
-              ),
-
-              const Text(
-                '15:30 - 19:00',
-
-                style: TextStyle(color: lightGreyColor, fontSize: 12),
               ),
             ],
           ),
