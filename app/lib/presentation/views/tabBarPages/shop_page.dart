@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
-import 'dart:async';
+import 'package:hold_down_button/hold_down_button.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -15,8 +15,6 @@ class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
-  Timer? _incrementTimer;
-  Timer? _decrementTimer;
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
@@ -289,9 +287,8 @@ class _ShopPageState extends State<ShopPage> {
               if (isInCart)
                 Row(
                   children: [
-                    GestureDetector(
-                      onTapDown: (_) {
-                        // Immediate decrement on tap
+                    HoldDownButton(
+                      onHoldDown: () {
                         setState(() {
                           if (quantity > 1) {
                             cartItems[item.id] = quantity - 1;
@@ -299,13 +296,7 @@ class _ShopPageState extends State<ShopPage> {
                             cartItems.remove(item.id);
                           }
                         });
-                        // Start continuous decrement after delay
-                        Timer(const Duration(milliseconds: 500), () {
-                          _startDecrementing(item.id);
-                        });
                       },
-                      onTapUp: (_) => _stopTimers(),
-                      onTapCancel: () => _stopTimers(),
                       child: Container(
                         width: 48,
                         height: 48,
@@ -327,19 +318,12 @@ class _ShopPageState extends State<ShopPage> {
                         ),
                       ),
                     ),
-                    GestureDetector(
-                      onTapDown: (_) {
-                        // Immediate increment on tap
+                    HoldDownButton(
+                      onHoldDown: () {
                         setState(() {
                           cartItems[item.id] = quantity + 1;
                         });
-                        // Start continuous increment after delay
-                        Timer(const Duration(milliseconds: 500), () {
-                          _startIncrementing(item.id);
-                        });
                       },
-                      onTapUp: (_) => _stopTimers(),
-                      onTapCancel: () => _stopTimers(),
                       child: Container(
                         width: 48,
                         height: 48,
@@ -469,46 +453,6 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _incrementTimer?.cancel();
-    _decrementTimer?.cancel();
-    super.dispose();
-  }
-
-  void _startIncrementing(String itemId) {
-    _incrementTimer?.cancel();
-    _incrementTimer = Timer.periodic(const Duration(milliseconds: 150), (
-      timer,
-    ) {
-      setState(() {
-        cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
-      });
-    });
-  }
-
-  void _startDecrementing(String itemId) {
-    _decrementTimer?.cancel();
-    _decrementTimer = Timer.periodic(const Duration(milliseconds: 150), (
-      timer,
-    ) {
-      setState(() {
-        final currentQuantity = cartItems[itemId] ?? 0;
-        if (currentQuantity > 1) {
-          cartItems[itemId] = currentQuantity - 1;
-        } else {
-          cartItems.remove(itemId);
-          _decrementTimer?.cancel();
-        }
-      });
-    });
-  }
-
-  void _stopTimers() {
-    _incrementTimer?.cancel();
-    _decrementTimer?.cancel();
   }
 }
 
