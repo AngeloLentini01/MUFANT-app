@@ -11,6 +11,7 @@ class AppBarWidget extends StatelessWidget {
     required this.iconImage,
     required this.onButtonPressed,
     required this.text,
+    this.showLogo = false, // Default to false, only show on homepage
   });
 
   final Color textColor;
@@ -19,9 +20,11 @@ class AppBarWidget extends StatelessWidget {
   final IconData iconImage;
   final VoidCallback onButtonPressed;
   final String text;
+  final bool showLogo;
 
   @override
   Widget build(BuildContext context) {
+    const double appBarTextfontSize = 16;
     return SliverAppBar(
       backgroundColor: backgroundColor == Colors.transparent
           ? kBlackColor
@@ -32,6 +35,71 @@ class AppBarWidget extends StatelessWidget {
       expandedHeight: kToolbarHeight,
       elevation: 0, // Remove default elevation, we'll add custom shadow
       shadowColor: Colors.transparent, // Remove default shadow
+      leading: showLogo
+          ? Container()
+          : null, // Empty container to suppress back button
+      title: showLogo
+          ? SizedBox(
+              height: kToolbarHeight,
+              child: Stack(
+                clipBehavior: Clip.none, // Allow overflow
+                children: [
+                  // Logo in the center
+                  Center(
+                    child: Image.asset(
+                      'assets/images/logo_senza_scritta.png',
+                      height: 40,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        logger.warning('Error loading logo: $error');
+                        return Text(
+                          'MUFANT',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Text on the left and bottom
+                  Positioned(
+                    left: -56, // Move text to the actual left edge of AppBar
+                    bottom: 4,
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: appBarTextfontSize,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : SizedBox(
+              height: kToolbarHeight,
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Text(
+                    text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: appBarTextfontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16.0, top: 14.0),
@@ -47,69 +115,6 @@ class AppBarWidget extends StatelessWidget {
           ),
         ),
       ],
-      flexibleSpace: LayoutBuilder(
-        builder: (context, constraints) {
-          // For floating SliverAppBar:
-          // - At top: maxHeight = expandedHeight (kToolbarHeight)
-          // - When floating: maxHeight = kToolbarHeight + padding (system adds padding)
-          // - We want shadow when floating, not when at top
-          final isFloating = constraints.maxHeight > kToolbarHeight;
-          final showShadow = isFloating;
-
-          return Container(
-            decoration: BoxDecoration(
-              color: backgroundColor == Colors.transparent
-                  ? kBlackColor
-                  : backgroundColor,
-              boxShadow: showShadow
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: .3),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 16, bottom: 8),
-              title: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Image.asset(
-                    'assets/images/logo_senza_scritta.png',
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Replace print with logger
-                      logger.warning('Error loading logo: $error');
-                      return Text(
-                        'MUFANT',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      text,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 }
