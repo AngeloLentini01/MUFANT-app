@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
-import 'package:hold_down_button/hold_down_button.dart';
+import 'dart:async';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -15,6 +15,9 @@ class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
+  Timer? _timer;
+  String? _activeTimerItemId;
+  bool _isIncrementing = false;
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
@@ -284,78 +287,77 @@ class _ShopPageState extends State<ShopPage> {
                 ),
               ),
               const SizedBox(width: 16),
-              if (isInCart)
-                Row(
-                  children: [
-                    HoldDownButton(
-                      onHoldDown: () {
-                        setState(() {
-                          if (quantity > 1) {
-                            cartItems[item.id] = quantity - 1;
-                          } else {
-                            cartItems.remove(item.id);
-                          }
-                        });
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          shape: BoxShape.circle,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: isInCart
+                    ? Row(
+                        key: ValueKey('quantity_controls_${item.id}'),
+                        children: [
+                          GestureDetector(
+                            onTapDown: (_) => _startOperation(item.id, false),
+                            onTapUp: (_) => _stopOperation(),
+                            onTapCancel: () => _stopOperation(),
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[700],
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.remove,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              quantity.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTapDown: (_) => _startOperation(item.id, true),
+                            onTapUp: (_) => _stopOperation(),
+                            onTapCancel: () => _stopOperation(),
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[700],
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.add, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ElevatedButton(
+                        key: ValueKey('add_button_${item.id}'),
+                        onPressed: () {
+                          setState(() {
+                            cartItems[item.id] = 1;
+                          });
+                          _logger.info('Added ${item.title} to cart');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kPinkColor,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                        child: const Icon(Icons.remove, color: Colors.white),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        quantity.toString(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        child: const Text(
+                          'Add',
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
-                    HoldDownButton(
-                      onHoldDown: () {
-                        setState(() {
-                          cartItems[item.id] = quantity + 1;
-                        });
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[700],
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.add, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                )
-              else
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      cartItems[item.id] = 1;
-                    });
-                    _logger.info('Added ${item.title} to cart');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPinkColor,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Text(
-                    'Add',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
+              ),
             ],
           ),
         ),
@@ -453,6 +455,65 @@ class _ShopPageState extends State<ShopPage> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startOperation(String itemId, bool isIncrementing) {
+    // Immediate action
+    _performOperation(itemId, isIncrementing);
+
+    // Set up for continuous operation
+    _activeTimerItemId = itemId;
+    _isIncrementing = isIncrementing;
+
+    // Start continuous operation after a delay
+    _timer = Timer(const Duration(milliseconds: 500), () {
+      _startContinuousOperation();
+    });
+  }
+
+  void _startContinuousOperation() {
+    if (_activeTimerItemId == null) return;
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (_activeTimerItemId == null) {
+        timer.cancel();
+        return;
+      }
+
+      _performOperation(_activeTimerItemId!, _isIncrementing);
+
+      // Stop if item is removed from cart
+      if (!_isIncrementing && (cartItems[_activeTimerItemId!] ?? 0) == 0) {
+        _stopOperation();
+      }
+    });
+  }
+
+  void _performOperation(String itemId, bool isIncrementing) {
+    setState(() {
+      if (isIncrementing) {
+        cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
+      } else {
+        final currentQuantity = cartItems[itemId] ?? 0;
+        if (currentQuantity > 1) {
+          cartItems[itemId] = currentQuantity - 1;
+        } else {
+          cartItems.remove(itemId);
+        }
+      }
+    });
+  }
+
+  void _stopOperation() {
+    _timer?.cancel();
+    _activeTimerItemId = null;
   }
 }
 
