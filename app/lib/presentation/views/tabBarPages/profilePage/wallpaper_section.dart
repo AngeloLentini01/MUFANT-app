@@ -57,7 +57,7 @@ class WallpaperSection extends StatelessWidget {
 
           children: [
             WallpaperThumbnail(
-              imagePath: 'assets/images/wallpaper/wallpaper 1.png',
+              imagePath: 'assets/images/wallpaper/wallpaper1.png',
               wallpaperName: 'Wallpaper 1',
             ),
 

@@ -1,14 +1,40 @@
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/presentation/views/tabBarPages/profilePage/avatar_selector_modal.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart';
 import 'package:flutter/material.dart';
 
-class UserAvatarSection extends StatelessWidget {
+class UserAvatarSection extends StatefulWidget {
   const UserAvatarSection({super.key, required this.context});
 
   final BuildContext context;
 
-  // Dynamic avatar image path - can be changed to implement avatar switching
-  final String avatarImagePath = 'assets/images/avatar/avatar_robot.png';
+  @override
+  State<UserAvatarSection> createState() => _UserAvatarSectionState();
+}
+
+class _UserAvatarSectionState extends State<UserAvatarSection> {
+  /// Dynamic avatar image path - can be changed to implement avatar switching
+  String avatarImagePath = 'assets/images/avatar/avatar_robot.png';
+
+  /// Handle avatar selection from the modal
+  void _onAvatarSelected(String newAvatarPath) {
+    setState(() {
+      avatarImagePath = newAvatarPath;
+    });
+  }
+
+  /// Opens the avatar selector modal bottom sheet
+  void _openAvatarSelector() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => AvatarSelectorModal(
+        currentAvatarPath: avatarImagePath,
+        onAvatarSelected: _onAvatarSelected,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +89,8 @@ class UserAvatarSection extends StatelessWidget {
 
             child: GestureDetector(
               onTap: () {
-                // TODO: Implement avatar change functionality
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Change avatar functionality not yet implemented',
-                    ),
-
-                    backgroundColor: greyColor,
-                  ),
-                );
+                // Open avatar selector modal
+                _openAvatarSelector();
               },
 
               child: Container(
