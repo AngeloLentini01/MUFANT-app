@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
                 iconImage: Icons.search,
                 text: homePageMessage,
                 onButtonPressed: () {},
+                showLogo: true, // Show logo only on homepage
               ),
               SliverPadding(
                 padding: kBodyPadding,

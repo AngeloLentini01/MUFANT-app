@@ -11,6 +11,8 @@ class AppBarWidget extends StatelessWidget {
     required this.iconImage,
     required this.onButtonPressed,
     required this.text,
+    this.showLogo = false, // Default to false, only show on homepage
+    this.showAppBarCTAButton = true, // Default to true, hide only on shop page
   });
 
   final Color textColor;
@@ -19,6 +21,8 @@ class AppBarWidget extends StatelessWidget {
   final IconData iconImage;
   final VoidCallback onButtonPressed;
   final String text;
+  final bool showLogo;
+  final bool showAppBarCTAButton;
 
   @override
   Widget build(BuildContext context) {
@@ -32,21 +36,23 @@ class AppBarWidget extends StatelessWidget {
       expandedHeight: kToolbarHeight,
       elevation: 0, // Remove default elevation, we'll add custom shadow
       shadowColor: Colors.transparent, // Remove default shadow
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16.0, top: 14.0),
-          child: IconButton(
-            icon: Icon(iconImage),
-            color: kWhiteColor,
-            onPressed: () {
-              // TODO: Implement search functionality
-              logger.info('button pressed');
-              onButtonPressed();
-            },
-            tooltip: '',
-          ),
-        ),
-      ],
+      actions: showAppBarCTAButton
+          ? [
+              Padding(
+                padding: const EdgeInsets.only(right: 16.0, top: 14.0),
+                child: IconButton(
+                  icon: Icon(iconImage),
+                  color: kWhiteColor,
+                  onPressed: () {
+                    // TODO: Implement search functionality
+                    logger.info('button pressed');
+                    onButtonPressed();
+                  },
+                  tooltip: '',
+                ),
+              ),
+            ]
+          : null,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
           // For floating SliverAppBar:
@@ -73,39 +79,49 @@ class AppBarWidget extends StatelessWidget {
             ),
             child: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(left: 16, bottom: 8),
-              title: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Image.asset(
-                    'assets/images/logo_senza_scritta.png',
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Replace print with logger
-                      logger.warning('Error loading logo: $error');
-                      return Text(
-                        'MUFANT',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+              title: showLogo
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Logo on the left
+                        Image.asset(
+                          'assets/images/logo_senza_scritta.png',
+                          height: 40,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            logger.warning('Error loading logo: $error');
+                            return Text(
+                              'MUFANT',
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
+                        const SizedBox(width: 16),
+                        // Text next to logo
+                        Expanded(
+                          child: Text(
+                            text,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
                       text,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
-              ),
             ),
           );
         },
