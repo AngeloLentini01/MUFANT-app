@@ -107,7 +107,7 @@ class AppBarWidget extends StatelessWidget {
                           child: Text(
                             text,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: kWhiteColor,
                               fontSize: appBarTextfontSize,
                               fontWeight: FontWeight.bold,
                             ),
@@ -118,7 +118,7 @@ class AppBarWidget extends StatelessWidget {
                   : Text(
                       text,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: kWhiteColor,
                         fontSize: appBarTextfontSize,
                         fontWeight: FontWeight.bold,
                       ),
