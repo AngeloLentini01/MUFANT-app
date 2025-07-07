@@ -68,7 +68,7 @@ class TicketsSection extends StatelessWidget {
               ),
             ],
             image: const DecorationImage(
-              image: AssetImage('assets/images/Ticket.png'),
+              image: AssetImage('assets/images/ticket/Ticket.png'),
               fit: BoxFit.cover,
             ),
           ),

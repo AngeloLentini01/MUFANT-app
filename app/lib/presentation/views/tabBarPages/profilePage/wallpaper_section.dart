@@ -1,12 +1,12 @@
 import 'package:app/presentation/styles/typography/section.dart';
-import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/wallpaper_thumbnail.dart';
 import 'package:flutter/material.dart';
 
+// Import the lightGreyColor constant
+const lightGreyColor = Color.fromARGB(255, 181, 181, 192);
+
 class WallpaperSection extends StatelessWidget {
-  const WallpaperSection({
-    super.key,
-  });
+  const WallpaperSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,7 @@ class WallpaperSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
           children: [
-            Text(
-              'My Wallpapers',
-
-              style: kSectionTitleTextStyle,
-            ),
+            Text('My Wallpapers', style: kSectionTitleTextStyle),
 
             TextButton(
               onPressed: () {
@@ -60,13 +56,25 @@ class WallpaperSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
           children: [
-            WallpaperThumbnail(color: Colors.purple, icon: Icons.architecture),
+            WallpaperThumbnail(
+              imagePath: 'assets/images/wallpaper/wallpaper 1.png',
+              wallpaperName: 'Wallpaper 1',
+            ),
 
-            WallpaperThumbnail(color: Colors.teal, icon: Icons.palette),
+            WallpaperThumbnail(
+              imagePath: 'assets/images/wallpaper/wallpaper2.png',
+              wallpaperName: 'Wallpaper 2',
+            ),
 
-            WallpaperThumbnail(color: Colors.deepPurple, icon: Icons.auto_awesome),
+            WallpaperThumbnail(
+              imagePath: 'assets/images/wallpaper/wallpaper3.png',
+              wallpaperName: 'Wallpaper 3',
+            ),
 
-            WallpaperThumbnail(color: Colors.blue, icon: Icons.emoji_objects),
+            WallpaperThumbnail(
+              imagePath: 'assets/images/wallpaper/wallpaper4.png',
+              wallpaperName: 'Wallpaper 4',
+            ),
           ],
         ),
       ],
