@@ -153,7 +153,9 @@ class AppBarWidget extends StatelessWidget {
                           ),
                         ),
                         // Additional content (search bar and tabs) - only show if there's enough space
-                        if (availableHeight > kToolbarHeight + 80) // Need at least 80px for content
+                        if (availableHeight >
+                            kToolbarHeight +
+                                80) // Need at least 80px for content
                           Expanded(
                             child: ClipRect(
                               child: SizedBox(

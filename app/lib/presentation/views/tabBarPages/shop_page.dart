@@ -115,12 +115,8 @@ class _ShopPageState extends State<ShopPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Flexible(
-                      child: _buildSearchBar(),
-                    ),
-                    Flexible(
-                      child: _buildCategoryTabs(),
-                    ),
+                    Flexible(child: _buildSearchBar()),
+                    Flexible(child: _buildCategoryTabs()),
                   ],
                 ),
               ),
