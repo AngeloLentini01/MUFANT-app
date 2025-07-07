@@ -26,5 +26,3 @@ void main() {
   );
   runApp(const AppPreConfigurator());
 }
-
-//todo: merge with dev branch
