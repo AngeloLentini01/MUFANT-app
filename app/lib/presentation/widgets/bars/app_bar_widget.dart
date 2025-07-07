@@ -26,6 +26,7 @@ class AppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double appBarTextfontSize = 16;
     return SliverAppBar(
       backgroundColor: backgroundColor == Colors.transparent
           ? kBlackColor
