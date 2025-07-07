@@ -33,13 +33,13 @@ class _ProfilePageState extends State<ProfilePage> {
               logger: _logger,
               iconImage: Icons.settings,
               onButtonPressed: () {},
+              showLogo: false, // Don't show logo on profile page
             ),
             SliverPadding(
               padding: const EdgeInsets.all(16.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   // Settings button row
-
                   kSpaceBetweenSections,
                   // User Avatar Section
                   _buildUserAvatarSection(),

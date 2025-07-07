@@ -109,6 +109,8 @@ class _ShopPageState extends State<ShopPage> {
                 _logger.info('Shop app bar button pressed');
                 // TODO: Implement shop-specific action
               },
+              showLogo: false, // Don't show logo on shop page
+              showAppBarCTAButton: false, // Hide button on shop page
             ),
             SliverToBoxAdapter(
               child: Column(
