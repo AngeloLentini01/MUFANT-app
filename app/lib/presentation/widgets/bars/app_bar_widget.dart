@@ -31,10 +31,10 @@ class AppBarWidget extends StatelessWidget {
     const double appBarTextfontSize = 16;
 
     // Calculate the height needed for additional content
-    // Search bar: 8 (padding top/bottom) + 40 (max height) = 48
-    // Category tabs: 8 (padding top/bottom) + 36 (max height) = 44
-    // Total additional height: 48 + 44 + 20 (buffer for safe spacing) = 112
-    const double additionalContentHeight = 112;
+    // Search bar: 16 (padding top/bottom) + 15*2 (content padding) + 8 (vertical padding) = 54
+    // Category tabs: 16 (padding top/bottom) + 12*2 (content padding) + 8 (vertical padding) = 48
+    // Total additional height: 54 + 48 + 28 (buffer for safe spacing) = 130
+    const double additionalContentHeight = 130;
 
     return SliverAppBar(
       backgroundColor: backgroundColor == Colors.transparent
@@ -68,12 +68,14 @@ class AppBarWidget extends StatelessWidget {
           : null,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          // Use the actual available height from constraints
-          final availableHeight = constraints.maxHeight;
+          // For floating SliverAppBar:
+          // - At top: maxHeight = expandedHeight
+          // - When floating: maxHeight = kToolbarHeight + padding (system adds padding)
+          // - We want shadow when floating, not when at top
           final expectedHeight = additionalContent != null
               ? kToolbarHeight + additionalContentHeight
               : kToolbarHeight;
-          final isFloating = availableHeight < expectedHeight;
+          final isFloating = constraints.maxHeight > expectedHeight;
           final showShadow = isFloating;
 
           return Container(
@@ -94,7 +96,7 @@ class AppBarWidget extends StatelessWidget {
             child: additionalContent != null
                 ? SizedBox(
                     width: double.infinity,
-                    height: availableHeight, // Use actual available height
+                    height: expectedHeight,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -152,18 +154,10 @@ class AppBarWidget extends StatelessWidget {
                                   ),
                           ),
                         ),
-                        // Additional content (search bar and tabs) - only show if there's enough space
-                        if (availableHeight >
-                            kToolbarHeight +
-                                80) // Need at least 80px for content
-                          Expanded(
-                            child: ClipRect(
-                              child: SizedBox(
-                                height: availableHeight - kToolbarHeight,
-                                child: additionalContent!,
-                              ),
-                            ),
-                          ),
+                        // Additional content (search bar and tabs)
+                        Expanded(
+                          child: additionalContent!,
+                        ),
                       ],
                     ),
                   )
