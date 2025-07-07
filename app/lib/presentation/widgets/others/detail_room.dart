@@ -13,7 +13,7 @@ class DetailRoom extends StatefulWidget {
 }
 
 class _DetailRoomState extends State<DetailRoom> {
-  static const blueColor = Color.fromARGB(255, 28, 28, 50);
+  static const darkGreyColor = Color.fromARGB(255, 45, 45, 50);
   static const backText = Color(0x9A545165);
   static const lightBlack = Color(0x56000000);
   static const kBlankSpaceWidget = SizedBox(height: 24);
@@ -73,13 +73,13 @@ class _DetailRoomState extends State<DetailRoom> {
             CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  backgroundColor: blueColor,
-                  pinned: true,
+                  backgroundColor: darkGreyColor.withValues(alpha: 0.4),
                   expandedHeight: 120,
                   flexibleSpace: FlexibleSpaceBar(
                     centerTitle: true,
                     title: Text(
-                      room['name'],
+                      room['nameText'],
+                      textAlign: TextAlign.center,
                       style: TextStyle(
                         color: kPinkColor,
                         fontSize: 28,
@@ -111,6 +111,7 @@ class _DetailRoomState extends State<DetailRoom> {
                                   vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: backText,
                                   border: Border.all(
                                     color: kPinkColor,
                                     width: 1,

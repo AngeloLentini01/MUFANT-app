@@ -2,20 +2,23 @@
     "rooms": [
         {
             "name": "Star Wars",
+            "nameText": "Star Wars",
             "roomText": "Welcome to a galaxy far, far away!\nThis room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basic Net, and a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\nA journey through myth, collecting, and nostalgic wonder.",
             "roomAssetBG": "assets/images/starwarsbackground.png",
             "roomAssetMap": "assets/images/starwarsmap.jpg"
         },
         {
             "name": "Riccardo Valla's Library",
-            "roomText": "Welcome to a galaxy far, far away!\nThis room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basic Net, and a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\nA journey through myth, collecting, and nostalgic wonder.",
+            "nameText": "Riccardo \nValla's Library",
+            "roomText": "Welcome to Riccardo Valla's Library.\nThis area is dedicated to read and find different type's of books about...",
             "roomAssetBG": "assets/images/library.jpg",
             "roomAssetMap": "assets/images/starwarsmap.jpg"
         },
         {
             "name": "Superheroes",
-            "roomText": "Welcome to a galaxy far, far away!\nThis room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basic Net, and a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\nA journey through myth, collecting, and nostalgic wonder.",
-            "roomAssetBG": "assets/images/starwarsbackground.png",
+            "nameText": "Superheroes",
+            "roomText": "Welcome to the space dedicated to superheroes...",
+            "roomAssetBG": "assets/images/superhero.jpg",
             "roomAssetMap": "assets/images/starwarsmap.jpg"
         }
     ]
