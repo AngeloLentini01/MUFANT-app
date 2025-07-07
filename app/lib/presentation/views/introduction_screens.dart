@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 const Color deepPurple = Color(0xFF673AB7); // Colore viola scuro per lo sfondo della pagina
 const Color purple = Color(0xFF9C27B0); // Colore viola per lo sfondo del pulsante
-const Color white = Color(0xFFFFFFFF); // Colore bianco per il testo del pulsante
+const Color white = Color(0xFFFFFFFF); // Colore bianco per il testo del pulsante e per i punti di navigazione
+const Color pink = Color(0xFFE91E63); // Colore rosa per il punto attivo della barra di progresso
 
 const kSpaceBeetwen = SizedBox(height: 24); // Spazio tra gli elementi della pagina
 
@@ -89,10 +90,22 @@ class IntroductionScreens extends StatelessWidget {
       baseBtnStyle: TextButton.styleFrom(
         backgroundColor: Colors.purple, // Colore di sfondo del pulsante
         foregroundColor: Colors.white, // Colore del testo del pulsante
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // Padding del pulsante
       ),
+      
+      // progress bar che mostra il progresso della schermata di introduzione
+      dotsDecorator: const DotsDecorator(
+        color: white, // Colore dei punti di navigazione
+        activeColor: Colors.pink, // Colore del punto attivo
+        size: Size(16.0, 16.0), // Dimensione dei punti di navigazione
+        activeSize: Size(32.0, 16.0), // Dimensione del punto attivo
+        // Forma dei punti di navigazione (rettangolare)
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        ),
+      ),
+
+     
     );
   }
 }
-
-//possibilità che introduction_screens compaia solo una volta
-//TODO
