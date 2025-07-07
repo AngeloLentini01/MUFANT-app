@@ -111,19 +111,34 @@ class _ShopPageState extends State<ShopPage> {
               },
               showLogo: false, // Don't show logo on shop page
               showAppBarCTAButton: false, // Hide button on shop page
-            ),
-            SliverToBoxAdapter(
-              child: Column(
-                children: [_buildSearchBar(), _buildCategoryTabs()],
+              additionalContent: IntrinsicHeight(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: _buildSearchBar(),
+                    ),
+                    Flexible(
+                      child: _buildCategoryTabs(),
+                    ),
+                  ],
+                ),
               ),
             ),
-            SliverFillRemaining(
-              child: Column(
-                children: [
-                  Expanded(child: _buildItemsList()),
-                  if (totalItems > 0) _buildCartSummary(),
-                ],
-              ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                if (index < filteredItems.length) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _buildShopItemCard(filteredItems[index]),
+                  );
+                } else {
+                  // This is the cart summary at the end
+                  return totalItems > 0
+                      ? _buildCartSummary()
+                      : const SizedBox.shrink();
+                }
+              }, childCount: filteredItems.length + (totalItems > 0 ? 1 : 0)),
             ),
           ],
         ),
@@ -133,8 +148,9 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Container(
+        constraints: const BoxConstraints(maxHeight: 40),
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: BorderRadius.circular(25),
@@ -148,7 +164,7 @@ class _ShopPageState extends State<ShopPage> {
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
-              vertical: 15,
+              vertical: 10,
             ),
           ),
         ),
@@ -158,49 +174,42 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _buildCategoryTabs() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: categories.asMap().entries.map((entry) {
-          final index = entry.key;
-          final category = entry.value;
-          final isSelected = selectedTabIndex == index;
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Container(
+        constraints: const BoxConstraints(maxHeight: 36),
+        child: Row(
+          children: categories.asMap().entries.map((entry) {
+            final index = entry.key;
+            final category = entry.value;
+            final isSelected = selectedTabIndex == index;
 
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: GestureDetector(
-                onTap: () => setState(() => selectedTabIndex = index),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? kPinkColor : Colors.grey[800],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyle(
-                      color: isSelected ? Colors.black : Colors.white,
-                      fontWeight: FontWeight.bold,
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: GestureDetector(
+                  onTap: () => setState(() => selectedTabIndex = index),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? kPinkColor : Colors.grey[800],
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    textAlign: TextAlign.center,
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: isSelected ? Colors.black : Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
-    );
-  }
-
-  Widget _buildItemsList() {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: filteredItems.length,
-      itemBuilder: (context, index) {
-        final item = filteredItems[index];
-        return _buildShopItemCard(item);
-      },
     );
   }
 
