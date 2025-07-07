@@ -31,10 +31,10 @@ class AppBarWidget extends StatelessWidget {
     const double appBarTextfontSize = 16;
 
     // Calculate the height needed for additional content
-    // Search bar: 8 (padding top/bottom) + 40 (max height) = 48
-    // Category tabs: 8 (padding top/bottom) + 36 (max height) = 44
-    // Total additional height: 48 + 44 + 20 (buffer for safe spacing) = 112
-    const double additionalContentHeight = 112;
+    // Search bar: 16 (padding top/bottom) + 15*2 (content padding) + 8 (vertical padding) = 54
+    // Category tabs: 16 (padding top/bottom) + 12*2 (content padding) + 8 (vertical padding) = 48
+    // Total additional height: 54 + 48 + 28 (buffer for safe spacing) = 130
+    const double additionalContentHeight = 130;
 
     return SliverAppBar(
       backgroundColor: backgroundColor == Colors.transparent
@@ -68,12 +68,12 @@ class AppBarWidget extends StatelessWidget {
           : null,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          // Calculate heights more reliably
           final availableHeight = constraints.maxHeight;
+
           final expectedHeight = additionalContent != null
               ? kToolbarHeight + additionalContentHeight
               : kToolbarHeight;
-          final isFloating = availableHeight < expectedHeight;
+          final isFloating = constraints.maxHeight > expectedHeight;
           final showShadow = isFloating;
 
           return Container(
