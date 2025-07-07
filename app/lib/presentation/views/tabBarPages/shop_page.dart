@@ -111,14 +111,8 @@ class _ShopPageState extends State<ShopPage> {
               },
               showLogo: false, // Don't show logo on shop page
               showAppBarCTAButton: false, // Hide button on shop page
-              additionalContent: IntrinsicHeight(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(child: _buildSearchBar()),
-                    Flexible(child: _buildCategoryTabs()),
-                  ],
-                ),
+              additionalContent: Column(
+                children: [_buildSearchBar(), _buildCategoryTabs()],
               ),
             ),
             SliverList(
@@ -144,9 +138,8 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _buildSearchBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Container(
-        constraints: const BoxConstraints(maxHeight: 40),
         decoration: BoxDecoration(
           color: Colors.grey[800],
           borderRadius: BorderRadius.circular(25),
@@ -160,7 +153,7 @@ class _ShopPageState extends State<ShopPage> {
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
-              vertical: 10,
+              vertical: 12,
             ),
           ),
         ),
@@ -170,41 +163,37 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _buildCategoryTabs() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Container(
-        constraints: const BoxConstraints(maxHeight: 36),
-        child: Row(
-          children: categories.asMap().entries.map((entry) {
-            final index = entry.key;
-            final category = entry.value;
-            final isSelected = selectedTabIndex == index;
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Row(
+        children: categories.asMap().entries.map((entry) {
+          final index = entry.key;
+          final category = entry.value;
+          final isSelected = selectedTabIndex == index;
 
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: GestureDetector(
-                  onTap: () => setState(() => selectedTabIndex = index),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? kPinkColor : Colors.grey[800],
-                      borderRadius: BorderRadius.circular(20),
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: GestureDetector(
+                onTap: () => setState(() => selectedTabIndex = index),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isSelected ? kPinkColor : Colors.grey[800],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    category,
+                    style: TextStyle(
+                      color: isSelected ? Colors.black : Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Text(
-                      category,
-                      style: TextStyle(
-                        color: isSelected ? Colors.black : Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-            );
-          }).toList(),
-        ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
