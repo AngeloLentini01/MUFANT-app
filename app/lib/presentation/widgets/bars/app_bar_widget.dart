@@ -68,14 +68,12 @@ class AppBarWidget extends StatelessWidget {
           : null,
       flexibleSpace: LayoutBuilder(
         builder: (context, constraints) {
-          // For floating SliverAppBar:
-          // - At top: maxHeight = expandedHeight
-          // - When floating: maxHeight = kToolbarHeight + padding (system adds padding)
-          // - We want shadow when floating, not when at top
+          // Calculate heights more reliably
+          final availableHeight = constraints.maxHeight;
           final expectedHeight = additionalContent != null
               ? kToolbarHeight + additionalContentHeight
               : kToolbarHeight;
-          final isFloating = constraints.maxHeight > expectedHeight;
+          final isFloating = availableHeight < expectedHeight;
           final showShadow = isFloating;
 
           return Container(
@@ -94,72 +92,75 @@ class AppBarWidget extends StatelessWidget {
                   : null,
             ),
             child: additionalContent != null
-                ? SizedBox(
-                    width: double.infinity,
-                    height: expectedHeight,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Standard AppBar content
-                        Container(
-                          height: kToolbarHeight,
-                          padding: const EdgeInsets.only(left: 16, bottom: 8),
-                          child: Align(
-                            alignment: Alignment.bottomLeft,
-                            child: showLogo
-                                ? Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      // Logo on the left
-                                      Image.asset(
-                                        'assets/images/logo_senza_scritta.png',
-                                        height: 40,
-                                        fit: BoxFit.contain,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                              logger.warning(
-                                                'Error loading logo: $error',
-                                              );
-                                              return Text(
-                                                'MUFANT',
-                                                style: TextStyle(
-                                                  color: textColor,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              );
-                                            },
-                                      ),
-                                      const SizedBox(width: 16),
-                                      // Text next to logo
-                                      Expanded(
-                                        child: Text(
-                                          text,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: appBarTextfontSize,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Standard AppBar content - fixed height
+                      Container(
+                        height: kToolbarHeight,
+                        padding: const EdgeInsets.only(left: 16, bottom: 8),
+                        child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: showLogo
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    // Logo on the left
+                                    Image.asset(
+                                      'assets/images/logo_senza_scritta.png',
+                                      height: 40,
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            logger.warning(
+                                              'Error loading logo: $error',
+                                            );
+                                            return Text(
+                                              'MUFANT',
+                                              style: TextStyle(
+                                                color: textColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            );
+                                          },
+                                    ),
+                                    const SizedBox(width: 16),
+                                    // Text next to logo
+                                    Expanded(
+                                      child: Text(
+                                        text,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: appBarTextfontSize,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : Text(
-                                    text,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: appBarTextfontSize,
-                                      fontWeight: FontWeight.bold,
                                     ),
+                                  ],
+                                )
+                              : Text(
+                                  text,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: appBarTextfontSize,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                          ),
+                                ),
                         ),
-                        // Additional content (search bar and tabs)
-                        Expanded(
+                      ),
+                      // Additional content - constrained height to prevent overflow
+                      SizedBox(
+                        height: (availableHeight - kToolbarHeight).clamp(
+                          0.0,
+                          additionalContentHeight,
+                        ),
+                        child: SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
                           child: additionalContent!,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   )
                 : FlexibleSpaceBar(
                     titlePadding: const EdgeInsets.only(left: 16, bottom: 8),
