@@ -84,7 +84,9 @@ class TicketsSection extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: const DecorationImage(
-                      image: AssetImage('assets/images/barcode-ticket.png'),
+                      image: AssetImage(
+                        'assets/images/ticket/barcode-ticket.png',
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),
