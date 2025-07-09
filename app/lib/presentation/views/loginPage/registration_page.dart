@@ -1,17 +1,17 @@
+import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:app/presentation/app_main.dart';
-import 'package:app/presentation/views/loginPage/registration_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegistrationPage> createState() => _RegistrationPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegistrationPageState extends State<RegistrationPage> {
   bool _obscurePassword = true;
+  bool _obscureRepeatPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 const SizedBox(height: 32),
                 Text(
-                  'Welcome back to',
+                  'Welcome to',
                   style: GoogleFonts.montserrat(
                     color: Colors.white,
                     fontSize: 26,
@@ -44,15 +44,62 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Login to your account!',
+                  'Let’s create your\nnew account!',
                   style: GoogleFonts.montserrat(
-                    color: Color(0xFFFF7CA3),
+                    color: const Color(0xFFFF7CA3),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
+                // Name and Surname fields
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: TextField(
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            hintText: 'Name',
+                            hintStyle: TextStyle(color: Colors.white54),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: TextField(
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            hintText: 'Surname',
+                            hintStyle: TextStyle(color: Colors.white54),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
                 // Email field
                 Container(
                   decoration: BoxDecoration(
@@ -61,8 +108,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: TextField(
                     style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person, color: Colors.white70),
+                    decoration: const InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.alternate_email,
+                        color: Colors.white70,
+                      ),
                       hintText: 'Email',
                       hintStyle: TextStyle(color: Colors.white54),
                       border: InputBorder.none,
@@ -81,11 +131,11 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: _obscurePassword,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock, color: Colors.white70),
+                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
                       hintText: 'Password',
-                      hintStyle: TextStyle(color: Colors.white54),
+                      hintStyle: const TextStyle(color: Colors.white54),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(vertical: 18),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
@@ -102,8 +152,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Repeat password field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: TextField(
+                    obscureText: _obscureRepeatPassword,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
+                      hintText: 'Repeat password',
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureRepeatPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: Colors.white54,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureRepeatPassword = !_obscureRepeatPassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 22),
-                // Sign in button
+                // Sign up button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -115,35 +197,14 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => const AppMain(),
-                        ),
-                      );
-                    },
+                    onPressed: () {},
                     child: Text(
-                      'Sign in',
+                      'Sign up',
                       style: GoogleFonts.montserrat(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        decoration: TextDecoration.underline,
-                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -162,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'or continue with',
                       style: GoogleFonts.montserrat(
-                        color: Color(0xFFFF7CA3),
+                        color: const Color(0xFFFF7CA3),
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
@@ -197,12 +258,12 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: 28),
-                // Sign up
+                // Sign in
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "You don't have an account? ",
+                      "You already have an account? ",
                       style: GoogleFonts.montserrat(
                         color: Colors.white70,
                         fontSize: 15,
@@ -212,14 +273,14 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const RegistrationPage(),
+                            builder: (context) => const LoginPage(),
                           ),
                         );
                       },
                       child: Text(
-                        'Sign up',
+                        'Sign in',
                         style: GoogleFonts.montserrat(
-                          color: Color(0xFFFF7CA3),
+                          color: const Color(0xFFFF7CA3),
                           fontSize: 15,
                           decoration: TextDecoration.underline,
                         ),
