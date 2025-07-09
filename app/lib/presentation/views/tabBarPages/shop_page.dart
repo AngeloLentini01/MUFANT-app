@@ -97,39 +97,52 @@ class _ShopPageState extends State<ShopPage> {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        child: CustomScrollView(
-          slivers: [
-            AppBarWidget(
-              textColor: kWhiteColor,
-              backgroundColor: kBlackColor,
-              logger: _logger,
-              iconImage: Icons.shopping_cart,
-              text: 'Shop',
-              onButtonPressed: () {
-                _logger.info('Shop app bar button pressed');
-                // TODO: Implement shop-specific action
-              },
-              showLogo: false, // Don't show logo on shop page
-              showAppBarCTAButton: false, // Hide button on shop page
-              additionalContent: Column(
-                children: [_buildSearchBar(), _buildCategoryTabs()],
+        child: Stack(
+          children: [
+            // Main content with CustomScrollView
+            CustomScrollView(
+              slivers: [
+                AppBarWidget(
+                  textColor: kWhiteColor,
+                  backgroundColor: kBlackColor,
+                  logger: _logger,
+                  iconImage: Icons.shopping_cart,
+                  text: 'Shop',
+                  onButtonPressed: () {
+                    _logger.info('Shop app bar button pressed');
+                    // TODO: Implement shop-specific action
+                  },
+                  showLogo: false, // Don't show logo on shop page
+                  showAppBarCTAButton: false, // Hide button on shop page
+                  additionalContent: Column(
+                    children: [_buildSearchBar(), _buildCategoryTabs()],
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildShopItemCard(filteredItems[index]),
+                    );
+                  }, childCount: filteredItems.length),
+                ),
+                // Add bottom padding to prevent content from being hidden behind cart summary
+                if (totalItems > 0)
+                  const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 100,
+                    ), // Height of cart summary + padding
+                  ),
+              ],
+            ),
+            // Cart summary snapped to the bottom
+            if (totalItems > 0)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: _buildCartSummary(),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                if (index < filteredItems.length) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _buildShopItemCard(filteredItems[index]),
-                  );
-                } else {
-                  // This is the cart summary at the end
-                  return totalItems > 0
-                      ? _buildCartSummary()
-                      : const SizedBox.shrink();
-                }
-              }, childCount: filteredItems.length + (totalItems > 0 ? 1 : 0)),
-            ),
           ],
         ),
       ),
@@ -370,85 +383,95 @@ class _ShopPageState extends State<ShopPage> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-      ),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Total to pay',
-                style: TextStyle(color: Colors.grey[400], fontSize: 14),
-              ),
-              Text(
-                '€${totalAmount.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              //todo: add clear button to remove all items from cart
-              Text(
-                '$totalItems item${totalItems > 1 ? 's' : ''}',
-                style: TextStyle(color: Colors.grey[400], fontSize: 12),
-              ),
-            ],
-          ),
-          const Spacer(),
-          Row(
-            children: [
-              // Clear cart button
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    cartItems.clear();
-                  });
-                  _logger.info('Cart cleared');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[700],
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text(
-                  'Clear',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Checkout button
-              ElevatedButton(
-                onPressed: () {
-                  _logger.info('Proceeding to cart with $totalItems items');
-                  // TODO: Navigate to cart page or checkout
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kPinkColor,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text(
-                  'Checkout',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
           ),
         ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Total to pay',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                ),
+                Text(
+                  '€${totalAmount.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                //todo: add clear button to remove all items from cart
+                Text(
+                  '$totalItems item${totalItems > 1 ? 's' : ''}',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                // Clear cart button
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      cartItems.clear();
+                    });
+                    _logger.info('Cart cleared');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[700],
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text(
+                    'Clear',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Checkout button
+                ElevatedButton(
+                  onPressed: () {
+                    _logger.info('Proceeding to cart with $totalItems items');
+                    // TODO: Navigate to cart page or checkout
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPinkColor,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: const Text(
+                    'Checkout',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
