@@ -74,7 +74,10 @@ class _HomePageState extends State<HomePage> {
                 logger: _logger,
                 iconImage: Icons.search,
                 text: homePageMessage,
-                onButtonPressed: () {},
+                onButtonPressed: () {
+                  /*todo: implement search functionality*/
+                  },
+                showLogo: true, // Show logo on homepage
               ),
               SliverPadding(
                 padding: kBodyPadding,
