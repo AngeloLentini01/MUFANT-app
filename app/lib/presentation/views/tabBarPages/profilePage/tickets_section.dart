@@ -3,6 +3,8 @@ import 'package:app/presentation/styles/typography/section.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ticket_material/ticket_material.dart';
+import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
+import 'package:app/data/services/ticket_service.dart';
 
 /// Custom painter for creating a barcode pattern
 class BarcodePainter extends CustomPainter {
@@ -13,27 +15,69 @@ class BarcodePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Generate barcode pattern with varying widths
-    final barWidths = [2.0, 1.0, 3.0, 1.0, 2.0, 1.0, 1.0, 2.0, 3.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0, 1.0, 2.0, 1.0, 3.0, 1.0, 2.0, 1.0, 1.0, 2.0, 3.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0, 1.0, 3.0, 1.0, 2.0];
-    
+    final barWidths = [
+      2.0,
+      1.0,
+      3.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      2.0,
+      3.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      3.0,
+      2.0,
+      1.0,
+      2.0,
+      1.0,
+      3.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      2.0,
+      3.0,
+      1.0,
+      2.0,
+      1.0,
+      1.0,
+      3.0,
+      2.0,
+      1.0,
+      3.0,
+      1.0,
+      2.0,
+    ];
+
     // Calculate total width needed and scale factor
     double totalBarsWidth = barWidths.reduce((a, b) => a + b);
-    double totalSpacing = (barWidths.length - 1) * 1.0; // 1px spacing between bars
+    double totalSpacing =
+        (barWidths.length - 1) * 1.0; // 1px spacing between bars
     double totalNeededWidth = totalBarsWidth + totalSpacing;
     double scaleFactor = size.width / totalNeededWidth;
-    
+
     double currentX = 0;
     const double barHeight = 40;
     const double spacing = 1.0;
 
     for (int i = 0; i < barWidths.length; i++) {
       final barWidth = barWidths[i] * scaleFactor;
-      
+
       // Draw black bar
       canvas.drawRect(
-        Rect.fromLTWH(currentX, (size.height - barHeight) / 2, barWidth, barHeight),
+        Rect.fromLTWH(
+          currentX,
+          (size.height - barHeight) / 2,
+          barWidth,
+          barHeight,
+        ),
         paint,
       );
-      
+
       currentX += barWidth + (spacing * scaleFactor);
     }
   }
@@ -122,7 +166,8 @@ class MyTicketWidget extends StatelessWidget {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: kBlackColor,
-                              decoration: TextDecoration.none, // Rimuove linee gialle
+                              decoration:
+                                  TextDecoration.none, // Rimuove linee gialle
                             ),
                           ),
                           IconButton(
@@ -143,13 +188,14 @@ class MyTicketWidget extends StatelessWidget {
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: kBlackColor,
-                          decoration: TextDecoration.none, // Rimuove linee gialle
+                          decoration:
+                              TextDecoration.none, // Rimuove linee gialle
                         ),
                       ),
 
                       const SizedBox(height: 16),
 
-                      // Date and time
+                      // Date
                       Row(
                         children: [
                           const Icon(
@@ -164,10 +210,18 @@ class MyTicketWidget extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: kBlackColor,
-                              decoration: TextDecoration.none, // Rimuove linee gialle
+                              decoration:
+                                  TextDecoration.none, // Rimuove linee gialle
                             ),
                           ),
-                          const SizedBox(width: 20),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Time
+                      Row(
+                        children: [
                           const Icon(
                             Icons.access_time,
                             size: 20,
@@ -180,7 +234,8 @@ class MyTicketWidget extends StatelessWidget {
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               color: kBlackColor,
-                              decoration: TextDecoration.none, // Rimuove linee gialle
+                              decoration:
+                                  TextDecoration.none, // Rimuove linee gialle
                             ),
                           ),
                         ],
@@ -203,7 +258,8 @@ class MyTicketWidget extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 color: kBlackColor,
-                                decoration: TextDecoration.none, // Rimuove linee gialle
+                                decoration:
+                                    TextDecoration.none, // Rimuove linee gialle
                               ),
                             ),
                           ),
@@ -224,10 +280,10 @@ class MyTicketWidget extends StatelessWidget {
                           child: Container(
                             width: double.infinity,
                             height: 40,
-                            margin: const EdgeInsets.symmetric(horizontal: 48), // 48px dai bordi
-                            child: CustomPaint(
-                              painter: BarcodePainter(),
-                            ),
+                            margin: const EdgeInsets.symmetric(
+                              horizontal: 48,
+                            ), // 48px dai bordi
+                            child: CustomPaint(painter: BarcodePainter()),
                           ),
                         ),
                       ),
@@ -346,49 +402,36 @@ class MyTicketWidget extends StatelessWidget {
 class TicketsSection extends StatelessWidget {
   const TicketsSection({super.key});
 
-  // Dynamic ticket content variables
-  // TODO: Implementare logica per recuperare l'ultimo biglietto acquistato dal database/API
-  // TODO: Sostituire questi valori hardcoded con dati dinamici provenienti dal backend
-  // TODO: Aggiungere listener per aggiornamenti real-time quando viene acquistato un nuovo biglietto
-  final String eventDate = '29, May 2025';
-  final String eventTime = '15:30 - 19:00';
-  final String eventName = '30 ANNI DI SAILOR';
-  final String eventLocation = 'piazza Riccardo Valle 5, Torino';
-
   @override
   Widget build(BuildContext context) {
+    final ticketService = TicketService();
+    final latestTicket = ticketService.getLatestTicket();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
           children: [
             Text('My tickets', style: kSectionTitleTextStyle),
-
             TextButton(
               onPressed: () {
-                // TODO: Navigate to all tickets
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TicketListPage()),
+                );
               },
-
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-
                 children: const [
                   Text(
                     'See all',
-
                     style: TextStyle(color: lightGreyColor, fontSize: 16),
                   ),
-
                   SizedBox(width: 4),
-
                   Icon(
                     Icons.arrow_forward_ios,
-
                     color: lightGreyColor,
-
                     size: 16,
                   ),
                 ],
@@ -399,38 +442,66 @@ class TicketsSection extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        // Using the new MyTicketWidget with TicketMaterial
-        // TODO: Integrare con sistema di gestione biglietti per mostrare l'ultimo acquistato
-        // TODO: Aggiungere stato di caricamento mentre si recuperano i dati del biglietto
-        // TODO: Gestire caso in cui l'utente non ha biglietti (mostrare placeholder o messaggio)
-        MyTicketWidget(
-          eventDate: eventDate,
-          eventTime: eventTime,
-          eventTitle: eventName,
-          venueAddress: eventLocation,
-        ),
+        // Show latest ticket or empty state
+        if (latestTicket != null) ...[
+          MyTicketWidget(
+            eventDate: latestTicket.eventDate,
+            eventTime: latestTicket.eventTime,
+            eventTitle: latestTicket.eventTitle,
+            venueAddress: latestTicket.venueAddress,
+          ),
 
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
 
-        Center(
-          child: TextButton(
-            onPressed: () {
-              // Show the same ticket details modal as the ticket tap
-              MyTicketWidget(
-                eventDate: eventDate,
-                eventTime: eventTime,
-                eventTitle: eventName,
-                venueAddress: eventLocation,
-              )._showTicketDetails(context);
-            },
-
-            child: const Text(
-              'View Details',
-
-              style: TextStyle(color: lightGreyColor, fontSize: 14),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                // Show the same ticket details modal as the ticket tap
+                MyTicketWidget(
+                  eventDate: latestTicket.eventDate,
+                  eventTime: latestTicket.eventTime,
+                  eventTitle: latestTicket.eventTitle,
+                  venueAddress: latestTicket.venueAddress,
+                )._showTicketDetails(context);
+              },
+              child: const Text(
+                'View Details',
+                style: TextStyle(color: lightGreyColor, fontSize: 14),
+              ),
             ),
           ),
-        ),
+        ] else ...[
+          // Empty state when no tickets
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.confirmation_number_outlined,
+                    size: 40,
+                    color: Colors.grey.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'No tickets yet',
+                    style: TextStyle(
+                      color: Colors.grey.withOpacity(0.7),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
