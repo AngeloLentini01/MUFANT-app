@@ -11,6 +11,8 @@ class AppPreConfigurator extends StatelessWidget {
     return MaterialApp(
       title: 'Mufant',
       debugShowCheckedModeBanner: false,
+      // Enable proper navigation history
+      navigatorKey: GlobalKey<NavigatorState>(),
       theme: ThemeData(
         textTheme: GoogleFonts.exoTextTheme(ThemeData.dark().textTheme),
         scaffoldBackgroundColor: kBlackColor,

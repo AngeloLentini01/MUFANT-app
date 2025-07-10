@@ -3,10 +3,7 @@ import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart
 import 'package:flutter/material.dart';
 
 class UserAvatarSection extends StatelessWidget {
-  const UserAvatarSection({
-    super.key,
-    required this.context,
-  });
+  const UserAvatarSection({super.key, required this.context});
 
   final BuildContext context;
 
@@ -26,10 +23,7 @@ class UserAvatarSection extends StatelessWidget {
 
               color: greyColor.withValues(alpha: 0.3),
 
-              border: Border.all(
-                color: greyColor.withValues(alpha: 0.5),
-                width: 2,
-              ),
+              border: Border.all(color: greyColor.withValues(alpha: 0.3), width: 2),
             ),
 
             child: Center(
@@ -41,7 +35,7 @@ class UserAvatarSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
 
-                  color: pinkColor.withValues(alpha: 0.2),
+                  color: pinkColor.withValues(alpha: 0.3),
                 ),
 
                 child: const Icon(Icons.android, size: 80, color: pinkColor),
