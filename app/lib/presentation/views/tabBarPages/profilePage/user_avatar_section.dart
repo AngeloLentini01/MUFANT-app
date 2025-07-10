@@ -64,7 +64,7 @@ class _UserAvatarSectionState extends State<UserAvatarSection> {
             ),
 
             child: Center(
-              child: Container(
+              child: SizedBox(
                 width: 120,
 
                 height: 120,

@@ -85,7 +85,7 @@ class _AvatarSelectorModalState extends State<AvatarSelectorModal> {
                 ],
         ),
         child: ClipOval(
-          child: Container(
+          child: SizedBox(
             width: 80,
             height: 80,
 
