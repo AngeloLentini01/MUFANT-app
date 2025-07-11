@@ -56,11 +56,13 @@ class ExpiredTicketWidget extends StatelessWidget {
 }
 
 class TicketListPage extends StatefulWidget {
+  const TicketListPage({super.key});
+
   @override
-  _TicketListPageState createState() => _TicketListPageState();
+  TicketListPageState createState() => TicketListPageState();
 }
 
-class _TicketListPageState extends State<TicketListPage> {
+class TicketListPageState extends State<TicketListPage> {
   final TicketService _ticketService = TicketService();
   List<TicketDisplayData> _tickets = [];
 
@@ -86,7 +88,7 @@ class _TicketListPageState extends State<TicketListPage> {
   void _showTicketDetails(BuildContext context, TicketDisplayData ticket) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
@@ -102,9 +104,8 @@ class _TicketListPageState extends State<TicketListPage> {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 30,
-                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -132,7 +133,8 @@ class _TicketListPageState extends State<TicketListPage> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
+
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -231,7 +233,8 @@ class _TicketListPageState extends State<TicketListPage> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
+
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -261,9 +264,11 @@ class _TicketListPageState extends State<TicketListPage> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.2),
+                      color: Colors.red.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.red.withOpacity(0.6)),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.6),
+                      ),
                     ),
                     child: const Text(
                       'EXPIRED EVENT',
@@ -293,10 +298,8 @@ class _TicketListPageState extends State<TicketListPage> {
                       width: double.infinity,
                       height: 40,
                       margin: const EdgeInsets.symmetric(horizontal: 40),
-                      child: BarcodeWidget(
-                        data: "MUFANT-${ticket.eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
-                        width: double.infinity,
-                        height: 40,
+                      child: _buildBarcodeWidget(
+                        "MUFANT-${ticket.eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
                       ),
                     ),
                   ),
@@ -370,7 +373,7 @@ class _TicketListPageState extends State<TicketListPage> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -393,7 +396,7 @@ class _TicketListPageState extends State<TicketListPage> {
                     Text(
                       '${_tickets.where((t) => !t.isExpired).length} active',
                       style: TextStyle(
-                        color: kWhiteColor.withOpacity(0.7),
+                        color: kWhiteColor.withValues(alpha: 0.7),
                         fontSize: 14,
                       ),
                     ),
@@ -442,21 +445,27 @@ class _TicketListPageState extends State<TicketListPage> {
       child: Row(
         children: [
           Expanded(
-            child: Container(height: 1, color: kWhiteColor.withOpacity(0.3)),
+            child: Container(
+              height: 1,
+              color: kWhiteColor.withValues(alpha: 0.3),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Expired Tickets',
               style: TextStyle(
-                color: kWhiteColor.withOpacity(0.7),
+                color: kWhiteColor.withValues(alpha: 0.7),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
           Expanded(
-            child: Container(height: 1, color: kWhiteColor.withOpacity(0.3)),
+            child: Container(
+              height: 1,
+              color: kWhiteColor.withValues(alpha: 0.3),
+            ),
           ),
         ],
       ),
@@ -477,7 +486,7 @@ class _TicketListPageState extends State<TicketListPage> {
               child: Text(
                 'Purchased ${_formatPurchaseDate(ticket.purchaseDate)}',
                 style: TextStyle(
-                  color: kWhiteColor.withOpacity(0.6),
+                  color: kWhiteColor.withValues(alpha: 0.6),
                   fontSize: 12,
                 ),
               ),
@@ -502,9 +511,9 @@ class _TicketListPageState extends State<TicketListPage> {
               margin: const EdgeInsets.only(top: 8, left: 4),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.2),
+                color: Colors.red.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.red.withOpacity(0.5)),
+                border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
               ),
               child: const Text(
                 'EXPIRED',
@@ -529,13 +538,13 @@ class _TicketListPageState extends State<TicketListPage> {
           Icon(
             Icons.confirmation_number_outlined,
             size: 80,
-            color: kWhiteColor.withOpacity(0.3),
+            color: kWhiteColor.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
           Text(
             'No tickets yet',
             style: TextStyle(
-              color: kWhiteColor.withOpacity(0.7),
+              color: kWhiteColor.withValues(alpha: 0.7),
               fontSize: 24,
               fontWeight: FontWeight.w500,
             ),
@@ -543,7 +552,10 @@ class _TicketListPageState extends State<TicketListPage> {
           const SizedBox(height: 8),
           Text(
             'Your purchased tickets will appear here',
-            style: TextStyle(color: kWhiteColor.withOpacity(0.5), fontSize: 16),
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.5),
+              fontSize: 16,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -564,5 +576,31 @@ class _TicketListPageState extends State<TicketListPage> {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  Widget _buildBarcodeWidget(String data) {
+    // Placeholder for barcode widget
+    // This can be replaced with a proper barcode widget when the barcode_widget package is added
+    return Container(
+      width: double.infinity,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Center(
+        child: Text(
+          data,
+          style: const TextStyle(
+            fontSize: 8,
+            fontFamily: 'monospace',
+            color: Colors.black,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
   }
 }

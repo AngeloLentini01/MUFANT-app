@@ -7,6 +7,8 @@ import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket
 import 'package:app/data/services/ticket_service.dart';
 import 'package:barcode/barcode.dart';
 
+
+
 /// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
   final String data;
@@ -78,7 +80,7 @@ class BarcodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       height: height ?? 40,
       child: CustomPaint(
@@ -126,7 +128,7 @@ class MyTicketWidget extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Ticket Details',
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
           child: Container(
@@ -144,7 +146,7 @@ class MyTicketWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -475,9 +477,9 @@ class TicketsSection extends StatelessWidget {
           Container(
             height: 150,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Center(
               child: Column(
@@ -486,13 +488,13 @@ class TicketsSection extends StatelessWidget {
                   Icon(
                     Icons.confirmation_number_outlined,
                     size: 40,
-                    color: Colors.grey.withOpacity(0.5),
+                    color: Colors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'No tickets yet',
                     style: TextStyle(
-                      color: Colors.grey.withOpacity(0.7),
+                      color: Colors.grey.withValues(alpha: 0.7),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
@@ -527,11 +529,12 @@ class VerticalBarcodeWidget extends StatelessWidget {
       height: height ?? 100,
       child: Transform.rotate(
         angle: 1.5708, // 90 degrees in radians (π/2)
-        child: Container(
-          width: height ?? 100,
-          height: width ?? 80,
+        child: SizedBox(
+          width: height ?? 160,
+          height: width ?? 50,
           child: CustomPaint(
             painter: BarcodePainter(data: data),
+            size: Size(50, 160),
           ),
         ),
       ),
