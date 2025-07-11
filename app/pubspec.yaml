@@ -78,6 +78,9 @@ flutter:
     - assets/images/avatar/
     - assets/images/ticket/
     - assets/images/wallpaper/
+    - assets/images/map/museum_map1.jpg
+    - assets/images/map/museum_map2.jpg
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
