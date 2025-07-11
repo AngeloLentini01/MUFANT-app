@@ -1,4 +1,4 @@
-import 'package:app/presentation/views/tabBarPages/cart_and_checkout/checkout_page.dart';
+import 'package:app/presentation/views/cart_confirmation/cart_confirmation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
@@ -432,7 +432,9 @@ class _ShopPageState extends State<ShopPage> {
                   // TODO: Navigate to cart page or checkout
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CheckoutPage()),
+                    MaterialPageRoute(
+                      builder: (context) => CartConfirmationPage(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(

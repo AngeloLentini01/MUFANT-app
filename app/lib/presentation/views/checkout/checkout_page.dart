@@ -27,13 +27,7 @@ class PaymentType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const paddingCardOption = EdgeInsetsGeometry.symmetric(
-      horizontal: 20,
-      vertical: 10,
-    );
     const colorRadiosSelector = Color.fromARGB(204, 154, 147, 186);
-    const textRadioDistance = SizedBox(width: 70);
-    const startTextDistance = SizedBox(width: 24);
 
     return InkWell(
       onTap: () {
@@ -88,8 +82,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String isChecked = " ";
   int test = 0;
 
-  final cardOtherDistance = SizedBox(height: 10);
-  final dateCvvDistance = SizedBox(width: 10);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
