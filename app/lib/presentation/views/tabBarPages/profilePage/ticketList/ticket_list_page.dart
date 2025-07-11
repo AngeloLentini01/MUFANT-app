@@ -56,11 +56,13 @@ class ExpiredTicketWidget extends StatelessWidget {
 }
 
 class TicketListPage extends StatefulWidget {
+  const TicketListPage({super.key});
+
   @override
-  _TicketListPageState createState() => _TicketListPageState();
+  TicketListPageState createState() => TicketListPageState();
 }
 
-class _TicketListPageState extends State<TicketListPage> {
+class TicketListPageState extends State<TicketListPage> {
   final TicketService _ticketService = TicketService();
   List<TicketDisplayData> _tickets = [];
 
@@ -104,7 +106,6 @@ class _TicketListPageState extends State<TicketListPage> {
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 30,
-                  offset: const Offset(0, 10),
                 ),
               ],
             ),
@@ -133,6 +134,7 @@ class _TicketListPageState extends State<TicketListPage> {
                         height: 32,
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.1),
+
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -232,6 +234,7 @@ class _TicketListPageState extends State<TicketListPage> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
+
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -263,7 +266,9 @@ class _TicketListPageState extends State<TicketListPage> {
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.red.withValues(alpha: 0.6)),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.6),
+                      ),
                     ),
                     child: const Text(
                       'EXPIRED EVENT',
@@ -293,7 +298,9 @@ class _TicketListPageState extends State<TicketListPage> {
                       width: double.infinity,
                       height: 40,
                       margin: const EdgeInsets.symmetric(horizontal: 40),
-                      child: CustomPaint(painter: BarcodePainter()),
+                      child: _buildBarcodeWidget(
+                        "MUFANT-${ticket.eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+                      ),
                     ),
                   ),
                 ),
@@ -438,7 +445,10 @@ class _TicketListPageState extends State<TicketListPage> {
       child: Row(
         children: [
           Expanded(
-            child: Container(height: 1, color: kWhiteColor.withValues(alpha: 0.3)),
+            child: Container(
+              height: 1,
+              color: kWhiteColor.withValues(alpha: 0.3),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -452,7 +462,10 @@ class _TicketListPageState extends State<TicketListPage> {
             ),
           ),
           Expanded(
-            child: Container(height: 1, color: kWhiteColor.withValues(alpha: 0.3)),
+            child: Container(
+              height: 1,
+              color: kWhiteColor.withValues(alpha: 0.3),
+            ),
           ),
         ],
       ),
@@ -539,7 +552,10 @@ class _TicketListPageState extends State<TicketListPage> {
           const SizedBox(height: 8),
           Text(
             'Your purchased tickets will appear here',
-            style: TextStyle(color: kWhiteColor.withValues(alpha: 0.5), fontSize: 16),
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.5),
+              fontSize: 16,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -560,5 +576,31 @@ class _TicketListPageState extends State<TicketListPage> {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
+  }
+
+  Widget _buildBarcodeWidget(String data) {
+    // Placeholder for barcode widget
+    // This can be replaced with a proper barcode widget when the barcode_widget package is added
+    return Container(
+      width: double.infinity,
+      height: 40,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Center(
+        child: Text(
+          data,
+          style: const TextStyle(
+            fontSize: 8,
+            fontFamily: 'monospace',
+            color: Colors.black,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
   }
 }

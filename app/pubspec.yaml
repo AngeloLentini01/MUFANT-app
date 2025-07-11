@@ -43,6 +43,10 @@ dependencies:
   path: ^1.9.1
   shared_preferences: ^2.5.3
   ticket_material: ^0.3.1
+
+  barcode: ^2.2.9
+  barcode_widget: ^2.0.4
+
   # Add other dependencies as needed
 
 dev_dependencies:
@@ -78,6 +82,12 @@ flutter:
     - assets/images/
     - assets/images/locandine/
     - assets/icons/login/
+    - assets/images/avatar/
+    - assets/images/ticket/
+    - assets/images/wallpaper/
+    - assets/images/map/museum_map1.jpg
+    - assets/images/map/museum_map2.jpg
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
