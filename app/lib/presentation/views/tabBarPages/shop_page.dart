@@ -1,3 +1,4 @@
+import 'package:app/presentation/views/tabBarPages/cart_and_checkout/checkout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
@@ -429,6 +430,10 @@ class _ShopPageState extends State<ShopPage> {
                 onPressed: () {
                   _logger.info('Proceeding to cart with $totalItems items');
                   // TODO: Navigate to cart page or checkout
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CheckoutPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPinkColor,
