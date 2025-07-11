@@ -1,4 +1,5 @@
 import 'package:app/presentation/styles/all.dart';
+import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -206,6 +207,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         ),
       ),
+      bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
     );
   }
 }
