@@ -1,7 +1,10 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:gal/gal.dart';
+import 'dart:typed_data';
 
-class FullscreenWallpaperView extends StatelessWidget {
+class FullscreenWallpaperView extends StatefulWidget {
   const FullscreenWallpaperView({
     super.key,
     required this.imagePath,
@@ -10,6 +13,79 @@ class FullscreenWallpaperView extends StatelessWidget {
 
   final String imagePath;
   final String wallpaperName;
+
+  @override
+  State<FullscreenWallpaperView> createState() =>
+      _FullscreenWallpaperViewState();
+}
+
+class _FullscreenWallpaperViewState extends State<FullscreenWallpaperView> {
+  bool _isDownloading = false;
+
+  /// Download wallpaper to device gallery
+  Future<void> _downloadWallpaper() async {
+    if (_isDownloading) return;
+
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      // Check if gallery access is available
+      final hasAccess = await Gal.hasAccess();
+      if (!hasAccess) {
+        final requestGranted = await Gal.requestAccess();
+        if (!requestGranted) {
+          throw Exception('Gallery access permission denied');
+        }
+      }
+
+      // Load the asset image as bytes
+      final ByteData data = await rootBundle.load(widget.imagePath);
+      final Uint8List bytes = data.buffer.asUint8List();
+
+      // Create a unique filename for the wallpaper
+      final String fileName = '${widget.wallpaperName.replaceAll(' ', '_').toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // Save to device gallery using gal
+      await Gal.putImageBytes(bytes, name: fileName);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ ${widget.wallpaperName} saved to gallery successfully!'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Download failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +100,7 @@ class FullscreenWallpaperView extends StatelessWidget {
               height: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(imagePath),
+                  image: AssetImage(widget.imagePath),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -64,21 +140,21 @@ class FullscreenWallpaperView extends StatelessWidget {
             right: 0,
             child: Center(
               child: ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Implement download functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Download $wallpaperName - Feature coming soon!',
-                      ),
-                      backgroundColor: kPinkColor,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.download, color: Colors.white),
-                label: const Text(
-                  'Download',
+                onPressed: _isDownloading ? null : _downloadWallpaper,
+                icon: _isDownloading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : const Icon(Icons.download, color: Colors.white),
+                label: Text(
+                  _isDownloading ? 'Downloading...' : 'Download',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -86,7 +162,7 @@ class FullscreenWallpaperView extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: kPinkColor,
+                  backgroundColor: _isDownloading ? Colors.grey : kPinkColor,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 16,
