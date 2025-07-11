@@ -530,10 +530,11 @@ class VerticalBarcodeWidget extends StatelessWidget {
       child: Transform.rotate(
         angle: 1.5708, // 90 degrees in radians (π/2)
         child: SizedBox(
-          width: height ?? 100,
-          height: width ?? 80,
+          width: height ?? 160,
+          height: width ?? 50,
           child: CustomPaint(
             painter: BarcodePainter(data: data),
+            size: Size(50, 160),
           ),
         ),
       ),

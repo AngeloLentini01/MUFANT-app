@@ -1,4 +1,4 @@
-import 'package:app/presentation/views/tabBarPages/profilePage/profile_page_auth.dart';
+import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/views/tabBarPages/home_page.dart';
 import 'package:app/presentation/views/tabBarPages/shop_page.dart';
@@ -18,7 +18,7 @@ class _MainAppState extends State<AppMain> {
   final List<Widget> _tabBarPages = [
     const HomePage(),
     const ShopPage(),
-    const ProfilePageAuth(),
+    const ProfilePage(),
   ];
 
   @override
