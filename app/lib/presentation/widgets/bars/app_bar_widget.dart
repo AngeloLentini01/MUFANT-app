@@ -14,6 +14,7 @@ class AppBarWidget extends StatelessWidget {
     this.showLogo = false, // Default to false, only show on homepage
     this.showAppBarCTAButton = true, // Default to true, hide only on shop page
     this.additionalContent, // Optional additional content below the title
+    this.backButtonColor,
   });
 
   final Color textColor;
@@ -25,6 +26,7 @@ class AppBarWidget extends StatelessWidget {
   final bool showLogo;
   final bool showAppBarCTAButton;
   final Widget? additionalContent;
+  final Color? backButtonColor;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,12 @@ class AppBarWidget extends StatelessWidget {
           ? kToolbarHeight + additionalContentHeight
           : kToolbarHeight,
       elevation: 0, // Remove default elevation, we'll add custom shadow
-      shadowColor: Colors.transparent, // Remove default shadow
+      shadowColor: Colors.transparent,
+      leading: Navigator.of(context).canPop()
+          ? BackButton(
+              color: backButtonColor ?? Colors.white, // <-- USA IL COLORE
+            )
+          : null, // Remove default shadow
       actions: showAppBarCTAButton
           ? [
               Padding(
