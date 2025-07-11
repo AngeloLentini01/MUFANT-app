@@ -1,4 +1,3 @@
-
 import 'package:app/presentation/app_pre_configurator.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 
