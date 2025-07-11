@@ -4,9 +4,7 @@ import 'package:app/presentation/views/tabBarPages/profilePage/badges_section.da
 import 'package:app/presentation/views/tabBarPages/profilePage/tickets_section.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/user_avatar_section.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/wallpaper_section.dart';
-import 'package:app/presentation/widgets/all.dart';
 import 'package:flutter/material.dart' hide Badge;
-import 'package:logging/logging.dart';
 
 // Color constants
 const pinkColor = kPinkColor;
@@ -21,29 +19,75 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  static final Logger _logger = Logger('ProfilePage');
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: blackColor,
-      body: SafeArea(
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [kBlackColor, Colors.grey[900]!],
+          ),
+        ),
         child: CustomScrollView(
           slivers: [
-            AppBarWidget(
-              textColor: kWhiteColor,
-              backgroundColor: kBlackColor,
-              logger: _logger,
-              iconImage: Icons.settings,
-              text: 'Settings',
-              onButtonPressed: () {},
-              showLogo: false, // Don't show logo on profile page
-            ),
             SliverPadding(
               padding: const EdgeInsets.all(16.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  // Settings button row
+                  // Custom header Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          // TODO: Replace with navigation to notification page
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Notification page not yet implemented',
+                              ),
+                              backgroundColor: greyColor,
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.notifications,
+                          color: pinkColor,
+                          size: 28,
+                        ),
+                      ),
+                      const Text(
+                        'HI, USER!',
+                        style: TextStyle(
+                          color: pinkColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          // TODO: Replace with navigation to settings page
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Settings page not yet implemented',
+                              ),
+                              backgroundColor: greyColor,
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.settings,
+                          color: pinkColor,
+                          size: 28,
+                        ),
+                      ),
+                    ],
+                  ),
+
                   kSpaceBetweenSections,
                   // User Avatar Section
                   UserAvatarSection(context: context),
