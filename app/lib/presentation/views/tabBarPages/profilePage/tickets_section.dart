@@ -389,13 +389,21 @@ class MyTicketWidget extends StatelessWidget {
 
   Widget _buildRight() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      child: Center(
-        child: VerticalBarcodeWidget(
-          data: "MUFANT-SIDE-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
-          width: 60,
-          height: 120,
-        ),
+      padding: const EdgeInsets.all(6),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Calcola dimensioni più generose ma sicure
+          final availableWidth = constraints.maxWidth - 2; // Margine minimo
+          final availableHeight = constraints.maxHeight - 2;
+          
+          return Center(
+            child: VerticalBarcodeWidget(
+              data: "MUFANT-SIDE-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+              width: (availableWidth * 0.85).clamp(45.0, 70.0), // Aumentato: 45-70px
+              height: (availableHeight * 0.85).clamp(110.0, 140.0), // Aumentato: 110-140px
+            ),
+          );
+        },
       ),
     );
   }
@@ -524,17 +532,26 @@ class VerticalBarcodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width ?? 80,
-      height: height ?? 100,
-      child: Transform.rotate(
-        angle: 1.5708, // 90 degrees in radians (π/2)
-        child: SizedBox(
-          width: height ?? 160,
-          height: width ?? 50,
-          child: CustomPaint(
-            painter: BarcodePainter(data: data),
-            size: Size(50, 160),
+    final containerWidth = width ?? 60; // Aumentato da 40 a 60
+    final containerHeight = height ?? 300; // Aumentato da 100 a 120
+    
+    return ClipRect(
+      child: SizedBox(
+        width: containerWidth,
+        height: containerHeight,
+        child: OverflowBox(
+          maxWidth: containerWidth,
+          maxHeight: containerHeight,
+          child: Transform.rotate(
+            angle: 1.5708, // 90 degrees in radians (π/2)
+            child: SizedBox(
+              width: containerHeight,
+              height: containerWidth,
+              child: CustomPaint(
+                painter: BarcodePainter(data: data),
+                size: Size(containerHeight, containerWidth),
+              ),
+            ),
           ),
         ),
       ),
