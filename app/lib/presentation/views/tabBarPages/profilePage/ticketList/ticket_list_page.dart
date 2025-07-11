@@ -293,7 +293,11 @@ class _TicketListPageState extends State<TicketListPage> {
                       width: double.infinity,
                       height: 40,
                       margin: const EdgeInsets.symmetric(horizontal: 40),
-                      child: CustomPaint(painter: BarcodePainter()),
+                      child: BarcodeWidget(
+                        data: "MUFANT-${ticket.eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+                        width: double.infinity,
+                        height: 40,
+                      ),
                     ),
                   ),
                 ),

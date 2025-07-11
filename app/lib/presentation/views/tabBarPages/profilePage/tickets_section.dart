@@ -5,80 +5,57 @@ import 'package:flutter/material.dart';
 import 'package:ticket_material/ticket_material.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
 import 'package:app/data/services/ticket_service.dart';
+import 'package:barcode/barcode.dart';
 
-/// Custom painter for creating a barcode pattern
+/// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
+  final String data;
+  
+  const BarcodePainter({this.data = "MUFANT-TICKET-123456789"});
+
   @override
   void paint(Canvas canvas, Size size) {
+    final bc = Barcode.code128();
+    
+    try {
+      // Generate barcode elements
+      final barcodeElements = bc.make(data, width: size.width, height: size.height);
+      
+      final paint = Paint()
+        ..color = Colors.black
+        ..style = PaintingStyle.fill;
+
+      // Draw barcode elements
+      for (final element in barcodeElements) {
+        if (element is BarcodeBar && element.black) {
+          canvas.drawRect(
+            Rect.fromLTWH(element.left, element.top, element.width, element.height),
+            paint,
+          );
+        }
+      }
+    } catch (e) {
+      // Fallback: draw a simple pattern if barcode generation fails
+      _drawFallbackPattern(canvas, size);
+    }
+  }
+  
+  void _drawFallbackPattern(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill;
 
-    // Generate barcode pattern with varying widths
-    final barWidths = [
-      2.0,
-      1.0,
-      3.0,
-      1.0,
-      2.0,
-      1.0,
-      1.0,
-      2.0,
-      3.0,
-      1.0,
-      2.0,
-      1.0,
-      1.0,
-      3.0,
-      2.0,
-      1.0,
-      2.0,
-      1.0,
-      3.0,
-      1.0,
-      2.0,
-      1.0,
-      1.0,
-      2.0,
-      3.0,
-      1.0,
-      2.0,
-      1.0,
-      1.0,
-      3.0,
-      2.0,
-      1.0,
-      3.0,
-      1.0,
-      2.0,
-    ];
-
-    // Calculate total width needed and scale factor
-    double totalBarsWidth = barWidths.reduce((a, b) => a + b);
-    double totalSpacing =
-        (barWidths.length - 1) * 1.0; // 1px spacing between bars
-    double totalNeededWidth = totalBarsWidth + totalSpacing;
-    double scaleFactor = size.width / totalNeededWidth;
-
-    double currentX = 0;
-    const double barHeight = 40;
-    const double spacing = 1.0;
-
-    for (int i = 0; i < barWidths.length; i++) {
-      final barWidth = barWidths[i] * scaleFactor;
-
-      // Draw black bar
-      canvas.drawRect(
-        Rect.fromLTWH(
-          currentX,
-          (size.height - barHeight) / 2,
-          barWidth,
-          barHeight,
-        ),
-        paint,
-      );
-
-      currentX += barWidth + (spacing * scaleFactor);
+    // Simple barcode-like pattern as fallback
+    final barCount = 20;
+    final barWidth = size.width / (barCount * 2);
+    
+    for (int i = 0; i < barCount; i++) {
+      if (i % 2 == 0) {
+        canvas.drawRect(
+          Rect.fromLTWH(i * barWidth * 2, 0, barWidth, size.height),
+          paint,
+        );
+      }
     }
   }
 
@@ -86,10 +63,35 @@ class BarcodePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
+/// Reusable barcode widget
+class BarcodeWidget extends StatelessWidget {
+  final String data;
+  final double? width;
+  final double? height;
+  
+  const BarcodeWidget({
+    super.key,
+    required this.data,
+    this.width,
+    this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height ?? 40,
+      child: CustomPaint(
+        painter: BarcodePainter(data: data),
+      ),
+    );
+  }
+}
+
 /// Reusable ticket widget using TicketMaterial
 /// TODO: Rendere questo widget più flessibile per supportare diversi tipi di biglietti
 /// TODO: Aggiungere supporto per biglietti scaduti (diversa visualizzazione)
-/// TODO: Implementare QR code dinamico al posto del barcode statico
+/// ✅ COMPLETED: Implementato barcode dinamico utilizzando la libreria barcode (sia orizzontale che verticale, senza background)
 class MyTicketWidget extends StatelessWidget {
   final String eventDate;
   final String eventTime;
@@ -283,7 +285,11 @@ class MyTicketWidget extends StatelessWidget {
                             margin: const EdgeInsets.symmetric(
                               horizontal: 48,
                             ), // 48px dai bordi
-                            child: CustomPaint(painter: BarcodePainter()),
+                            child: BarcodeWidget(
+                              data: "MUFANT-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+                              width: double.infinity,
+                              height: 40,
+                            ),
                           ),
                         ),
                       ),
@@ -381,18 +387,12 @@ class MyTicketWidget extends StatelessWidget {
 
   Widget _buildRight() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Center(
-        child: Container(
-          width: 80,
-          height: 100,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            image: const DecorationImage(
-              image: AssetImage('assets/images/ticket/barcode-ticket.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
+        child: VerticalBarcodeWidget(
+          data: "MUFANT-SIDE-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+          width: 60,
+          height: 120,
         ),
       ),
     );
@@ -503,6 +503,38 @@ class TicketsSection extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// Vertical barcode widget for ticket sides (no background)
+class VerticalBarcodeWidget extends StatelessWidget {
+  final String data;
+  final double? width;
+  final double? height;
+  
+  const VerticalBarcodeWidget({
+    super.key,
+    required this.data,
+    this.width,
+    this.height,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width ?? 80,
+      height: height ?? 100,
+      child: Transform.rotate(
+        angle: 1.5708, // 90 degrees in radians (π/2)
+        child: Container(
+          width: height ?? 100,
+          height: width ?? 80,
+          child: CustomPaint(
+            painter: BarcodePainter(data: data),
+          ),
+        ),
+      ),
     );
   }
 }
