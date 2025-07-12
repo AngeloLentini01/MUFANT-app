@@ -45,7 +45,8 @@ class _FullscreenWallpaperViewState extends State<FullscreenWallpaperView> {
       final Uint8List bytes = data.buffer.asUint8List();
 
       // Create a unique filename for the wallpaper
-      final String fileName = '${widget.wallpaperName.replaceAll(' ', '_').toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final String fileName =
+          '${widget.wallpaperName.replaceAll(' ', '_').toLowerCase()}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       // Save to device gallery using gal
       await Gal.putImageBytes(bytes, name: fileName);
@@ -53,7 +54,9 @@ class _FullscreenWallpaperViewState extends State<FullscreenWallpaperView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ ${widget.wallpaperName} saved to gallery successfully!'),
+            content: Text(
+              '✅ ${widget.wallpaperName} saved to gallery successfully!',
+            ),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),
