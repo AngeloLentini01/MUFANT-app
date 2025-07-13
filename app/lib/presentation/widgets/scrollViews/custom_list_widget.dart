@@ -10,23 +10,20 @@ class CustomListWidget extends StatelessWidget {
     required this.title,
     required this.textColor,
     required this.activities,
+    this.onItemTap,
   });
 
   final String title;
   final Color textColor;
   final List<DetailsModel> activities;
-
-
+  final Function(DetailsModel)? onItemTap;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: kSectionTitleTextStyle,
-        ),
+        Text(title, style: kSectionTitleTextStyle),
         kBlankSpaceInSectionBetweenTitleAndList,
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -38,6 +35,7 @@ class CustomListWidget extends StatelessWidget {
                     imagePath: event.imageUrlOrPath ?? '',
                     title: event.name,
                     info: event.notes ?? '',
+                    onTap: onItemTap != null ? () => onItemTap!(event) : null,
                   ),
                 )
                 .toList(),

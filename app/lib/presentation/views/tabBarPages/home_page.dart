@@ -8,6 +8,10 @@ import 'package:app/presentation/styles/all.dart';
 
 import 'package:app/presentation/widgets/all.dart';
 import 'package:app/presentation/views/tabBarPages/map_page.dart';
+import 'package:app/presentation/views/events/event_page.dart';
+import 'package:app/presentation/views/events/room_details_page.dart';
+import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/main.dart' as main_app;
 
 final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
 // Replace with actual username logic
@@ -25,6 +29,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool isSkeletonLoading = true;
   final _username = 'User'; // Replace with actual username logic
+  List<DetailsModel> _events = [];
+  List<DetailsModel> _rooms = [];
 
   String get homePageMessage => '$homepageGreeting, $_username!';
 
@@ -32,8 +38,51 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    // Load data from database
+    _loadActivitiesData();
+
     // Set isLoading to false after 6 seconds
     _mockDataLoadingUISkeletonEffect();
+  }
+
+  Future<void> _loadActivitiesData() async {
+    try {
+      print('Waiting for database initialization...');
+
+      // Wait for database to be fully initialized
+      bool dbReady = await main_app.waitForDatabaseInitialization();
+
+      if (!dbReady) {
+        print('Database initialization failed');
+        return;
+      }
+
+      print('Database is ready, loading activities...');
+
+      // Debug: List all available activities
+      await DBMuseumActivityManager.debugListAllActivities();
+
+      final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
+      final rooms = await DBMuseumActivityManager.getRoomsAsDetailsModels();
+
+      print('Loaded ${events.length} events and ${rooms.length} rooms');
+      for (final event in events) {
+        print('Event: ${event.name}');
+      }
+      for (final room in rooms) {
+        print('Room: ${room.name}');
+      }
+
+      if (mounted) {
+        setState(() {
+          _events = events;
+          _rooms = rooms;
+        });
+      }
+    } catch (e) {
+      // Handle error - could show a snackbar or log the error
+      print('Error loading activities from database: $e');
+    }
   }
 
   void _mockDataLoadingUISkeletonEffect() {
@@ -46,6 +95,24 @@ class _HomePageState extends State<HomePage> {
           });
         }
       },
+    );
+  }
+
+  void _navigateToEventDetails(DetailsModel event) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventPage(eventTitle: event.name),
+      ),
+    );
+  }
+
+  void _navigateToRoomDetails(DetailsModel room) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RoomDetailsPage(title: room.name),
+      ),
     );
   }
 
@@ -106,54 +173,35 @@ class _HomePageState extends State<HomePage> {
                       CustomListWidget(
                         title: "Our Events",
                         textColor: kPinkColor,
-                        activities: [
-                          DetailsModel(
-                            name: 'Sailor Moon\'s Anniversary',
-                            description:
-                                'Un evento speciale per celebrare i 30 anni di Sailor Moon.',
-                            notes: '01-28 nov•MUFANT Museum\nFree entry',
-                            imageUrlOrPath:
-                                'assets/images/locandine/sailor-moon.jpg',
-                          ),
-                          DetailsModel(
-                            name: 'Ufo Pop',
-                            description:
-                                'Un evento dedicato alla cultura pop degli UFO e degli alieni.',
-                            notes: '01-28 nov•MUFANT Museum\nStarting from 5€',
-                            imageUrlOrPath:
-                                'assets/images/locandine/ufo-pop.png',
-                          ),
-                          DetailsModel(
-                            name: 'Artificial Prophecies',
-                            description:
-                                'Un evento che esplora le profezie legate all\'intelligenza artificiale.',
-                            notes: '01-28 nov•MUFANT Museum\nComing soon',
-                            imageUrlOrPath:
-                                'assets/images/locandine/profezie-artificiali.jpg',
-                          ),
-                        ],
+                        onItemTap: _navigateToEventDetails,
+                        activities: _events.isNotEmpty
+                            ? _events
+                            : [
+                                // Fallback data if no events are loaded
+                                DetailsModel(
+                                  name: 'Loading Events...',
+                                  description:
+                                      'Please wait while we load events',
+                                  imageUrlOrPath: 'assets/images/logo.png',
+                                ),
+                              ],
                       ),
                       kSpaceBetweenSections,
                       CustomListWidget(
                         title: "Discover the Rooms",
                         textColor: kPinkColor,
-                        activities: [
-                          DetailsModel(
-                            name: 'Star Wars',
-                            description: 'Enter the Star Wars universe',
-                            imageUrlOrPath: 'assets/images/starwars.jpg',
-                          ),
-                          DetailsModel(
-                            name: 'Riccardo Valla\'s Library',
-                            description: 'Quiet reading space',
-                            imageUrlOrPath: 'assets/images/library.jpg',
-                          ),
-                          DetailsModel(
-                            name: 'Superheroes',
-                            description: 'Superhero themed room',
-                            imageUrlOrPath: 'assets/images/superhero.jpg',
-                          ),
-                        ],
+                        onItemTap: _navigateToRoomDetails,
+                        activities: _rooms.isNotEmpty
+                            ? _rooms
+                            : [
+                                // Fallback data if no rooms are loaded
+                                DetailsModel(
+                                  name: 'Loading Rooms...',
+                                  description:
+                                      'Please wait while we load rooms',
+                                  imageUrlOrPath: 'assets/images/logo.png',
+                                ),
+                              ],
                       ), // Replace with actual data
                       kSpaceBetweenSections,
                       // Community Chat Section

@@ -1,49 +1,33 @@
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:ulid/ulid.dart';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:app/model/generic/details_model.dart';
+import 'package:app/data/dbManagers/database_helper.dart';
 
 class DBMuseumActivityManager {
-  static Database? _database;
-  static const String _databaseName = 'mufant_museum.db';
   static final Logger _logger = AppLogger.getLogger('DBMuseumActivityManager');
 
-  // Get database instance
+  // Use the shared database instance from DatabaseHelper
   static Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
+    return DatabaseHelper.database;
   }
 
   // Initialize database
-  static Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), _databaseName);
-    return await openDatabase(path);
-  }
-
   // Get all museum activities
   static Future<List<Map<String, dynamic>>> getAllActivities() async {
     try {
       final db = await database;
 
-      // Join the tables to get the activity details
-      final result = await db.rawQuery('''
-        SELECT ma.id, d.name AS title, d.description, d.imageUrlOrPath AS image_path, 
-               t.activity_options AS type, mad.location, 
-               dr.start_date AS start_time, dr.end_date AS end_time,
-               d.notes AS additional_info, 1 AS is_active,
-               be.created_at, be.last_update_at AS updated_at
-        FROM MuseumActivity ma
-        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
-        JOIN Details d ON mad.details_fk = d.id
-        JOIN TypeOfMuseumActivity t ON mad.type_fk = t.id
-        JOIN Details td ON t.details_fk = td.id
-        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
-        JOIN BaseEntity be ON ma.id = be.id
-        ORDER BY be.created_at DESC
-      ''');
+      // Query the simple museum_activities table
+      final result = await db.rawQuery(
+        '''        SELECT id, name, type, description, start_date, end_date,
+               location, notes, price, image_path, created_at, updated_at
+        FROM MuseumActivity
+        ORDER BY created_at DESC
+      ''',
+      );
 
       return result;
     } catch (e) {
@@ -64,23 +48,13 @@ class DBMuseumActivityManager {
     try {
       final db = await database;
 
-      // Join the tables to get the activity details with type filter
+      // Query the simple museum_activities table with type filter
       final result = await db.rawQuery(
-        '''
-        SELECT ma.id, d.name AS title, d.description, d.imageUrlOrPath AS image_path, 
-               t.activity_options AS type, mad.location, 
-               dr.start_date AS start_time, dr.end_date AS end_time,
-               d.notes AS additional_info, 1 AS is_active,
-               be.created_at, be.last_update_at AS updated_at
-        FROM MuseumActivity ma
-        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
-        JOIN Details d ON mad.details_fk = d.id
-        JOIN TypeOfMuseumActivity t ON mad.type_fk = t.id
-        JOIN Details td ON t.details_fk = td.id
-        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
-        JOIN BaseEntity be ON ma.id = be.id
-        WHERE td.name = ?
-        ORDER BY be.created_at DESC
+        '''        SELECT id, name, type, description, start_date, end_date,
+               location, notes, price, image_path, created_at, updated_at
+        FROM MuseumActivity
+        WHERE type = ?
+        ORDER BY created_at DESC
       ''',
         [type],
       );
@@ -103,20 +77,10 @@ class DBMuseumActivityManager {
       final db = await database;
 
       final result = await db.rawQuery(
-        '''
-        SELECT ma.id, d.name AS title, d.description, d.imageUrlOrPath AS image_path, 
-               t.activity_options AS type, mad.location, 
-               dr.start_date AS start_time, dr.end_date AS end_time,
-               d.notes AS additional_info, 1 AS is_active,
-               be.created_at, be.last_update_at AS updated_at
-        FROM MuseumActivity ma
-        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
-        JOIN Details d ON mad.details_fk = d.id
-        JOIN TypeOfMuseumActivity t ON mad.type_fk = t.id
-        JOIN Details td ON t.details_fk = td.id
-        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
-        JOIN BaseEntity be ON ma.id = be.id
-        WHERE ma.id = ?
+        '''        SELECT id, name, type, description, start_date, end_date,
+               location, notes, price, image_path, created_at, updated_at
+        FROM MuseumActivity
+        WHERE id = ?
       ''',
         [id],
       );
@@ -136,43 +100,9 @@ class DBMuseumActivityManager {
     }
   }
 
-  // Get activity by title
+  // Get activity by title (updated to use fallback)
   static Future<Map<String, dynamic>?> getActivityByTitle(String title) async {
-    try {
-      final db = await database;
-
-      final result = await db.rawQuery(
-        '''
-        SELECT ma.id, d.name AS title, d.description, d.imageUrlOrPath AS image_path, 
-               t.activity_options AS type, mad.location, 
-               dr.start_date AS start_time, dr.end_date AS end_time,
-               d.notes AS additional_info, 1 AS is_active,
-               be.created_at, be.last_update_at AS updated_at
-        FROM MuseumActivity ma
-        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
-        JOIN Details d ON mad.details_fk = d.id
-        JOIN TypeOfMuseumActivity t ON mad.type_fk = t.id
-        JOIN Details td ON t.details_fk = td.id
-        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
-        JOIN BaseEntity be ON ma.id = be.id
-        WHERE d.name = ?
-      ''',
-        [title],
-      );
-
-      if (result.isNotEmpty) {
-        return result.first;
-      }
-      return null;
-    } catch (e) {
-      AppLogger.error(
-        _logger,
-        'Error getting activity by title',
-        e,
-        StackTrace.current,
-      );
-      return null;
-    }
+    return await getActivityByTitleWithFallback(title);
   }
 
   // Get all rooms
@@ -463,6 +393,317 @@ class DBMuseumActivityManager {
         StackTrace.current,
       );
       return [];
+    }
+  }
+
+  // Get all events as DetailsModel objects
+  static Future<List<DetailsModel>> getEventsAsDetailsModels() async {
+    try {
+      // Use fallback approach to get data from either schema
+      final activities = await getActivitiesWithFallback();
+
+      // Filter for events (handle both "event" and "Visit" types)
+      final events = activities.where((activity) {
+        final type = activity['type']?.toString().toLowerCase() ?? '';
+        return type == 'event' || type == 'visit';
+      }).toList();
+
+      return events
+          .map((activity) => _convertToDetailsModel(activity))
+          .toList();
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting events as DetailsModel',
+        e,
+        StackTrace.current,
+      );
+      return [];
+    }
+  }
+
+  // Get all rooms as DetailsModel objects
+  static Future<List<DetailsModel>> getRoomsAsDetailsModels() async {
+    try {
+      // Use fallback approach to get data from either schema
+      final activities = await getActivitiesWithFallback();
+
+      // Filter for rooms
+      final rooms = activities.where((activity) {
+        final type = activity['type']?.toString().toLowerCase() ?? '';
+        return type == 'room';
+      }).toList();
+
+      return rooms.map((activity) => _convertToDetailsModel(activity)).toList();
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting rooms as DetailsModel',
+        e,
+        StackTrace.current,
+      );
+      return [];
+    }
+  }
+
+  // Convert database row to DetailsModel
+  static DetailsModel _convertToDetailsModel(Map<String, dynamic> activity) {
+    return DetailsModel(
+      id: null, // Since the database uses integer IDs and the model expects Ulid, set to null for now
+      name: activity['name'] ?? 'Unknown',
+      description: activity['description'],
+      notes: activity['notes'],
+      imageUrlOrPath: activity['image_path'],
+      createdAt: activity['created_at'] != null
+          ? DateTime.tryParse(activity['created_at'])
+          : null,
+      updatedAt: activity['updated_at'] != null
+          ? DateTime.tryParse(activity['updated_at'])
+          : null,
+    );
+  }
+
+  // New methods for complex schema support
+
+  // Get activities from normalized schema
+  static Future<List<Map<String, dynamic>>>
+  getActivitiesFromNormalizedSchema() async {
+    try {
+      final db = await database;
+
+      final result = await db.rawQuery('''
+        SELECT 
+          ma.id as activity_id,
+          d.name,
+          d.description,
+          d.imageUrlOrPath as image_path,
+          d.notes,
+          mad.location,
+          toma.activity_options as type,
+          dr.start_date,
+          dr.end_date
+        FROM MuseumActivity ma
+        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
+        JOIN Details d ON mad.details_fk = d.id
+        JOIN TypeOfMuseumActivity toma ON mad.type_fk = toma.id
+        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
+        ORDER BY dr.start_date DESC
+      ''');
+
+      return result;
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting activities from normalized schema',
+        e,
+        StackTrace.current,
+      );
+      return [];
+    }
+  }
+
+  // Get activity by name from normalized schema
+  static Future<Map<String, dynamic>?> getActivityByNameFromNormalizedSchema(
+    String name,
+  ) async {
+    try {
+      final db = await database;
+
+      final result = await db.rawQuery(
+        '''
+        SELECT 
+          ma.id as activity_id,
+          d.name,
+          d.description,
+          d.imageUrlOrPath as image_path,
+          d.notes,
+          mad.location,
+          toma.activity_options as type,
+          dr.start_date,
+          dr.end_date
+        FROM MuseumActivity ma
+        JOIN MuseumActivityDetails mad ON ma.museum_activity_details_fk = mad.id
+        JOIN Details d ON mad.details_fk = d.id
+        JOIN TypeOfMuseumActivity toma ON mad.type_fk = toma.id
+        JOIN DateTimeRange dr ON mad.active_datetime_range_fk = dr.id
+        WHERE d.name = ?
+      ''',
+        [name],
+      );
+
+      if (result.isNotEmpty) {
+        return result.first;
+      }
+      return null;
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting activity by name from normalized schema',
+        e,
+        StackTrace.current,
+      );
+      return null;
+    }
+  }
+
+  // Check if normalized schema has data
+  static Future<bool> hasNormalizedData() async {
+    try {
+      final db = await database;
+
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM MuseumActivity',
+      );
+      final count = result.first['count'] as int;
+
+      return count > 0;
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error checking for normalized data',
+        e,
+        StackTrace.current,
+      );
+      return false;
+    }
+  }
+
+  // Get activities with fallback (tries normalized schema first, then simple)
+  static Future<List<Map<String, dynamic>>> getActivitiesWithFallback() async {
+    try {
+      // Use flat schema (we've migrated to flat structure)
+      return await getAllActivities();
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting activities with fallback',
+        e,
+        StackTrace.current,
+      );
+      return [];
+    }
+  }
+
+  // Get activity by title with fallback (tries normalized schema first, then simple)
+  static Future<Map<String, dynamic>?> getActivityByTitleWithFallback(
+    String title,
+  ) async {
+    try {
+      AppLogger.info(_logger, 'Searching for activity with title: "$title"');
+
+      // First try to get data from normalized schema
+      if (await hasNormalizedData()) {
+        AppLogger.info(_logger, 'Using normalized schema for search');
+        final result = await getActivityByNameFromNormalizedSchema(title);
+        if (result != null) {
+          AppLogger.info(
+            _logger,
+            'Found activity in normalized schema: ${result['name']}',
+          );
+          return result;
+        }
+        AppLogger.info(_logger, 'Activity not found in normalized schema');
+      }
+
+      // Fall back to simple schema
+      AppLogger.info(_logger, 'Using simple schema for search');
+      final result = await getActivityByTitleSimple(title);
+      if (result != null) {
+        AppLogger.info(
+          _logger,
+          'Found activity in simple schema: ${result['name']}',
+        );
+        return result;
+      }
+
+      AppLogger.warning(
+        _logger,
+        'Activity not found in any schema for title: "$title"',
+      );
+      return null;
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting activity by title with fallback',
+        e,
+        StackTrace.current,
+      );
+      return null;
+    }
+  }
+
+  // Simple schema method (to avoid circular reference)
+  static Future<Map<String, dynamic>?> getActivityByTitleSimple(
+    String title,
+  ) async {
+    try {
+      final db = await database;
+
+      final result = await db.rawQuery(
+        '''        SELECT id, name, type, description, start_date, end_date,
+               location, notes, price, image_path, created_at, updated_at
+        FROM MuseumActivity
+        WHERE name = ?
+      ''',
+        [title],
+      );
+
+      if (result.isNotEmpty) {
+        return result.first;
+      }
+      return null;
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error getting activity by title from simple schema',
+        e,
+        StackTrace.current,
+      );
+      return null;
+    }
+  }
+
+  // Debug method to list all activities
+  static Future<void> debugListAllActivities() async {
+    try {
+      final db = await database;
+
+      // Check simple schema
+      final simpleActivities = await db.query('MuseumActivity');
+      AppLogger.info(
+        _logger,
+        'Simple schema activities count: ${simpleActivities.length}',
+      );
+      for (final activity in simpleActivities) {
+        AppLogger.info(
+          _logger,
+          'Simple activity: "${activity['name']}" (type: ${activity['type']})',
+        );
+      }
+
+      // Check normalized schema
+      if (await hasNormalizedData()) {
+        final normalizedActivities = await getActivitiesFromNormalizedSchema();
+        AppLogger.info(
+          _logger,
+          'Normalized schema activities count: ${normalizedActivities.length}',
+        );
+        for (final activity in normalizedActivities) {
+          AppLogger.info(
+            _logger,
+            'Normalized activity: "${activity['name']}" (type: ${activity['type']})',
+          );
+        }
+      } else {
+        AppLogger.info(_logger, 'No normalized schema data found');
+      }
+    } catch (e) {
+      AppLogger.error(
+        _logger,
+        'Error debugging activities list',
+        e,
+        StackTrace.current,
+      );
     }
   }
 }

@@ -59,10 +59,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const Text(
-                        'HI, USER!',
+                        'Profile',
                         style: TextStyle(
-                          color: pinkColor,
-                          fontSize: 24,
+                          color: kWhiteColor,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
                         ),

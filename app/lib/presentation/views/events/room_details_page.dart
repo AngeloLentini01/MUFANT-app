@@ -30,9 +30,18 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
 
   Future<void> _loadRoomData() async {
     try {
+      AppLogger.info(_logger, 'RoomDetailsPage: Loading data for room title: "${widget.title}"');
+      
       final data = await DBMuseumActivityManager.getActivityByTitle(
         widget.title,
       );
+      
+      if (data != null) {
+        AppLogger.info(_logger, 'RoomDetailsPage: Successfully loaded room data: "${data['name']}"');
+      } else {
+        AppLogger.warning(_logger, 'RoomDetailsPage: No room data found for title: "${widget.title}"');
+      }
+      
       setState(() {
         roomData = data;
         isLoading = false;
@@ -91,7 +100,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          roomData!['title'],
+          roomData!['name'] ?? widget.title,
           style: TextStyle(
             color: kPinkColor,
             fontSize: 28,
