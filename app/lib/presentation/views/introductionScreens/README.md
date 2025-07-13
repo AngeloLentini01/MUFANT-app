@@ -12,6 +12,7 @@ SplashScreen → OnboardingScreen (3 pages) → AppMain (with TabBar)
 
 ### 🎨 Design Elements
 - **Consistent Colors**: Uses project's color scheme (kPinkColor, kBlackColor)
+- **Gradient Background**: Same LinearGradient as Home and Profile pages (kBlackColor → Colors.grey[900])
 - **Modern UI**: Clean, minimalist design matching the app's aesthetic
 - **Responsive Layout**: Adapts to different screen sizes
 - **Smooth Animations**: Uses introduction_screen's built-in transitions

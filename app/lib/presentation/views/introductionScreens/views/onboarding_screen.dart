@@ -12,35 +12,44 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IntroductionScreen(
-        pages: _buildPages(context),
-        onDone: () => _onFinish(context),
-        onSkip: () => _onFinish(context),
-        showSkipButton: true,
-        skipOrBackFlex: 0,
-        nextFlex: 0,
-        skip: Text(
-          'Skip',
-          style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-        ),
-        next: Icon(Icons.arrow_forward, color: kPinkColor),
-        done: Text(
-          'Done',
-          style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-        ),
-        curve: Curves.easeInOut,
-        controlsMargin: const EdgeInsets.all(16),
-        controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-        dotsDecorator: DotsDecorator(
-          size: const Size(10.0, 10.0),
-          color: Colors.grey[400]!,
-          activeSize: const Size(22.0, 10.0),
-          activeColor: kPinkColor,
-          activeShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        globalBackgroundColor: kBlackColor,
+        child: IntroductionScreen(
+          pages: _buildPages(context),
+          onDone: () => _onFinish(context),
+          onSkip: () => _onFinish(context),
+          showSkipButton: true,
+          skipOrBackFlex: 0,
+          nextFlex: 0,
+          skip: Text(
+            'Skip',
+            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
+          ),
+          next: Icon(Icons.arrow_forward, color: kPinkColor),
+          done: Text(
+            'Done',
+            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
+          ),
+          curve: Curves.easeInOut,
+          controlsMargin: const EdgeInsets.all(16),
+          controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+          dotsDecorator: DotsDecorator(
+            size: const Size(10.0, 10.0),
+            color: Colors.grey[400]!,
+            activeSize: const Size(22.0, 10.0),
+            activeColor: kPinkColor,
+            activeShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0),
+            ),
+          ),
+          globalBackgroundColor: Colors.transparent, // Make background transparent to show gradient
+        ),
       ),
     );
   }
@@ -89,7 +98,7 @@ class OnboardingScreen extends StatelessWidget {
         bodyWidget:
             const SizedBox.shrink(), // Empty body since we use titleWidget
         decoration: PageDecoration(
-          pageColor: kBlackColor,
+          pageColor: Colors.transparent, // Make transparent to show gradient background
           imagePadding: EdgeInsets.zero,
           contentMargin: EdgeInsets.zero,
           titlePadding: EdgeInsets.zero,
