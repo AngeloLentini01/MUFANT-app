@@ -90,12 +90,8 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kBlackColor, Colors.grey[900]!],
-          ),
+        decoration: const BoxDecoration(
+          gradient: kBackgroundGradient,
         ),
         child: Stack(
           children: [

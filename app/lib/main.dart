@@ -45,7 +45,7 @@ void main() async {
   // Set system UI overlay style to ensure status bar matches app theme
   MySystem.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: kBlackColor,
+      statusBarColor: kBlackColor, // Using the new base color
       statusBarIconBrightness: Brightness.light,
     ),
   );

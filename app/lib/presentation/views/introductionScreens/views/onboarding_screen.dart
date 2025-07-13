@@ -20,12 +20,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kBlackColor, Colors.grey[900]!],
-          ),
+        decoration: const BoxDecoration(
+          gradient: kBackgroundGradient, // Using the new gradient
         ),
         child: IntroductionScreen(
           pages: _buildPages(context),

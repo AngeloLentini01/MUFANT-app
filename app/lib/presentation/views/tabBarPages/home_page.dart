@@ -78,12 +78,8 @@ class _HomePageState extends State<HomePage> {
         ), // Wrap the home page with Skeletonizer
         child: SafeArea(
           child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [kBlackColor, Colors.grey[900]!],
-              ),
+            decoration: const BoxDecoration(
+              gradient: kBackgroundGradient,
             ),
             child: CustomScrollView(
               slivers: [

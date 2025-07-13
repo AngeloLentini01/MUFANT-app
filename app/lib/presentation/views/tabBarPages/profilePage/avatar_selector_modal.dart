@@ -119,11 +119,7 @@ class _AvatarSelectorModalState extends State<AvatarSelectorModal> {
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
         ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [kBlackColor, Colors.grey[900]!],
-        ),
+        gradient: kBackgroundGradient,
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
