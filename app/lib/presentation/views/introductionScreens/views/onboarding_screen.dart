@@ -33,7 +33,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onSkip: () => _onFinish(context),
           onChange: (page) => setState(() => _currentPage = page),
           showSkipButton: _currentPage < 2, // Only show Skip on pages 1-2
-          showNextButton: _currentPage < 2, // Only show Next on pages 1-2 
+          showNextButton: _currentPage < 2, // Only show Next on pages 1-2
           showDoneButton: _currentPage < 2, // Only show Done on pages 1-2
           skipOrBackFlex: 0,
           nextFlex: 0,
@@ -73,20 +73,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       int index = entry.key;
       OnboardingPageData pageData = entry.value;
       bool isLastPage = index == 2; // Third page (index 2)
-      
+
       return PageViewModel(
         titleWidget: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 40),
               // Centered image from assets/images/IntroductionScreen
               Container(
-                height: 300,
-                width: 300,
+                height: 280,
+                width: 280,
                 child: Image.asset(pageData.imagePath, fit: BoxFit.contain),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
               // Short descriptive text below the image
               Text(
                 pageData.title,
@@ -114,7 +114,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
         ),
-        bodyWidget: isLastPage ? _buildThirdPageButtons(context) : const SizedBox.shrink(),
+        bodyWidget: isLastPage
+            ? _buildThirdPageButtons(context)
+            : const SizedBox.shrink(),
         decoration: PageDecoration(
           pageColor: Colors.transparent,
           imagePadding: EdgeInsets.zero,
@@ -129,20 +131,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   /// Build buttons for the third page positioned above the navigation dots
   Widget _buildThirdPageButtons(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Sign up button
           SizedBox(
             width: double.infinity,
-            height: 56,
+            height: 52,
             child: ElevatedButton(
               onPressed: () {
                 // TODO: Navigate to RegistrationPage() after RegistrationPage is implemented
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Registration page not yet implemented'),
+                    content: const Text(
+                      'Registration page not yet implemented',
+                    ),
                     backgroundColor: kPinkColor,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -159,16 +163,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               child: const Text(
                 'Sign up',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-          
-          const SizedBox(height: 20),
-          
+
+          const SizedBox(height: 16),
+
           // "Already have an account? Sign in" text
           TextButton(
             onPressed: () {
@@ -184,10 +185,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: RichText(
               text: TextSpan(
                 text: 'Already have an account? ',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.grey[400], fontSize: 16),
                 children: [
                   TextSpan(
                     text: 'Sign in',
@@ -202,43 +200,47 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           ),
-          
-          const SizedBox(height: 30),
-          
-          // Dev button to skip login/register (for development purposes)
-          TextButton(
-            onPressed: () {
-              // Navigate directly to main app for development
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const AppMain()),
-              );
-            },
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              backgroundColor: Colors.grey[800],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+
+          const SizedBox(height: 18),
+
+          // Continue as Guest button
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: OutlinedButton(
+              onPressed: () {
+                // Navigate to main app as guest user
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AppMain()),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.grey[300],
+                side: BorderSide(color: Colors.grey[600]!, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.developer_mode,
-                  size: 16,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Skip (Dev Mode)',
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person_outline,
+                    size: 18,
+                    color: Colors.grey[300],
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Text(
+                    'Continue as Guest',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[300],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

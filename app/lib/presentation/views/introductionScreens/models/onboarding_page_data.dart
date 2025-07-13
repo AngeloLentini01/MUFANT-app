@@ -36,7 +36,7 @@ class OnboardingDataProvider {
     OnboardingPageData(
       imagePath:
           'assets/images/IntroductionScreen/robot_introduction_screen_3.png',
-      title: 'The future is in your hands. Join us today.',
+      title: 'The future is in your hands',
       description: '', // Empty description to save space for buttons
     ),
   ];
