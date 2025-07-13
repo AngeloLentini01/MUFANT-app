@@ -21,21 +21,12 @@ class OnboardingScreen extends StatelessWidget {
         nextFlex: 0,
         skip: Text(
           'Skip',
-          style: TextStyle(
-            color: kPinkColor,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
         ),
-        next: Icon(
-          Icons.arrow_forward,
-          color: kPinkColor,
-        ),
+        next: Icon(Icons.arrow_forward, color: kPinkColor),
         done: Text(
           'Done',
-          style: TextStyle(
-            color: kPinkColor,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
         ),
         curve: Curves.easeInOut,
         controlsMargin: const EdgeInsets.all(16),
@@ -68,10 +59,7 @@ class OnboardingScreen extends StatelessWidget {
               Container(
                 height: 300,
                 width: 300,
-                child: Image.asset(
-                  pageData.imagePath,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset(pageData.imagePath, fit: BoxFit.contain),
               ),
               const SizedBox(height: 40),
               // Short descriptive text below the image
@@ -98,7 +86,8 @@ class OnboardingScreen extends StatelessWidget {
             ],
           ),
         ),
-        bodyWidget: const SizedBox.shrink(), // Empty body since we use titleWidget
+        bodyWidget:
+            const SizedBox.shrink(), // Empty body since we use titleWidget
         decoration: PageDecoration(
           pageColor: kBlackColor,
           imagePadding: EdgeInsets.zero,
