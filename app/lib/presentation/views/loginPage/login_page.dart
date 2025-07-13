@@ -7,7 +7,9 @@ import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final bool shouldNavigateToMain;
+
+  const LoginPage({super.key, this.shouldNavigateToMain = true});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -49,10 +51,15 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const AppMain()),
-          );
+          if (widget.shouldNavigateToMain) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const AppMain()),
+            );
+          } else {
+            // Return to previous screen with success result
+            Navigator.pop(context, true);
+          }
         }
       } else {
         _showErrorDialog('Invalid username or password');
@@ -318,12 +325,23 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const RegistrationPage(),
-                                ),
-                              );
+                              if (widget.shouldNavigateToMain) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegistrationPage(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegistrationPage(
+                                          shouldNavigateToMain: false,
+                                        ),
+                                  ),
+                                );
+                              }
                             },
                             child: Text(
                               'Sign up',

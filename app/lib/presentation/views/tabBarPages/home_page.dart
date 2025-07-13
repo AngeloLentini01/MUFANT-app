@@ -11,14 +11,13 @@ import 'package:app/presentation/views/tabBarPages/map_page.dart';
 import 'package:app/presentation/views/events/event_page.dart';
 import 'package:app/presentation/views/events/room_details_page.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/data/services/user_session_manager.dart';
 import 'package:app/main.dart' as main_app;
 
 final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
-// Replace with actual username logic
 
 final _logger = Logger('MufantApp');
 
-// TODO: Implement logic to retrieve the actual username from user profile or authentication state.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -26,23 +25,131 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool isSkeletonLoading = true;
-  final _username = 'User'; // Replace with actual username logic
+  String _username = 'User'; // Default fallback username
   List<DetailsModel> _events = [];
   List<DetailsModel> _rooms = [];
 
   String get homePageMessage => '$homepageGreeting, $_username!';
 
+  // Public method to refresh user session
+  void refreshUserSession() {
+    _logger.info('Manually refreshing user session from external call');
+    _loadUserSession();
+  }
+
   @override
   void initState() {
     super.initState();
 
-    // Load data from database
-    _loadActivitiesData();
+    // Add observer for app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
+
+    // Load user session and activities data
+    _initializeData();
 
     // Set isLoading to false after 6 seconds
     _mockDataLoadingUISkeletonEffect();
+  }
+
+  @override
+  void dispose() {
+    // Remove observer when disposing
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Refresh user session when app resumes
+    if (state == AppLifecycleState.resumed) {
+      _logger.info('App resumed, refreshing user session');
+      _loadUserSession();
+    }
+  }
+
+  Future<void> _initializeData() async {
+    // For testing purposes, you can uncomment this line to create a test user
+    // await _createTestUserIfNeeded();
+
+    await _loadUserSession();
+    await _loadActivitiesData();
+  }
+
+  Future<void> _loadUserSession() async {
+    try {
+      _logger.info('Loading user session...');
+
+      // First check if user is already logged in
+      bool isLoggedIn = await UserSessionManager.isLoggedIn();
+      _logger.info('Is user logged in: $isLoggedIn');
+
+      if (isLoggedIn) {
+        _logger.info('User is logged in, checking current user...');
+
+        // Check if current user is already loaded
+        if (UserSessionManager.currentUser != null) {
+          _logger.info(
+            'Current user already loaded: ${UserSessionManager.currentUser!.username}',
+          );
+        } else {
+          _logger.info('Current user not loaded, loading session...');
+          // Load user session from shared preferences
+          bool sessionLoaded = await UserSessionManager.loadSession();
+          _logger.info('Session loaded: $sessionLoaded');
+        }
+
+        if (UserSessionManager.currentUser != null) {
+          final user = UserSessionManager.currentUser!;
+          String displayName = 'User'; // Default fallback
+
+          _logger.info(
+            'User data: username=${user.username}, firstName=${user.firstName}, lastName=${user.lastName}',
+          );
+
+          // Prefer first name if available, otherwise use username
+          if (user.firstName != null && user.firstName!.isNotEmpty) {
+            displayName = user.firstName!;
+            _logger.info('Using firstName: $displayName');
+          } else if (user.username.isNotEmpty) {
+            // If username is in format like "John_Doe", extract first part
+            List<String> nameParts = user.username.split('_');
+            if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
+              displayName = nameParts[0];
+              _logger.info('Using parsed username: $displayName');
+            } else {
+              displayName = user.username;
+              _logger.info('Using full username: $displayName');
+            }
+          }
+
+          _logger.info('Final display name: $displayName');
+
+          if (mounted) {
+            setState(() {
+              _username = displayName;
+            });
+            _logger.info('Updated UI with username: $_username');
+          }
+        } else {
+          _logger.warning('Current user is null after loading session');
+        }
+      } else {
+        _logger.info('No user session found - user not logged in');
+        // Set a more welcoming default message for visitors
+        if (mounted) {
+          setState(() {
+            _username = 'Visitor';
+          });
+        }
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Error loading user session: $e');
+      _logger.severe('Stack trace: $stackTrace');
+      // Keep default "User" username
+    }
   }
 
   Future<void> _loadActivitiesData() async {
@@ -65,7 +172,9 @@ class _HomePageState extends State<HomePage> {
       final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
       final rooms = await DBMuseumActivityManager.getRoomsAsDetailsModels();
 
-      _logger.finest('Loaded ${events.length} events and ${rooms.length} rooms');
+      _logger.finest(
+        'Loaded ${events.length} events and ${rooms.length} rooms',
+      );
       for (final event in events) {
         _logger.finer('Event: ${event.name}');
       }
