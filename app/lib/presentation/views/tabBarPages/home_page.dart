@@ -47,17 +47,17 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadActivitiesData() async {
     try {
-      print('Waiting for database initialization...');
+      _logger.fine('Waiting for database initialization...');
 
       // Wait for database to be fully initialized
       bool dbReady = await main_app.waitForDatabaseInitialization();
 
       if (!dbReady) {
-        print('Database initialization failed');
+        _logger.severe('Database initialization failed');
         return;
       }
 
-      print('Database is ready, loading activities...');
+      _logger.finer('Database is ready, loading activities...');
 
       // Debug: List all available activities
       await DBMuseumActivityManager.debugListAllActivities();
@@ -65,12 +65,12 @@ class _HomePageState extends State<HomePage> {
       final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
       final rooms = await DBMuseumActivityManager.getRoomsAsDetailsModels();
 
-      print('Loaded ${events.length} events and ${rooms.length} rooms');
+      _logger.finest('Loaded ${events.length} events and ${rooms.length} rooms');
       for (final event in events) {
-        print('Event: ${event.name}');
+        _logger.finer('Event: ${event.name}');
       }
       for (final room in rooms) {
-        print('Room: ${room.name}');
+        _logger.finer('Room: ${room.name}');
       }
 
       if (mounted) {
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
       }
     } catch (e) {
       // Handle error - could show a snackbar or log the error
-      print('Error loading activities from database: $e');
+      _logger.severe('Error loading activities from database: $e');
     }
   }
 

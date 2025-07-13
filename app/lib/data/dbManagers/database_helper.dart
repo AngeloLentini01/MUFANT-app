@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:logging/logging.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,6 +11,7 @@ class DatabaseHelper {
   // ULID generation constants
   static const String _ulidAlphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
   static final Random _random = Random();
+  static final Logger _logger = Logger('DatabaseHelper');
 
   // Generate a ULID string
   static String generateUlid() {
@@ -81,7 +83,7 @@ class DatabaseHelper {
 
   // Create all tables in the database
   static Future<void> _createTables(Database db) async {
-    print('DEBUG: Creating tables...');
+    _logger.fine('DEBUG: Creating tables...');
 
     // Create BaseEntity table
     await db.execute('''
@@ -91,7 +93,7 @@ class DatabaseHelper {
         last_update_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     ''');
-    print('DEBUG: BaseEntity table created');
+    _logger.fine('DEBUG: BaseEntity table created');
 
     // Create Details table
     await db.execute('''
@@ -103,7 +105,7 @@ class DatabaseHelper {
         notes TEXT NOT NULL DEFAULT ''
       )
     ''');
-    print('DEBUG: Details table created');
+    _logger.fine('DEBUG: Details table created');
 
     // Create DateTimeRange table
     await db.execute('''
@@ -287,7 +289,7 @@ class DatabaseHelper {
     ''');
 
     // Create MuseumActivity table (flat structure for compatibility)
-    print('DEBUG: Creating MuseumActivity table...');
+    _logger.fine('DEBUG: Creating MuseumActivity table...');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS MuseumActivity (
         id TEXT PRIMARY KEY,
@@ -304,13 +306,13 @@ class DatabaseHelper {
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     ''');
-    print('DEBUG: MuseumActivity table created successfully');
+    _logger.fine('DEBUG: MuseumActivity table created successfully');
 
     // Verify the table was created
     final tables = await db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='table' AND name='MuseumActivity'",
     );
-    print('DEBUG: MuseumActivity table exists: ${tables.isNotEmpty}');
+    _logger.fine('DEBUG: MuseumActivity table exists: ${tables.isNotEmpty}');
 
     // Create MuseumActivityDetails table
     await db.execute('''
@@ -518,18 +520,18 @@ class DatabaseHelper {
   static Future<void> initializeSampleData() async {
     final db = await database;
 
-    print('DEBUG: Checking if sample data exists...');
+    _logger.fine('DEBUG: Checking if sample data exists...');
 
     // Verify MuseumActivity table exists
     final tables = await db.rawQuery(
       "SELECT name FROM sqlite_master WHERE type='table' AND name='MuseumActivity'",
     );
-    print(
+    _logger.warning(
       'DEBUG: MuseumActivity table exists in sample data: ${tables.isNotEmpty}',
     );
 
     // Always clear and reload sample data for debugging
-    print('DEBUG: Clearing all existing data and reloading sample data...');
+    _logger.fine('DEBUG: Clearing all existing data and reloading sample data...');
 
     // Clear all existing data
     await db.delete('MuseumActivity');
@@ -540,7 +542,7 @@ class DatabaseHelper {
     await db.delete('TypeOfMuseumActivity');
     await db.delete('MuseumActivityDetails');
 
-    print('DEBUG: Existing data cleared, inserting fresh sample data...');
+    _logger.fine('DEBUG: Existing data cleared, inserting fresh sample data...');
 
     // Start a transaction with error handling
     await db.transaction((txn) async {
@@ -571,7 +573,7 @@ class DatabaseHelper {
         final museumActivityDetailsId3 = generateUlid();
         final museumActivityDetailsId4 = generateUlid();
 
-        print('DEBUG: Starting sample data transaction...');
+        _logger.fine('DEBUG: Starting sample data transaction...');
 
         // Add supported languages
         await txn.insert('SupportedLanguage', {
@@ -639,7 +641,7 @@ class DatabaseHelper {
           'name': 'Riccardo Valla\'s Library',
           'description': 'Biblioteca specializzata in fantascienza e fantasy',
           'imageUrlOrPath': 'assets/images/library.jpg',
-          'notes': 'MUFANT Museum\nLibrary Room',
+          'notes': '2nd floor\n',
         });
 
         // Add Type Of Museum Activity details
@@ -705,10 +707,10 @@ class DatabaseHelper {
           'active_datetime_range_fk': dateRangeId2,
         });
 
-        print('DEBUG: Starting MuseumActivity insertions...');
+        _logger.fine('DEBUG: Starting MuseumActivity insertions...');
 
         // Add sample museum activities with flat structure
-        print('DEBUG: Inserting Ufo Pop event...');
+        _logger.fine('DEBUG: Inserting Ufo Pop event...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Ufo Pop',
@@ -723,9 +725,9 @@ class DatabaseHelper {
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Ufo Pop event');
+        _logger.fine('DEBUG: Successfully inserted Ufo Pop event');
 
-        print('DEBUG: Inserting Artificial Prophecies event...');
+        _logger.fine('DEBUG: Inserting Artificial Prophecies event...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Artificial Prophecies',
@@ -740,9 +742,9 @@ class DatabaseHelper {
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Artificial Prophecies event');
+        _logger.fine('DEBUG: Successfully inserted Artificial Prophecies event');
 
-        print('DEBUG: Inserting Sailor Moon Anniversary event...');
+        _logger.fine('DEBUG: Inserting Sailor Moon Anniversary event...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Sailor Moon\'s Anniversary',
@@ -758,9 +760,9 @@ class DatabaseHelper {
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Sailor Moon Anniversary event');
+        _logger.fine('DEBUG: Successfully inserted Sailor Moon Anniversary event');
 
-        print('DEBUG: Inserting Library room...');
+        _logger.fine('DEBUG: Inserting Library room...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Riccardo Valla\'s Library',
@@ -771,13 +773,13 @@ class DatabaseHelper {
           'location': 'MUFANT Museum - Library Wing',
           'image_path': 'assets/images/library.jpg',
           'price': 0.0,
-          'notes': 'MUFANT Museum\nLibrary Room',
+          'notes': '2nd floor\n',
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Library room');
+        _logger.fine('DEBUG: Successfully inserted Library room');
 
-        print('DEBUG: Inserting Star Wars room...');
+        _logger.fine('DEBUG: Inserting Star Wars room...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Star Wars',
@@ -788,13 +790,13 @@ class DatabaseHelper {
           'location': 'MUFANT Museum - Star Wars Wing',
           'image_path': 'assets/images/starwars.jpg',
           'price': 5.0,
-          'notes': 'MUFANT Museum\nStar Wars Collection Room',
+          'notes': '2nd floor\n',
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Star Wars room');
+        _logger.fine('DEBUG: Successfully inserted Star Wars room');
 
-        print('DEBUG: Inserting Superheroes room...');
+        _logger.fine('DEBUG: Inserting Superheroes room...');
         await txn.insert('MuseumActivity', {
           'id': generateUlid(),
           'name': 'Superheroes',
@@ -806,22 +808,22 @@ class DatabaseHelper {
           'location': 'MUFANT Museum - Hero Gallery',
           'image_path': 'assets/images/superhero.jpg',
           'price': 8.0,
-          'notes': 'MUFANT Museum\nSuperhero Exhibition Room',
+          'notes': '1st floor\n',
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        print('DEBUG: Successfully inserted Superheroes room');
+        _logger.fine('DEBUG: Successfully inserted Superheroes room');
 
-        print('DEBUG: All MuseumActivity insertions completed successfully');
+        _logger.fine('DEBUG: All MuseumActivity insertions completed successfully');
       } catch (e) {
-        print('DEBUG: Error during transaction: $e');
+        _logger.fine('DEBUG: Error during transaction: $e');
         rethrow;
       }
     });
 
     // Verify data was inserted
     final finalCount = await db.query('MuseumActivity');
-    print(
+    _logger.fine(
       'DEBUG: Sample data insertion completed. Total MuseumActivity records: ${finalCount.length}',
     );
   }

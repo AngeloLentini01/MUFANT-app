@@ -125,7 +125,7 @@ class _EventPageState extends State<EventPage> {
           style: const TextStyle(
             color: Color(0xFFFF7CA3),
             fontWeight: FontWeight.bold,
-            fontSize: 28,
+            fontSize: 16,
             letterSpacing: 1.5,
           ),
         ),
