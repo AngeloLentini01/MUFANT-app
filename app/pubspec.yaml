@@ -48,6 +48,7 @@ dependencies:
   barcode_widget: ^2.0.4
   path_provider: ^2.1.4
   gal: ^2.3.0
+  introduction_screen: ^3.1.17
 
   # Add other dependencies as needed
 
@@ -87,6 +88,7 @@ flutter:
     - assets/images/avatar/
     - assets/images/ticket/
     - assets/images/wallpaper/
+    - assets/images/IntroductionScreen/
     - assets/images/map/museum_map1.jpg
     - assets/images/map/museum_map2.jpg
 
