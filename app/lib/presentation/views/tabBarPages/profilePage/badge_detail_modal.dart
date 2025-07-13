@@ -28,7 +28,7 @@ class BadgeDetailModal extends StatelessWidget {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.5), width: 2),
+          border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -40,7 +40,7 @@ class BadgeDetailModal extends StatelessWidget {
                 onPressed: () => Navigator.of(context).pop(),
                 icon: Icon(
                   Icons.close,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   size: 24,
                 ),
               ),
@@ -59,10 +59,13 @@ class BadgeDetailModal extends StatelessWidget {
                   colors: [kBlackColor, Colors.grey[900]!],
                 ),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withOpacity(0.3), width: 2),
+                border: Border.all(
+                  color: color.withValues(alpha: 0.3),
+                  width: 2,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: color.withOpacity(0.3),
+                    color: color.withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 2,
                   ),
@@ -91,7 +94,7 @@ class BadgeDetailModal extends StatelessWidget {
             Text(
               description,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
                 fontSize: 16,
                 height: 1.5,
               ),
@@ -104,13 +107,13 @@ class BadgeDetailModal extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey[800]?.withOpacity(0.5),
+                color: Colors.grey[800]?.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 'Achieved on: Jan 15, 2024',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14,
                 ),
               ),
