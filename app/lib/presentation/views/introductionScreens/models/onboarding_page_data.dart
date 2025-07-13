@@ -37,8 +37,7 @@ class OnboardingDataProvider {
       imagePath:
           'assets/images/IntroductionScreen/robot_introduction_screen_3.png',
       title: 'The future is in your hands. Join us today.',
-      description:
-          'Be part of the next generation of entertainment and geek culture.',
+      description: '', // Empty description to save space for buttons
     ),
   ];
 }
