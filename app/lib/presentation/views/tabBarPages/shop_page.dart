@@ -90,9 +90,7 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: kBackgroundGradient,
-        ),
+        decoration: const BoxDecoration(gradient: kBackgroundGradient),
         child: Stack(
           children: [
             // Main content with CustomScrollView

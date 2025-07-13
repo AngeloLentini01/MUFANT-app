@@ -23,9 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: kBackgroundGradient,
-        ),
+        decoration: const BoxDecoration(gradient: kBackgroundGradient),
         child: CustomScrollView(
           slivers: [
             SliverPadding(

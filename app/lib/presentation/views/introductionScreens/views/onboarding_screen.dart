@@ -221,11 +221,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 18,
-                    color: Colors.grey[300],
-                  ),
+                  Icon(Icons.person_outline, size: 18, color: Colors.grey[300]),
                   const SizedBox(width: 8),
                   Text(
                     'Continue as Guest',

@@ -78,9 +78,7 @@ class _HomePageState extends State<HomePage> {
         ), // Wrap the home page with Skeletonizer
         child: SafeArea(
           child: Container(
-            decoration: const BoxDecoration(
-              gradient: kBackgroundGradient,
-            ),
+            decoration: const BoxDecoration(gradient: kBackgroundGradient),
             child: CustomScrollView(
               slivers: [
                 AppBarWidget(
