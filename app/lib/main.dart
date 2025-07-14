@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/dbManagers/database_helper.dart';
 import 'package:app/data/dbManagers/data_migration_helper.dart';
 import 'package:app/data/services/user_session_manager.dart';
+import 'package:app/data/services/push_notification_service.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -86,6 +87,9 @@ void main() async {
 
   // Initialize database asynchronously in background
   _initializeDatabaseAsync();
+
+  // Initialize push notification service
+  _initializePushNotifications();
 
   // Start the app immediately without waiting for database
   runApp(const AppPreConfigurator());
@@ -174,6 +178,27 @@ void _initializeDatabaseAsync() async {
     if (!_databaseInitializationCompleter.isCompleted) {
       _databaseInitializationCompleter.complete(false);
     }
+  }
+}
+
+void _initializePushNotifications() async {
+  try {
+    AppLogger.info(_logger, 'Starting push notification initialization...');
+
+    // Initialize the push notification service
+    await PushNotificationService.instance.initialize();
+
+    // Request permission for notifications
+    final hasPermission = await PushNotificationService.instance
+        .requestPermission();
+
+    if (hasPermission) {
+      AppLogger.info(_logger, 'Push notifications initialized successfully');
+    } else {
+      AppLogger.warning(_logger, 'Push notification permission denied');
+    }
+  } catch (e) {
+    AppLogger.error(_logger, 'Failed to initialize push notifications', e);
   }
 }
 
