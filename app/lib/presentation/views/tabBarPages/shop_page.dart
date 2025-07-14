@@ -433,7 +433,11 @@ class _ShopPageState extends State<ShopPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CartConfirmationPage(),
+                      builder: (context) => CartConfirmationPage(
+                        cartItems: cartItems,
+                        totalAmount: totalAmount,
+                        itemList: items,
+                      ),
                     ),
                   );
                 },
