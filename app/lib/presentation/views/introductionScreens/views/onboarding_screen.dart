@@ -156,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 backgroundColor: kPinkColor,
                 foregroundColor: Colors.white,
                 elevation: 8,
-                shadowColor: kPinkColor.withOpacity(0.3),
+                shadowColor: kPinkColor.withValues(alpha: 0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
                 ),
@@ -225,11 +225,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 18,
-                    color: Colors.grey[300],
-                  ),
+                  Icon(Icons.person_outline, size: 18, color: Colors.grey[300]),
                   const SizedBox(width: 8),
                   Text(
                     'Continue as Guest',
