@@ -47,6 +47,12 @@ dependencies:
   barcode: ^2.2.9
   barcode_widget: ^2.0.4
 
+  # Dependencies for notifications management
+  flutter_slidable: ^3.0.0
+  grouped_list: ^5.1.2
+  badges: ^3.1.1
+  flutter_staggered_animations: ^1.1.1
+
   # Add other dependencies as needed
 
 dev_dependencies:
