@@ -24,17 +24,28 @@ class _EventPageState extends State<EventPage> {
 
   Future<void> _loadEventData() async {
     try {
+      AppLogger.info(_logger, 'EventPage: Loading data for event title: "${widget.eventTitle}"');
+      
       Map<String, dynamic>? data;
       if (widget.eventTitle != null) {
+        AppLogger.info(_logger, 'EventPage: Searching for specific event: "${widget.eventTitle}"');
         data = await DBMuseumActivityManager.getActivityByTitle(
           widget.eventTitle!,
         );
       } else {
+        AppLogger.info(_logger, 'EventPage: Loading default Sailor Moon event');
         // Load default Sailor Moon event
         data = await DBMuseumActivityManager.getActivityByTitle(
           '30 ANNI DI SAILOR',
         );
       }
+      
+      if (data != null) {
+        AppLogger.info(_logger, 'EventPage: Successfully loaded event data: "${data['name']}"');
+      } else {
+        AppLogger.warning(_logger, 'EventPage: No event data found for title: "${widget.eventTitle}"');
+      }
+      
       setState(() {
         eventData = data;
         isLoading = false;
@@ -110,11 +121,11 @@ class _EventPageState extends State<EventPage> {
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         title: Text(
-          eventData!['title'] ?? 'Event',
+          eventData!['name'] ?? 'Event',
           style: const TextStyle(
             color: Color(0xFFFF7CA3),
             fontWeight: FontWeight.bold,
-            fontSize: 28,
+            fontSize: 16,
             letterSpacing: 1.5,
           ),
         ),
@@ -184,7 +195,7 @@ class _EventPageState extends State<EventPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${eventData!['start_time'] ?? ''} – ${eventData!['end_time'] ?? ''}',
+                  '${eventData!['start_date'] ?? ''} – ${eventData!['end_date'] ?? ''}',
                   style: const TextStyle(color: Colors.white70, fontSize: 15),
                 ),
                 const SizedBox(height: 16),
@@ -218,7 +229,7 @@ class _EventPageState extends State<EventPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        eventData!['schedule'] ?? 'Schedule TBD',
+                        eventData!['notes'] ?? 'Schedule TBD',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -227,7 +238,7 @@ class _EventPageState extends State<EventPage> {
                 const SizedBox(height: 18),
                 // Extra info
                 Text(
-                  eventData!['additional_info'] ?? '',
+                  eventData!['notes'] ?? '',
                   style: const TextStyle(color: Colors.white70, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),

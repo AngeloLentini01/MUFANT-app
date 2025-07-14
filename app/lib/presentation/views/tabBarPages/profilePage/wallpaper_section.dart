@@ -1,81 +1,43 @@
+import 'package:app/presentation/widgets/scrollViews/wallpaper_carousel.dart';
+import 'package:app/presentation/views/tabBarPages/profilePage/fullscreen_wallpaper_view.dart';
 import 'package:app/presentation/styles/typography/section.dart';
-import 'package:app/presentation/views/tabBarPages/profilePage/wallpaper_thumbnail.dart';
 import 'package:flutter/material.dart';
-
-// Import the lightGreyColor constant
-const lightGreyColor = Color.fromARGB(255, 181, 181, 192);
 
 class WallpaperSection extends StatelessWidget {
   const WallpaperSection({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Lista semplificata di wallpaper con solo l'immagine
+    final wallpapers = [
+      {'image': 'assets/images/wallpaper/wallpaper1.png'},
+      {'image': 'assets/images/wallpaper/wallpaper2.png'},
+      {'image': 'assets/images/wallpaper/wallpaper3.png'},
+      {'image': 'assets/images/wallpaper/wallpaper4.png'},
+      {'image': 'assets/images/wallpaper/wallpaper1.png'},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-          children: [
-            Text('My Wallpapers', style: kSectionTitleTextStyle),
-
-            TextButton(
-              onPressed: () {
-                // TODO: Navigate to all wallpapers
-              },
-
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-
-                children: const [
-                  Text(
-                    'See all',
-
-                    style: TextStyle(color: lightGreyColor, fontSize: 16),
-                  ),
-
-                  SizedBox(width: 4),
-
-                  Icon(
-                    Icons.arrow_forward_ios,
-
-                    color: lightGreyColor,
-
-                    size: 16,
-                  ),
-                ],
-              ),
-            ),
-          ],
+        Text(
+          'My Wallpapers',
+          style: kSectionTitleTextStyle,
         ),
-
         const SizedBox(height: 16),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-          children: [
-            WallpaperThumbnail(
-              imagePath: 'assets/images/wallpaper/wallpaper1.png',
-              wallpaperName: 'Wallpaper 1',
-            ),
-
-            WallpaperThumbnail(
-              imagePath: 'assets/images/wallpaper/wallpaper2.png',
-              wallpaperName: 'Wallpaper 2',
-            ),
-
-            WallpaperThumbnail(
-              imagePath: 'assets/images/wallpaper/wallpaper3.png',
-              wallpaperName: 'Wallpaper 3',
-            ),
-
-            WallpaperThumbnail(
-              imagePath: 'assets/images/wallpaper/wallpaper4.png',
-              wallpaperName: 'Wallpaper 4',
-            ),
-          ],
+        WallpaperCarousel(
+          wallpapers: wallpapers,
+          onWallpaperTap: (imagePath) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FullscreenWallpaperView(
+                  imagePath: imagePath,
+                  wallpaperName: 'Wallpaper',
+                ),
+              ),
+            );
+          },
         ),
       ],
     );

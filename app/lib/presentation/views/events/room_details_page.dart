@@ -3,6 +3,8 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/styles/spacing/section.dart';
 import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
 
@@ -15,8 +17,9 @@ class RoomDetailsPage extends StatefulWidget {
 }
 
 class _RoomDetailsPageState extends State<RoomDetailsPage> {
-  static const backText = Color(0x9A545165);
-  static const lightBlack = Color(0x56000000);
+  static const lightBlack = Color(
+    0x80000000,
+  ); // Increased opacity for better text readability
   final Logger _logger = AppLogger.getLogger('RoomDetailsPage');
 
   Map<String, dynamic>? roomData;
@@ -30,9 +33,27 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
 
   Future<void> _loadRoomData() async {
     try {
+      AppLogger.info(
+        _logger,
+        'RoomDetailsPage: Loading data for room title: "${widget.title}"',
+      );
+
       final data = await DBMuseumActivityManager.getActivityByTitle(
         widget.title,
       );
+
+      if (data != null) {
+        AppLogger.info(
+          _logger,
+          'RoomDetailsPage: Successfully loaded room data: "${data['name']}"',
+        );
+      } else {
+        AppLogger.warning(
+          _logger,
+          'RoomDetailsPage: No room data found for title: "${widget.title}"',
+        );
+      }
+
       setState(() {
         roomData = data;
         isLoading = false;
@@ -50,97 +71,269 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
     }
   }
 
+  // Helper methods for room-specific content
+  String _getMapImagePath() {
+    final roomName = roomData?['name']?.toLowerCase() ?? '';
+    if (roomName.contains('star wars')) {
+      return "assets/images/map/museum_map2.jpg";
+    } else if (roomName.contains('library')) {
+      return "assets/images/map/museum_map1.jpg";
+    } else if (roomName.contains('superhero')) {
+      return "assets/images/map/museum_map2.jpg";
+    }
+    return "assets/images/library.jpg"; // Default fallback
+  }
+
+  String _getWelcomeMessage() {
+    final roomName = roomData?['name']?.toLowerCase() ?? '';
+    if (roomName.contains('star wars')) {
+      return "Welcome to a galaxy far, far away!";
+    } else if (roomName.contains('library')) {
+      return "Welcome to the Literary Universe!";
+    } else if (roomName.contains('superhero')) {
+      return "Welcome to the Hall of Heroes!";
+    }
+    return "Welcome to ${roomData?['name'] ?? 'this amazing room'}!";
+  }
+
+  String _getDetailedDescription() {
+    final roomName = roomData?['name']?.toLowerCase() ?? '';
+    if (roomName.contains('star wars')) {
+      return "This room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basile Net, and as a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\n\nA journey through myth, collecting, and nostalgic wonder.";
+    } else if (roomName.contains('library')) {
+      return "Step into Riccardo Valla's extraordinary library, a specialized collection dedicated to science fiction and fantasy literature. This room houses rare editions, first prints, and manuscripts from the greatest authors of speculative fiction. From Asimov to Le Guin, from Tolkien to Philip K. Dick, explore the literary foundations that shaped our imagination of the future and fantastical worlds.";
+    } else if (roomName.contains('superhero')) {
+      return "Enter the realm of legendary superheroes! This exhibition celebrates the greatest champions of comic books and cinema. From the Golden Age of comics to modern cinematic universes, discover original artwork, rare comic issues, movie props, and costumes from your favorite heroes. Marvel at the evolution of superhero storytelling and the cultural impact these characters have had on our society.";
+    }
+    return roomData?['description'] ??
+        'Explore this fascinating exhibition and discover its unique treasures and stories.';
+  }
+
+  String _getBackgroundImagePath() {
+    final roomName = roomData?['name']?.toLowerCase() ?? '';
+    if (roomName.contains('star wars')) {
+      return "assets/images/starwars.jpg";
+    } else if (roomName.contains('library')) {
+      return "assets/images/library.jpg";
+    } else if (roomName.contains('superhero')) {
+      return "assets/images/superhero.jpg";
+    }
+    return roomData?['image_path'] ??
+        "assets/images/library.jpg"; // Default fallback
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.title,
-            style: TextStyle(
-              color: kPinkColor,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
+    try {
+      if (isLoading) {
+        return Scaffold(
+          backgroundColor: Color(0xFF1a1a2e),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-          ),
-          centerTitle: true,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (roomData == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            widget.title,
-            style: TextStyle(
-              color: kPinkColor,
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.5,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: const Center(child: Text('Room not found')),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          roomData!['title'],
-          style: TextStyle(
-            color: kPinkColor,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.5,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                roomData!['image_path'] ??
-                    "assets/images/starwarsbackground.png",
-                fit: BoxFit.cover,
+            title: Text(
+              widget.title.toUpperCase(),
+              style: TextStyle(
+                color: kPinkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2.0,
               ),
-            ), //background image
-            Positioned.fill(child: Container(color: lightBlack)),
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Image.asset(
-                      roomData!['image_path'] ??
-                          "assets/images/starwarsmap.jpg",
-                      fit: BoxFit.cover,
-                    ),
+            ),
+            centerTitle: true,
+          ),
+          body: const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          ),
+        );
+      }
+
+      if (roomData == null) {
+        return Scaffold(
+          backgroundColor: Color(0xFF1a1a2e),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(
+              widget.title.toUpperCase(),
+              style: TextStyle(
+                color: kPinkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2.0,
+              ),
+            ),
+            centerTitle: true,
+          ),
+          body: const Center(
+            child: Text(
+              'Room not found',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+        );
+      }
+
+      return Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Color(0x80000000), // Semi-transparent black background
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              (roomData!['name'] ?? widget.title),
+              style: TextStyle(
+                color: kPinkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2.0,
+              ),
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: SizedBox(
+          width: double.infinity,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
+                  child: Image.asset(
+                    _getBackgroundImagePath(),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Color(0xFF1a1a2e), // Dark fallback color
+                      );
+                    },
                   ),
-                  kSpaceBetweenSections,
-                  Center(
-                    child: Wrap(
-                      children: [
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                ),
+              ), //background image
+              Positioned.fill(child: Container(color: lightBlack)),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).padding.top + kToolbarHeight,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Map/Floor plan image
+                      Container(
+                        height: 300,
+                        margin: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            _getMapImagePath(),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: double.infinity,
+                                height: 300,
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF2a2a3e),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.map_outlined,
+                                        size: 48,
+                                        color: kPinkColor,
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Room Map',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+
+                      // "You are here" indicator (if needed)
+                      /*                   Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              border: Border.all(
-                                color: kPinkColor, // Border color
-                                width: 1, // Border width
+                              color: kPinkColor,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "You are here",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
                               ),
-                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+*/
+                      kSpaceBetweenSections,
+
+                      // Audio guide button
+                      Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            // TODO: Implement audio guide functionality
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: kPinkColor, width: 2),
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -148,49 +341,119 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                 Icon(
                                   Icons.volume_up_outlined,
                                   color: kPinkColor,
-                                  size: 30,
+                                  size: 24,
                                 ),
-                                SizedBox(width: 8),
-                                const Text(
-                                  "listen to the text-to-spech",
-                                  style: TextStyle(fontSize: 20),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Listen to the audioguide",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  kSpaceBetweenSections,
-                  Padding(
-                    padding: EdgeInsets.all(25),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: backText,
-                        borderRadius: BorderRadius.circular(18),
                       ),
-                      child: Padding(
-                        padding: EdgeInsetsGeometry.fromLTRB(5, 10, 5, 10),
-                        child: Text(
-                          roomData!['description'] ??
-                              'No description available',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          textAlign: TextAlign.center,
+
+                      kSpaceBetweenSections,
+
+                      // Welcome message and description
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _getWelcomeMessage(),
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 16),
+                            Container(
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Color(
+                                  0x88000000,
+                                ), // Semi-transparent black
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Text(
+                                _getDetailedDescription(),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  height: 1.6,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
-    );
+        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+      );
+    } catch (e) {
+      AppLogger.error(_logger, 'Error building room details page', e);
+      // Return a safe fallback UI
+      return Scaffold(
+        backgroundColor: Color(0xFF1a1a2e),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            "ROOM DETAILS",
+            style: TextStyle(
+              color: kPinkColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 2.0,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: kPinkColor),
+              SizedBox(height: 16),
+              Text(
+                'Unable to load room details',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Please try again later',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+      );
+    }
   }
 }

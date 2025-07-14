@@ -1,4 +1,4 @@
-import 'package:app/presentation/app_main.dart';
+import 'package:app/presentation/views/introductionScreens/views/onboarding_screen.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 
@@ -6,10 +6,10 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
@@ -33,13 +33,12 @@ class _SplashScreenState extends State<SplashScreen>
       if (mounted) _controller.forward();
     });
 
-    // Naviga a AppMain() al termine del fade-out
+    // Naviga all'OnboardingScreen al termine del fade-out
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AppMain()),
-          //TODO: modificare con LoginPage() quando sarà implementata
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
         );
       }
     });

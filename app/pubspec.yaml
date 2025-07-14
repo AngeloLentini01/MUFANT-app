@@ -46,6 +46,9 @@ dependencies:
 
   barcode: ^2.2.9
   barcode_widget: ^2.0.4
+  path_provider: ^2.1.4
+  gal: ^2.3.0
+  introduction_screen: ^3.1.17
 
   # Dependencies for notifications management
   flutter_slidable: ^3.0.0
@@ -91,6 +94,7 @@ flutter:
     - assets/images/avatar/
     - assets/images/ticket/
     - assets/images/wallpaper/
+    - assets/images/IntroductionScreen/
     - assets/images/map/museum_map1.jpg
     - assets/images/map/museum_map2.jpg
 
