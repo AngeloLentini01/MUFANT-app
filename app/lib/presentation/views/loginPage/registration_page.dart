@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+  final bool shouldNavigateToMain;
+
+  const RegistrationPage({super.key, this.shouldNavigateToMain = true});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -102,10 +104,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close dialog
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              );
+              if (widget.shouldNavigateToMain) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              } else {
+                // Return to previous screen with success result
+                Navigator.pop(context, true);
+              }
             },
             child: const Text('Sign In'),
           ),
@@ -453,11 +460,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
+                              if (widget.shouldNavigateToMain) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginPage(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginPage(
+                                      shouldNavigateToMain: false,
+                                    ),
+                                  ),
+                                );
+                              }
                             },
                             child: Text(
                               'Sign in',

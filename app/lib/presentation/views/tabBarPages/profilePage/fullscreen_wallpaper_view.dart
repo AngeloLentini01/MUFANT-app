@@ -2,7 +2,6 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';
-import 'dart:typed_data';
 
 class FullscreenWallpaperView extends StatefulWidget {
   const FullscreenWallpaperView({
