@@ -1,5 +1,5 @@
 import 'package:app/presentation/styles/colors/generic.dart';
-import 'package:app/presentation/app_main.dart';
+import 'package:app/presentation/views/splashPage/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,6 +11,8 @@ class AppPreConfigurator extends StatelessWidget {
     return MaterialApp(
       title: 'Mufant',
       debugShowCheckedModeBanner: false,
+      // Enable proper navigation history
+      navigatorKey: GlobalKey<NavigatorState>(),
       theme: ThemeData(
         textTheme: GoogleFonts.exoTextTheme(ThemeData.dark().textTheme),
         scaffoldBackgroundColor: kBlackColor,
@@ -23,7 +25,7 @@ class AppPreConfigurator extends StatelessWidget {
           secondary: kPinkColor,
         ),
       ),
-      home: const AppMain(),
+      home: const SplashScreen(),
     );
   }
 }
