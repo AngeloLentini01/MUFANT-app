@@ -81,7 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const SizedBox(height: 40),
               // Centered image from assets/images/IntroductionScreen
-              Container(
+              SizedBox(
                 height: 280,
                 width: 280,
                 child: Image.asset(pageData.imagePath, fit: BoxFit.contain),
@@ -156,7 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 backgroundColor: kPinkColor,
                 foregroundColor: Colors.white,
                 elevation: 8,
-                shadowColor: kPinkColor.withOpacity(0.3),
+                shadowColor: kPinkColor.withValues(alpha: 0.3),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28),
                 ),
