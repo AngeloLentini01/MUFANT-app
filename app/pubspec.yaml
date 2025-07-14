@@ -89,6 +89,7 @@ flutter:
   # Add assets
   assets:
     - assets/images/
+    - assets/images/badge/
     - assets/images/locandine/
     - assets/icons/login/
     - assets/images/avatar/
