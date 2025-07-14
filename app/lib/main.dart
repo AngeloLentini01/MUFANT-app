@@ -166,7 +166,11 @@ void _initializeDatabaseAsync() async {
       await BadgeService.instance.initialize();
       AppLogger.info(_logger, 'Badge service initialized');
     } catch (badgeError) {
-      AppLogger.error(_logger, 'Failed to initialize badge service', badgeError);
+      AppLogger.error(
+        _logger,
+        'Failed to initialize badge service',
+        badgeError,
+      );
     }
 
     // Mark database as ready

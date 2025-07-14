@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 
 class Badge extends StatelessWidget {
   const Badge({
-    super.key, 
-    required this.color, 
-    this.icon, 
+    super.key,
+    required this.color,
+    this.icon,
     this.imagePath,
     this.isEarned = false,
-    this.onTap
+    this.onTap,
   });
 
   final Color color;
@@ -28,7 +28,7 @@ class Badge extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isEarned 
+            colors: isEarned
                 ? [kBlackColor, Colors.grey[900]!]
                 : [Colors.grey[800]!, Colors.grey[600]!],
           ),
@@ -41,9 +41,7 @@ class Badge extends StatelessWidget {
         child: Stack(
           children: [
             // Main badge content
-            Center(
-              child: _buildBadgeContent(),
-            ),
+            Center(child: _buildBadgeContent()),
             // Lock overlay for unearned badges
             if (!isEarned)
               Container(
@@ -52,11 +50,7 @@ class Badge extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.lock,
-                    color: Colors.grey,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.lock, color: Colors.grey, size: 24),
                 ),
               ),
           ],

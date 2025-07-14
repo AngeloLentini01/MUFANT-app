@@ -7,7 +7,7 @@ import 'dart:convert';
 class BadgeService extends ChangeNotifier {
   static BadgeService? _instance;
   static BadgeService get instance => _instance ??= BadgeService._();
-  
+
   BadgeService._();
 
   List<BadgeData> _earnedBadges = [];
@@ -28,7 +28,9 @@ class BadgeService extends ChangeNotifier {
       await _loadEarnedBadges();
       _isInitialized = true;
       notifyListeners();
-      debugPrint('✅ Badge service initialized with ${_earnedBadges.length} earned badges');
+      debugPrint(
+        '✅ Badge service initialized with ${_earnedBadges.length} earned badges',
+      );
     } catch (e) {
       debugPrint('❌ Error initializing badge service: $e');
     }
@@ -49,17 +51,20 @@ class BadgeService extends ChangeNotifier {
       }
 
       // Create the earned badge
-      final earnedBadge = BadgeDataProvider.earnBadge(type, achievedDate: achievedDate);
-      
+      final earnedBadge = BadgeDataProvider.earnBadge(
+        type,
+        achievedDate: achievedDate,
+      );
+
       // Add to earned badges list
       _earnedBadges.add(earnedBadge);
-      
+
       // Save to persistent storage
       await _saveEarnedBadges();
-      
+
       // Notify listeners
       notifyListeners();
-      
+
       debugPrint('🎉 Badge earned: ${earnedBadge.title}');
       return true;
     } catch (e) {
@@ -73,7 +78,7 @@ class BadgeService extends ChangeNotifier {
     final result = BadgeDataProvider.badges.map((badge) {
       final type = _getBadgeType(badge);
       final isEarned = isBadgeEarned(type);
-      
+
       if (isEarned) {
         final earnedBadge = _earnedBadges.firstWhere(
           (earned) => _getBadgeType(earned) == type,
@@ -101,14 +106,16 @@ class BadgeService extends ChangeNotifier {
         );
       }
     }).toList();
-    
+
     // Debug output
     debugPrint('🎯 BadgeService: Returning ${result.length} badges');
     for (int i = 0; i < result.length; i++) {
       final badge = result[i];
-      debugPrint('  Badge $i: ${badge.title}, imagePath: ${badge.imagePath}, earned: ${badge.isEarned}');
+      debugPrint(
+        '  Badge $i: ${badge.title}, imagePath: ${badge.imagePath}, earned: ${badge.isEarned}',
+      );
     }
-    
+
     return result;
   }
 
@@ -154,10 +161,12 @@ class BadgeService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final badgesJson = prefs.getString('earned_badges');
-      
+
       if (badgesJson != null) {
         final List<dynamic> badgesList = json.decode(badgesJson);
-        _earnedBadges = badgesList.map((badgeData) => _fromJson(badgeData)).toList();
+        _earnedBadges = badgesList
+            .map((badgeData) => _fromJson(badgeData))
+            .toList();
       }
     } catch (e) {
       debugPrint('❌ Error loading earned badges: $e');
@@ -169,7 +178,9 @@ class BadgeService extends ChangeNotifier {
   Future<void> _saveEarnedBadges() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final badgesJson = json.encode(_earnedBadges.map((badge) => _toJson(badge)).toList());
+      final badgesJson = json.encode(
+        _earnedBadges.map((badge) => _toJson(badge)).toList(),
+      );
       await prefs.setString('earned_badges', badgesJson);
     } catch (e) {
       debugPrint('❌ Error saving earned badges: $e');
@@ -195,7 +206,7 @@ class BadgeService extends ChangeNotifier {
       description: json['description'],
       imagePath: json['imagePath'],
       color: Color(json['color']),
-      achievedDate: json['achievedDate'] != null 
+      achievedDate: json['achievedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['achievedDate'])
           : null,
       isEarned: json['isEarned'] ?? false,
@@ -205,9 +216,11 @@ class BadgeService extends ChangeNotifier {
   /// Get badge type from badge data (based on title)
   BadgeType _getBadgeType(BadgeData badge) {
     if (badge.title.contains('Space Pioneer')) return BadgeType.spacePioneer;
-    if (badge.title.contains('Galactic Speaker')) return BadgeType.galacticSpeaker;
+    if (badge.title.contains('Galactic Speaker'))
+      return BadgeType.galacticSpeaker;
     if (badge.title.contains('Time Voyager')) return BadgeType.timeVoyager;
-    if (badge.title.contains('Identity Shifter')) return BadgeType.identityShifter;
+    if (badge.title.contains('Identity Shifter'))
+      return BadgeType.identityShifter;
     throw Exception('Unknown badge type: ${badge.title}');
   }
 

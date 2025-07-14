@@ -95,9 +95,4 @@ class BadgeDataProvider {
 }
 
 // Enum for badge types to make badge management easier
-enum BadgeType {
-  spacePioneer,
-  galacticSpeaker,
-  timeVoyager,
-  identityShifter,
-}
+enum BadgeType { spacePioneer, galacticSpeaker, timeVoyager, identityShifter }

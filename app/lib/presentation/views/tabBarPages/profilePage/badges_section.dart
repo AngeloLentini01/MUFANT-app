@@ -68,10 +68,22 @@ class _BadgesSectionState extends State<BadgesSection> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _buildTestButton('🚀 Space', () => _badgeService.earnSpacePioneerBadge()),
-            _buildTestButton('👽 Speaker', () => _badgeService.earnGalacticSpeakerBadge()),
-            _buildTestButton('⏳ Time', () => _badgeService.earnTimeVoyagerBadge()),
-            _buildTestButton('🧬 Identity', () => _badgeService.earnIdentityShifterBadge()),
+            _buildTestButton(
+              '🚀 Space',
+              () => _badgeService.earnSpacePioneerBadge(),
+            ),
+            _buildTestButton(
+              '👽 Speaker',
+              () => _badgeService.earnGalacticSpeakerBadge(),
+            ),
+            _buildTestButton(
+              '⏳ Time',
+              () => _badgeService.earnTimeVoyagerBadge(),
+            ),
+            _buildTestButton(
+              '🧬 Identity',
+              () => _badgeService.earnIdentityShifterBadge(),
+            ),
             _buildTestButton('🔄 Reset', () => _badgeService.resetAllBadges()),
           ],
         ),
@@ -90,10 +102,7 @@ class _BadgesSectionState extends State<BadgesSection> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           minimumSize: Size.zero,
         ),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 10),
-        ),
+        child: Text(label, style: const TextStyle(fontSize: 10)),
       ),
     );
   }
@@ -107,9 +116,7 @@ class _BadgesSectionState extends State<BadgesSection> {
         children: [
           Text('My Badges', style: kSectionTitleTextStyle),
           const SizedBox(height: 16),
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
+          const Center(child: CircularProgressIndicator()),
         ],
       );
     }
@@ -158,7 +165,7 @@ class _BadgesSectionState extends State<BadgesSection> {
               .toList(),
         ),
         // Show test buttons in debug mode
-        if (const bool.fromEnvironment('dart.vm.product') == false) 
+        if (const bool.fromEnvironment('dart.vm.product') == false)
           _buildBadgeTestButtons(),
       ],
     );
