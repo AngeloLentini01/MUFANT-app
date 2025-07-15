@@ -35,7 +35,10 @@ class BadgeDetailModal extends StatelessWidget {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+            width: 1,
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -47,7 +50,7 @@ class BadgeDetailModal extends StatelessWidget {
                 onTap: () => Navigator.of(context).pop(),
                 child: Icon(
                   Icons.close,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   size: 24,
                 ),
               ),
@@ -69,13 +72,15 @@ class BadgeDetailModal extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isEarned ? color.withOpacity(0.8) : Colors.grey[600]!,
+                  color: isEarned
+                      ? color.withValues(alpha: 0.8)
+                      : Colors.grey[600]!,
                   width: 3,
                 ),
                 boxShadow: isEarned
                     ? [
                         BoxShadow(
-                          color: color.withOpacity(0.3),
+                          color: color.withValues(alpha: 0.3),
                           blurRadius: 20,
                           spreadRadius: 2,
                         ),
@@ -90,7 +95,7 @@ class BadgeDetailModal extends StatelessWidget {
                   if (!isEarned)
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
+                        color: Colors.black.withValues(alpha: 0.7),
                         borderRadius: BorderRadius.circular(17),
                       ),
                       child: const Center(
@@ -126,7 +131,7 @@ class BadgeDetailModal extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.2),
+                      color: Colors.green.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.green, width: 1),
                     ),
@@ -152,9 +157,9 @@ class BadgeDetailModal extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withOpacity(0.3)),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   'Achieved on ${DateFormat('MMM dd, yyyy').format(achievedDate!)}',
@@ -184,9 +189,11 @@ class BadgeDetailModal extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                  border: Border.all(
+                    color: Colors.orange.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   children: [

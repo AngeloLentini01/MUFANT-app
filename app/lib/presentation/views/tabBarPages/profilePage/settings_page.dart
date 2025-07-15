@@ -133,10 +133,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
-                          color: Colors.grey[850]?.withOpacity(0.7),
+                          color: Colors.grey[850]?.withValues(alpha: 0.7),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: Colors.grey[700]!.withOpacity(0.3),
+                            color: Colors.grey[700]!.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -153,7 +153,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   Container(
                                     padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      color: kPinkColor.withOpacity(0.1),
+                                      color: kPinkColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Icon(
@@ -203,7 +203,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                   activeTrackColor: kPinkColor,
                                   inactiveTrackColor: Colors.grey[800],
                                   thumbColor: kPinkColor,
-                                  overlayColor: kPinkColor.withOpacity(0.2),
+                                  overlayColor: kPinkColor.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   trackHeight: 4,
                                   thumbShape: const RoundSliderThumbShape(
                                     enabledThumbRadius: 10,
@@ -359,9 +361,12 @@ class _SettingsPageState extends State<SettingsPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[850]?.withOpacity(0.7),
+        color: Colors.grey[850]?.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[700]!.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: Colors.grey[700]!.withValues(alpha: 0.3),
+          width: 1,
+        ),
       ),
       child: ListTile(
         onTap: onTap,
@@ -369,7 +374,7 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: kPinkColor.withOpacity(0.1),
+            color: kPinkColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: kPinkColor, size: 24),
@@ -444,10 +449,10 @@ class _SettingsPageState extends State<SettingsPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: kPinkColor.withOpacity(0.1),
+                  color: kPinkColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: kPinkColor.withOpacity(0.3),
+                    color: kPinkColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),

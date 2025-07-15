@@ -9,7 +9,7 @@ void main() async {
   // Configure logging to display in console
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: ${record.message}');
+    _logger.info('${record.level.name}: ${record.time}: ${record.message}');
   });
 
   _logger.info('=== MUFANT Badge System Test ===\n');

@@ -94,7 +94,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               colors: [kBlackColor, Colors.grey[900]!],
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.red.withOpacity(0.3), width: 1),
+            border: Border.all(
+              color: Colors.red.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -156,7 +159,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               colors: [kBlackColor, Colors.grey[900]!],
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: kPinkColor.withOpacity(0.3), width: 1),
+            border: Border.all(
+              color: kPinkColor.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
