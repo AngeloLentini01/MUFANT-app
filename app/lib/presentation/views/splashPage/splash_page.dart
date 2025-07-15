@@ -1,5 +1,7 @@
 import 'package:app/presentation/views/introductionScreens/views/onboarding_screen.dart';
+import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:app/data/services/user_session_manager.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -36,10 +38,7 @@ class SplashScreenState extends State<SplashScreen>
     // Naviga all'OnboardingScreen al termine del fade-out
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-        );
+        _checkAuthenticationAndNavigate();
       }
     });
   }
@@ -48,6 +47,39 @@ class SplashScreenState extends State<SplashScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  /// Check if user is logged in and navigate accordingly
+  Future<void> _checkAuthenticationAndNavigate() async {
+    if (!mounted) return;
+
+    try {
+      // Check if user is logged in
+      final isLoggedIn = await UserSessionManager.isLoggedIn();
+
+      if (!mounted) return;
+
+      if (isLoggedIn) {
+        // User is logged in, go directly to main app
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AppMain()),
+        );
+      } else {
+        // User is not logged in, show onboarding screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+        );
+      }
+    } catch (e) {
+      // If there's an error checking authentication, default to onboarding
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+      );
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -13,6 +14,7 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  final Logger _logger = Logger('RegistrationPage');
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
   bool _isLoading = false;
@@ -125,30 +127,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF2B2A33),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () {
+              _logger.fine('AppBar back button pressed');
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    Navigator.maybePop(context);
-                  },
-                ),
-              ),
-            ),
             // Main content
             Center(
               child: SingleChildScrollView(
@@ -460,14 +463,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           GestureDetector(
                             onTap: () {
+                              _logger.fine(
+                                'Sign in button pressed from registration page',
+                              );
                               if (widget.shouldNavigateToMain) {
-                                Navigator.of(context).pushReplacement(
+                                Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const LoginPage(),
                                   ),
                                 );
                               } else {
-                                Navigator.of(context).pushReplacement(
+                                Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const LoginPage(
                                       shouldNavigateToMain: false,
