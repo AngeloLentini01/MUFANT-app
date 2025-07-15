@@ -461,14 +461,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           GestureDetector(
                             onTap: () {
+                              print('Sign in button pressed from registration page');
                               if (widget.shouldNavigateToMain) {
-                                Navigator.of(context).pushReplacement(
+                                Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const LoginPage(),
                                   ),
                                 );
                               } else {
-                                Navigator.of(context).pushReplacement(
+                                Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => const LoginPage(
                                       shouldNavigateToMain: false,
