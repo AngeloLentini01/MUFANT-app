@@ -2,6 +2,7 @@ import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:logging/logging.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -13,6 +14,7 @@ class RegistrationPage extends StatefulWidget {
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
+  final Logger _logger = Logger('RegistrationPage');
   bool _obscurePassword = true;
   bool _obscureRepeatPassword = true;
   bool _isLoading = false;
@@ -141,7 +143,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               size: 20,
             ),
             onPressed: () {
-              print('AppBar back button pressed');
+              _logger.fine('AppBar back button pressed');
               Navigator.pop(context);
             },
           ),
@@ -461,7 +463,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              print(
+                              _logger.fine(
                                 'Sign in button pressed from registration page',
                               );
                               if (widget.shouldNavigateToMain) {

@@ -5,6 +5,7 @@ import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
+import 'package:logging/logging.dart';
 
 class LoginPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -111,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
               size: 20,
             ),
             onPressed: () {
-              print('LoginPage back button pressed');
+              Logger('LoginPage').fine('Back button pressed');
               Navigator.pop(context);
             },
           ),
