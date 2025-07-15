@@ -1,6 +1,8 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/views/introductionScreens/models/onboarding_page_data.dart';
 import 'package:app/presentation/app_main.dart';
+import 'package:app/presentation/views/loginPage/login_page.dart';
+import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
@@ -13,8 +15,11 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
   int _currentPage = 0;
+  final GlobalKey<IntroductionScreenState> _introKey =
+      GlobalKey<IntroductionScreenState>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +35,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: Stack(
           children: [
             IntroductionScreen(
+              key: _introKey,
               pages: _buildPages(context),
               onDone: () => _onFinish(context),
-              onSkip: () => _onFinish(context),
+              onSkip: () => _skipToLastPage(),
               onChange: (page) => setState(() => _currentPage = page),
               showSkipButton: _currentPage < 2, // Show normally on pages 1-2
               showNextButton: _currentPage < 2, // Show normally on pages 1-2
@@ -41,7 +47,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               nextFlex: 0,
               skip: Text(
                 'Skip',
-                style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: kPinkColor,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               next: Icon(Icons.arrow_forward, color: kPinkColor),
               curve: Curves.easeInOut,
@@ -60,7 +69,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             // Absolutely positioned dots centered horizontally and vertically aligned with Skip/arrow
             Positioned(
-              bottom: 40, // Adjust to match Skip text and arrow vertical position
+              bottom:
+                  40, // Adjust to match Skip text and arrow vertical position
               left: 0,
               right: 0,
               child: Center(
@@ -68,7 +78,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(3, (index) {
                     bool isActive = index == _currentPage;
-                    return Container(
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
                       margin: const EdgeInsets.symmetric(horizontal: 6),
                       width: isActive ? 22.0 : 10.0,
                       height: 10.0,
@@ -162,15 +174,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             height: 52,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: Navigate to RegistrationPage() after RegistrationPage is implemented
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      'Registration page not yet implemented',
-                    ),
-                    backgroundColor: kPinkColor,
-                    behavior: SnackBarBehavior.floating,
-                  ),
+                // Navigate to RegistrationPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegistrationPage()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -194,13 +201,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           // "Already have an account? Sign in" text
           TextButton(
             onPressed: () {
-              // TODO: Navigate to LoginPage() after LoginPage is implemented
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Login page not yet implemented'),
-                  backgroundColor: kPinkColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
+              // Navigate to LoginPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
             child: RichText(
@@ -222,7 +226,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 12),
+
+          // "or" text only
+          Text(
+            'or',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 12),
 
           // Continue as Guest button
           SizedBox(
@@ -246,11 +264,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 18,
-                    color: Colors.grey[300],
-                  ),
+                  Icon(Icons.person_outline, size: 18, color: Colors.grey[300]),
                   const SizedBox(width: 8),
                   Text(
                     'Continue as Guest',
@@ -267,6 +281,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ],
       ),
     );
+  }
+
+  /// Skip to the last introduction screen page
+  void _skipToLastPage() {
+    _introKey.currentState?.animateScroll(2);
   }
 
   /// Navigate to main app with tab bar when onboarding is completed

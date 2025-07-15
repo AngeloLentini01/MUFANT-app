@@ -51,9 +51,13 @@ class SplashScreenState extends State<SplashScreen>
 
   /// Check if user is logged in and navigate accordingly
   Future<void> _checkAuthenticationAndNavigate() async {
+    if (!mounted) return;
+
     try {
       // Check if user is logged in
       final isLoggedIn = await UserSessionManager.isLoggedIn();
+
+      if (!mounted) return;
 
       if (isLoggedIn) {
         // User is logged in, go directly to main app
@@ -70,6 +74,7 @@ class SplashScreenState extends State<SplashScreen>
       }
     } catch (e) {
       // If there's an error checking authentication, default to onboarding
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const OnboardingScreen()),
