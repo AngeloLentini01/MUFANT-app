@@ -45,7 +45,7 @@ class CartSummary extends StatelessWidget {
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
                   Text(
-                    '€${totalAmount.toStringAsFixed(2)}',
+                    '€${totalAmount.toStringAsFixed(2)}'.replaceAll('.00', ''),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,

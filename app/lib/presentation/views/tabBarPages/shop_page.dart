@@ -16,6 +16,7 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
+  // Removed PageController
   static final Logger _logger = Logger('ShopPage');
   static const int maxAllowedTickets = 1000;
   int selectedTabIndex = 0;
@@ -474,20 +475,23 @@ class _ShopPageState extends State<ShopPage> {
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: ShopCard(
-                          item: filteredItems[index],
-                          cartQuantity: cartItems[filteredItems[index].id] ?? 0,
-                          onAddToCart: () =>
-                              _addToCart(filteredItems[index].id),
-                          onRemoveFromCart: () =>
-                              _removeFromCart(filteredItems[index].id),
-                          showDeleteButton:
-                              (cartItems[filteredItems[index].id] ?? 0) > 0,
-                          onDelete: () =>
-                              _removeAllOfItem(filteredItems[index].id),
-                          onQuantityEdit: (newQuantity) => _setQuantity(
-                            filteredItems[index].id,
-                            newQuantity,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 176), // Set to the height of the biggest card
+                          child: ShopCard(
+                            item: filteredItems[index],
+                            cartQuantity: cartItems[filteredItems[index].id] ?? 0,
+                            onAddToCart: () =>
+                                _addToCart(filteredItems[index].id),
+                            onRemoveFromCart: () =>
+                                _removeFromCart(filteredItems[index].id),
+                            showDeleteButton:
+                                (cartItems[filteredItems[index].id] ?? 0) > 0,
+                            onDelete: () =>
+                                _removeAllOfItem(filteredItems[index].id),
+                            onQuantityEdit: (newQuantity) => _setQuantity(
+                              filteredItems[index].id,
+                              newQuantity,
+                            ),
                           ),
                         ),
                       );
@@ -543,36 +547,98 @@ class _ShopPageState extends State<ShopPage> {
   Widget _buildCategoryTabs() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Row(
-        children: categories.asMap().entries.map((entry) {
-          final index = entry.key;
-          final category = entry.value;
-          final isSelected = selectedTabIndex == index;
-
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: GestureDetector(
-                onTap: () => setState(() => selectedTabIndex = index),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? kPinkColor : Colors.grey[800],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyle(
-                      color: isSelected ? Colors.black : Colors.white,
-                      fontWeight: FontWeight.bold,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final tabCount = categories.length;
+          final tabWidth = (constraints.maxWidth - 8 * tabCount) / tabCount;
+          final highlightCenter = selectedTabIndex * (tabWidth + 8) + tabWidth / 2 + 4;
+          return SizedBox(
+            height: 48,
+            child: Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                // Animated highlight background (selected tab)
+                AnimatedAlign(
+                  alignment: Alignment(-1.0 + 2.0 * selectedTabIndex / (tabCount - 1), 0),
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                  child: Container(
+                    width: tabWidth,
+                    height: 40,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: kPinkColor,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
+                Row(
+                  children: categories.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final category = entry.value;
+                    final isSelected = selectedTabIndex == index;
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedTabIndex = index;
+                            });
+                          },
+                          child: Container(
+                            height: 40,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: isSelected ? Colors.transparent : Colors.grey[800],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: LayoutBuilder(
+                              builder: (context, tabConstraints) {
+                                final tabOffset = index * (tabWidth + 8);
+                                // Calculate highlight position relative to this tab
+                                final highlightLeft = (highlightCenter - tabOffset - tabWidth / 2).clamp(0.0, tabWidth);
+                                final highlightWidth = tabWidth;
+                                if (isSelected) {
+                                  return CustomPaint(
+                                    painter: _TabHighlightTextPainter(
+                                      text: category,
+                                      highlightLeft: highlightLeft,
+                                      highlightWidth: highlightWidth,
+                                      textStyle: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: tabConstraints.maxHeight,
+                                    ),
+                                  );
+                                } else {
+                                  return Text(
+                                    category,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -599,4 +665,55 @@ class ShopItem {
     required this.category,
     required this.imageAsset,
   });
+}
+
+// Custom painter for crisp highlight text effect
+class _TabHighlightTextPainter extends CustomPainter {
+  final String text;
+  final double highlightLeft;
+  final double highlightWidth;
+  final TextStyle textStyle;
+
+  _TabHighlightTextPainter({
+    required this.text,
+    required this.highlightLeft,
+    required this.highlightWidth,
+    required this.textStyle,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final textSpanWhite = TextSpan(text: text, style: textStyle);
+    final tpWhite = TextPainter(
+      text: textSpanWhite,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    tpWhite.layout(minWidth: 0, maxWidth: size.width);
+    final dx = (size.width - tpWhite.width) / 2;
+    final dy = (size.height - tpWhite.height) / 2;
+    // Draw white text
+    tpWhite.paint(canvas, Offset(dx, dy));
+
+    // Draw black text only in highlight area
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(highlightLeft, 0, highlightWidth, size.height));
+    final textSpanBlack = TextSpan(text: text, style: textStyle.copyWith(color: Colors.black));
+    final tpBlack = TextPainter(
+      text: textSpanBlack,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    tpBlack.layout(minWidth: 0, maxWidth: size.width);
+    tpBlack.paint(canvas, Offset(dx, dy));
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _TabHighlightTextPainter oldDelegate) {
+    return text != oldDelegate.text ||
+        highlightLeft != oldDelegate.highlightLeft ||
+        highlightWidth != oldDelegate.highlightWidth ||
+        textStyle != oldDelegate.textStyle;
+  }
 }
