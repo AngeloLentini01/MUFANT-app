@@ -22,7 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   int _currentPage = 0;
   final GlobalKey<IntroductionScreenState> _introKey =
       GlobalKey<IntroductionScreenState>();
-  
+
   // Logger for this class
   static final Logger _logger = AppLogger.getLogger('OnboardingScreen');
 
@@ -187,7 +187,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 // Navigate to RegistrationPage
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegistrationPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const RegistrationPage(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -212,16 +214,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           TextButton(
             onPressed: () {
               // Debug logger for sign in navigation
-              AppLogger.debug(_logger, 'Sign in button pressed from onboarding screen');
+              AppLogger.debug(
+                _logger,
+                'Sign in button pressed from onboarding screen',
+              );
               AppLogger.debug(_logger, 'Navigating to LoginPage...');
-              
+
               // Navigate to LoginPage
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               ).then((result) {
                 // Log when returning from login page
-                AppLogger.debug(_logger, 'Returned from LoginPage with result: $result');
+                AppLogger.debug(
+                  _logger,
+                  'Returned from LoginPage with result: $result',
+                );
               });
             },
             child: RichText(
