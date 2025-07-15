@@ -1,8 +1,12 @@
 import 'package:app/presentation/views/cart_confirmation/cart_confirmation_page.dart';
+import 'package:app/presentation/models/cart_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
+import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+// import 'package:app/model/generic/details_model.dart';
+import 'package:app/presentation/models/shop_event_item.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -66,17 +70,71 @@ class _ShopPageState extends State<ShopPage> {
     ),
   ];
 
+  List<ShopEventItem> eventItems = [];
+  bool _eventsLoaded = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadEventsForShop();
+  }
+
+  Future<void> _loadEventsForShop() async {
+    final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
+    setState(() {
+      eventItems = events
+          .map((e) => ShopEventItem.fromDetailsModel(e))
+          .toList();
+      _eventsLoaded = true;
+    });
+  }
+
   List<ShopItem> get filteredItems {
-    return items
-        .where((item) => item.category == categories[selectedTabIndex])
-        .toList();
+    if (categories[selectedTabIndex] == 'Events') {
+      // Convert ShopEventItem to ShopItem for ShopCard compatibility
+      return eventItems
+          .map(
+            (e) => ShopItem(
+              id: e.id,
+              title: e.title,
+              subtitle: e.subtitle,
+              price: e.price,
+              category: e.category,
+              imageAsset: e.imageAsset,
+            ),
+          )
+          .toList();
+    } else {
+      return items
+          .where((item) => item.category == categories[selectedTabIndex])
+          .toList();
+    }
   }
 
   double get totalAmount {
     double total = 0;
     cartItems.forEach((id, quantity) {
-      final item = items.firstWhere((item) => item.id == id);
-      total += item.price * quantity;
+      final item = items.cast<ShopItem?>().firstWhere(
+        (item) => item != null && item.id == id,
+        orElse: () => null,
+      );
+      if (item != null) {
+        total += item.price * quantity;
+      } else {
+        final eventItem = eventItems.firstWhere(
+          (e) => e.id == id,
+          orElse: () => ShopEventItem(
+            id: '',
+            title: '',
+            subtitle: '',
+            price: 0.0,
+            category: '',
+            imageAsset: '',
+          ),
+        );
+        if (eventItem.id != '') {
+          total += eventItem.price * quantity;
+        }
+      }
     });
     return total;
   }
@@ -87,20 +145,11 @@ class _ShopPageState extends State<ShopPage> {
 
   void _addToCart(String itemId) {
     setState(() {
-      // Check if adding one more would exceed the limit
       if (totalItems >= maxAllowedTickets) {
-        // Show the dialog
         _showTicketLimitDialog();
         return;
       }
-
-      // If this is the first time adding this item, track it
-      if (!cartItems.containsKey(itemId)) {
-        additionOrder.add(itemId);
-      }
-
       cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
-      // Also add to the order for each individual ticket
       additionOrder.add(itemId);
     });
   }
@@ -145,32 +194,7 @@ class _ShopPageState extends State<ShopPage> {
         final currentQuantity = cartItems[itemId] ?? 0;
         final newTotal = totalItems - currentQuantity + newQuantity;
         if (newTotal > maxAllowedTickets) {
-          // Show the dialog but DON'T update the cart yet
-          _logger.info(
-            'Quantity change would exceed limit. Current: $totalItems, Requested total: $newTotal',
-          );
-          // We need to temporarily update the cart to reflect the new state for the dialog
-          cartItems[itemId] = newQuantity;
-
-          // Update order tracking for the temporary state
-          if (newQuantity > currentQuantity) {
-            // Adding tickets - add to order
-            for (int i = 0; i < (newQuantity - currentQuantity); i++) {
-              additionOrder.add(itemId);
-            }
-          } else if (newQuantity < currentQuantity) {
-            // Removing tickets - remove from order (last added first)
-            int toRemove = currentQuantity - newQuantity;
-            for (int i = 0; i < toRemove; i++) {
-              for (int j = additionOrder.length - 1; j >= 0; j--) {
-                if (additionOrder[j] == itemId) {
-                  additionOrder.removeAt(j);
-                  break;
-                }
-              }
-            }
-          }
-
+          // Show the dialog instead of just a snackbar
           _showTicketLimitDialog();
           return;
         }
@@ -247,7 +271,7 @@ class _ShopPageState extends State<ShopPage> {
                 _clearCart(); // Clear all tickets when dismissing checkout
               },
               child: Text(
-                'Dismiss Checkout',
+                'Dismiss checkout',
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             ),
@@ -264,7 +288,7 @@ class _ShopPageState extends State<ShopPage> {
                 ),
               ),
               child: const Text(
-                'Remove Exceeding Tickets',
+                'Remove Lastly added tickets',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -276,38 +300,22 @@ class _ShopPageState extends State<ShopPage> {
 
   void _removeExceedingTickets() {
     setState(() {
-      int currentTotal = totalItems;
-      if (currentTotal > maxAllowedTickets) {
-        int excessTickets = currentTotal - maxAllowedTickets;
-        int removedCount = 0;
-
-        // Remove from the end of additionOrder (LIFO - Last In First Out)
-        while (removedCount < excessTickets && additionOrder.isNotEmpty) {
-          // Get the last added item
-          String lastItemId = additionOrder.last;
-
-          // Remove this ticket from cart
-          if (cartItems.containsKey(lastItemId) && cartItems[lastItemId]! > 0) {
-            cartItems[lastItemId] = cartItems[lastItemId]! - 1;
-
-            // If quantity becomes 0, remove the item completely
-            if (cartItems[lastItemId] == 0) {
-              cartItems.remove(lastItemId);
-            }
-
-            // Remove from addition order (remove the last entry)
-            additionOrder.removeLast();
-            removedCount++;
-          } else {
-            // If for some reason the item doesn't exist in cart, just remove from order
-            additionOrder.removeLast();
-          }
-        }
-
-        _logger.info(
-          'Removed exactly $removedCount excess tickets (lastly added), new total: $totalItems',
-        );
-      }
+      _logger.info(
+        'Before removal: cartItems=$cartItems, additionOrder=$additionOrder',
+      );
+      final result = CartUtils.removeExceedingTickets(
+        cartItems: cartItems,
+        additionOrder: additionOrder,
+        maxAllowedTickets: maxAllowedTickets,
+      );
+      cartItems = Map<String, int>.from(result['cartItems']);
+      additionOrder = List<String>.from(result['additionOrder']);
+      _logger.info(
+        'After removal: cartItems=$cartItems, additionOrder=$additionOrder',
+      );
+      _logger.info(
+        'Removed exceeding tickets (lastly added), new total: $totalItems',
+      );
     });
   }
 
@@ -319,32 +327,44 @@ class _ShopPageState extends State<ShopPage> {
     }
 
     _logger.info('Proceeding to cart with $totalItems items');
+    // Combine static items and event items for confirmation page
+    final List<ShopItem> allItems = [
+      ...items,
+      ...eventItems.map((e) => ShopItem(
+            id: e.id,
+            title: e.title,
+            subtitle: e.subtitle,
+            price: e.price,
+            category: e.category,
+            imageAsset: e.imageAsset,
+          )),
+    ];
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CartConfirmationPage(
           cartItems: cartItems,
           totalAmount: totalAmount,
-          itemList: items,
+          itemList: allItems,
+          additionOrder: List<String>.from(additionOrder),
         ),
       ),
     );
 
-    // Update cart items if changes were made in cart confirmation
-    if (result != null && result is Map<String, int>) {
+    // Update cart items and additionOrder if changes were made in cart confirmation
+    if (result != null && result is Map<String, dynamic>) {
       setState(() {
-        cartItems = result;
-        // Rebuild the addition order based on current cart items
-        // This is a simplified approach - in a real app, you might want to persist the order
-        additionOrder.clear();
-        cartItems.forEach((itemId, quantity) {
+        cartItems = Map<String, int>.from(result['cartItems'] ?? {});
+        // Rebuild additionOrder to match cartItems (order is not meaningful after confirmation)
+        additionOrder = [];
+        cartItems.forEach((id, quantity) {
           for (int i = 0; i < quantity; i++) {
-            additionOrder.add(itemId);
+            additionOrder.add(id);
           }
         });
       });
       _logger.info(
-        'Cart updated with $totalItems items after returning from cart confirmation',
+        'Cart updated with $totalItems items after returning from cart confirmation (additionOrder rebuilt)',
       );
     }
   }
@@ -373,44 +393,45 @@ class _ShopPageState extends State<ShopPage> {
                   text: 'Shop',
                   onButtonPressed: () {
                     _logger.info('Shop app bar button pressed');
-                    // TODO: Implement shop-specific action
                   },
-                  showLogo: false, // Don't show logo on shop page
-                  showAppBarCTAButton: false, // Hide button on shop page
+                  showLogo: false,
+                  showAppBarCTAButton: false,
                   additionalContent: Column(
                     children: [_buildSearchBar(), _buildCategoryTabs()],
                   ),
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: ShopCard(
-                        item: filteredItems[index],
-                        cartQuantity: cartItems[filteredItems[index].id] ?? 0,
-                        onAddToCart: () => _addToCart(filteredItems[index].id),
-                        onRemoveFromCart: () =>
-                            _removeFromCart(filteredItems[index].id),
-                        showDeleteButton:
-                            (cartItems[filteredItems[index].id] ?? 0) > 0,
-                        onDelete: () =>
-                            _removeAllOfItem(filteredItems[index].id),
-                        onQuantityEdit: (newQuantity) =>
-                            _setQuantity(filteredItems[index].id, newQuantity),
-                      ),
-                    );
-                  }, childCount: filteredItems.length),
-                ),
-                // Add bottom padding to prevent content from being hidden behind cart summary
-                if (totalItems > 0)
+                if (!_eventsLoaded && categories[selectedTabIndex] == 'Events')
                   const SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 100,
-                    ), // Height of cart summary + padding
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ShopCard(
+                          item: filteredItems[index],
+                          cartQuantity: cartItems[filteredItems[index].id] ?? 0,
+                          onAddToCart: () =>
+                              _addToCart(filteredItems[index].id),
+                          onRemoveFromCart: () =>
+                              _removeFromCart(filteredItems[index].id),
+                          showDeleteButton:
+                              (cartItems[filteredItems[index].id] ?? 0) > 0,
+                          onDelete: () =>
+                              _removeAllOfItem(filteredItems[index].id),
+                          onQuantityEdit: (newQuantity) => _setQuantity(
+                            filteredItems[index].id,
+                            newQuantity,
+                          ),
+                        ),
+                      );
+                    }, childCount: filteredItems.length),
                   ),
+                if (totalItems > 0)
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
-            // Cart summary snapped to the bottom
             if (totalItems > 0)
               Positioned(
                 bottom: 0,

@@ -9,12 +9,14 @@ class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
   final double totalAmount;
   final List<ShopItem> itemList;
+  final List<String> additionOrder;
 
   const CartConfirmationPage({
     super.key,
     required this.cartItems,
     required this.totalAmount,
     required this.itemList,
+    required this.additionOrder,
   });
 
   @override
@@ -22,21 +24,34 @@ class CartConfirmationPage extends StatefulWidget {
 }
 
 class _CartConfirmationPageState extends State<CartConfirmationPage> {
+  // Call this after any change to cardGroup to keep localAdditionOrder in sync
+  void _syncAdditionOrderWithCart() {
+    localAdditionOrder = [];
+    cardGroup.forEach((id, quantity) {
+      for (int i = 0; i < quantity; i++) {
+        localAdditionOrder.add(id);
+      }
+    });
+  }
+
   late Map<String, int> cardGroup;
+  late List<String> localAdditionOrder;
 
   @override
   void initState() {
     super.initState();
-    cardGroup = Map<String, int>.from(
-      widget.cartItems,
-    ); // Initialize with cartItems
+    cardGroup = Map<String, int>.from(widget.cartItems);
+    localAdditionOrder = List<String>.from(widget.additionOrder);
   }
 
   double get totalAmount {
     double total = 0;
     cardGroup.forEach((id, quantity) {
-      final item = widget.itemList.firstWhere((item) => item.id == id);
-      total += item.price * quantity;
+      final found = widget.itemList.where((item) => item.id == id);
+      if (found.isNotEmpty) {
+        final item = found.first;
+        total += item.price * quantity;
+      }
     });
     return total;
   }
@@ -48,8 +63,22 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
   void _removeItem(String itemId) {
     setState(() {
       cardGroup.remove(itemId);
+      _syncAdditionOrderWithCart();
     });
   }
+
+  // If you add plus/minus buttons for quantity, call _syncAdditionOrderWithCart() after any change.
+  // Example: If you have quantity change logic, call _syncAdditionOrderWithCart() after any change.
+  // void _changeQuantity(String itemId, int newQuantity) {
+  //   setState(() {
+  //     if (newQuantity <= 0) {
+  //       cardGroup.remove(itemId);
+  //     } else {
+  //       cardGroup[itemId] = newQuantity;
+  //     }
+  //     _syncAdditionOrderWithCart();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +86,10 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
       canPop: false, // Prevent default pop behavior since we handle it manually
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          Navigator.pop(context, cardGroup);
+          Navigator.pop(context, {
+            'cartItems': cardGroup,
+            'additionOrder': localAdditionOrder,
+          });
         }
       },
       child: SafeArea(
@@ -67,7 +99,10 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
             elevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onPressed: () => Navigator.pop(context, cardGroup),
+              onPressed: () => Navigator.pop(context, {
+                'cartItems': cardGroup,
+                'additionOrder': localAdditionOrder,
+              }),
             ),
             centerTitle: true,
             title: Image.asset(
@@ -112,7 +147,10 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.pop(context, cardGroup);
+                              Navigator.pop(context, {
+                                'cartItems': cardGroup,
+                                'additionOrder': localAdditionOrder,
+                              });
                             },
                             child: Center(
                               child: Text(
@@ -180,6 +218,10 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                               duration: const Duration(seconds: 2),
                             ),
                           );
+                          Navigator.pop(context, {
+                            'cartItems': cardGroup,
+                            'additionOrder': localAdditionOrder,
+                          });
                         },
                       ),
                   ],
