@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -17,14 +18,14 @@ class _MapPageState extends State<MapPage> {
       context: context,
       barrierDismissible: true,
       builder: (_) {
-        return GestureDetector(
-          onTap: () => Navigator.of(context).pop(),
-          child: Container(
-            color: Colors.black.withValues(alpha: 0.1),
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
             child: Center(
               child: PhotoView(
                 imageProvider: AssetImage(imagePath),
-                backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered * 4,
                 initialScale: PhotoViewComputedScale.contained,
@@ -38,8 +39,20 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
+    // Set the status bar style to be transparent with light content
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.light,
+      ),
+    );
+
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -53,22 +66,39 @@ class _MapPageState extends State<MapPage> {
             CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  //TODO: Rivedere appBar
-                  backgroundColor: kBlackColor,
+                  backgroundColor: Colors.transparent,
                   pinned: false,
-                  leading: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                  title: const Text(
-                    'Map',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                  floating: false,
+                  expandedHeight: 100,
+                  iconTheme: const IconThemeData(color: Colors.white),
+                  flexibleSpace: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [kBlackColor, kBlackColor.withOpacity(0.8)],
+                      ),
+                    ),
+                    child: const SafeArea(
+                      child: Column(
+                        children: [
+                          SizedBox(height: 16),
+                          Padding(
+                            padding: EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              'Map',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  centerTitle: false,
                   elevation: 0,
                 ),
                 SliverToBoxAdapter(
@@ -129,6 +159,10 @@ class _MapPageState extends State<MapPage> {
                             height: 300,
                           ),
                         ),
+                      ),
+                      // Add bottom padding to ensure content is above bottom navigation
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.bottom + 16,
                       ),
                     ],
                   ),
