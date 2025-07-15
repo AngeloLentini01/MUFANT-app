@@ -13,8 +13,10 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
+  static const int maxAllowedTickets = 1000;
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
+  List<String> additionOrder = []; // Track the order items were added
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
@@ -85,7 +87,21 @@ class _ShopPageState extends State<ShopPage> {
 
   void _addToCart(String itemId) {
     setState(() {
+      // Check if adding one more would exceed the limit
+      if (totalItems >= maxAllowedTickets) {
+        // Show the dialog
+        _showTicketLimitDialog();
+        return;
+      }
+      
+      // If this is the first time adding this item, track it
+      if (!cartItems.containsKey(itemId)) {
+        additionOrder.add(itemId);
+      }
+      
       cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
+      // Also add to the order for each individual ticket
+      additionOrder.add(itemId);
     });
   }
 
@@ -94,8 +110,17 @@ class _ShopPageState extends State<ShopPage> {
       final currentQuantity = cartItems[itemId] ?? 0;
       if (currentQuantity > 1) {
         cartItems[itemId] = currentQuantity - 1;
+        // Remove the last occurrence of this item from the order
+        for (int i = additionOrder.length - 1; i >= 0; i--) {
+          if (additionOrder[i] == itemId) {
+            additionOrder.removeAt(i);
+            break;
+          }
+        }
       } else {
         cartItems.remove(itemId);
+        // Remove all occurrences of this item from the order
+        additionOrder.removeWhere((id) => id == itemId);
       }
     });
   }
@@ -103,6 +128,7 @@ class _ShopPageState extends State<ShopPage> {
   void _clearCart() {
     setState(() {
       cartItems.clear();
+      additionOrder.clear(); // Also clear the order tracking
     });
     _logger.info('Cart cleared');
   }
@@ -111,8 +137,61 @@ class _ShopPageState extends State<ShopPage> {
     setState(() {
       if (newQuantity <= 0) {
         cartItems.remove(itemId);
+        // Remove all occurrences of this item from the order
+        additionOrder.removeWhere((id) => id == itemId);
         _logger.info('Item $itemId removed from cart');
       } else {
+        // Check if setting this quantity would exceed the limit
+        final currentQuantity = cartItems[itemId] ?? 0;
+        final newTotal = totalItems - currentQuantity + newQuantity;
+        if (newTotal > maxAllowedTickets) {
+          // Show the dialog but DON'T update the cart yet
+          _logger.info('Quantity change would exceed limit. Current: $totalItems, Requested total: $newTotal');
+          // We need to temporarily update the cart to reflect the new state for the dialog
+          cartItems[itemId] = newQuantity;
+          
+          // Update order tracking for the temporary state
+          if (newQuantity > currentQuantity) {
+            // Adding tickets - add to order
+            for (int i = 0; i < (newQuantity - currentQuantity); i++) {
+              additionOrder.add(itemId);
+            }
+          } else if (newQuantity < currentQuantity) {
+            // Removing tickets - remove from order (last added first)
+            int toRemove = currentQuantity - newQuantity;
+            for (int i = 0; i < toRemove; i++) {
+              for (int j = additionOrder.length - 1; j >= 0; j--) {
+                if (additionOrder[j] == itemId) {
+                  additionOrder.removeAt(j);
+                  break;
+                }
+              }
+            }
+          }
+          
+          _showTicketLimitDialog();
+          return;
+        }
+        
+        // Update order tracking
+        if (newQuantity > currentQuantity) {
+          // Adding tickets - add to order
+          for (int i = 0; i < (newQuantity - currentQuantity); i++) {
+            additionOrder.add(itemId);
+          }
+        } else if (newQuantity < currentQuantity) {
+          // Removing tickets - remove from order (last added first)
+          int toRemove = currentQuantity - newQuantity;
+          for (int i = 0; i < toRemove; i++) {
+            for (int j = additionOrder.length - 1; j >= 0; j--) {
+              if (additionOrder[j] == itemId) {
+                additionOrder.removeAt(j);
+                break;
+              }
+            }
+          }
+        }
+        
         cartItems[itemId] = newQuantity;
         _logger.info('Item $itemId quantity set to $newQuantity');
       }
@@ -123,11 +202,127 @@ class _ShopPageState extends State<ShopPage> {
     setState(() {
       final removedQuantity = cartItems[itemId] ?? 0;
       cartItems.remove(itemId);
+      // Remove all occurrences of this item from the order
+      additionOrder.removeWhere((id) => id == itemId);
       _logger.info('All $removedQuantity items of $itemId removed from cart');
     });
   }
 
+  void _showTicketLimitDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: kPinkColor, size: 28),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Too Many Tickets',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "We're sorry. Unfortunately, the museum can't host more than $maxAllowedTickets visitors.",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _clearCart(); // Clear all tickets when dismissing checkout
+              },
+              child: Text(
+                'Dismiss Checkout',
+                style: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _removeExceedingTickets();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPinkColor,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Remove Exceeding Tickets',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _removeExceedingTickets() {
+    setState(() {
+      int currentTotal = totalItems;
+      if (currentTotal > maxAllowedTickets) {
+        int excessTickets = currentTotal - maxAllowedTickets;
+        int removedCount = 0;
+        
+        // Remove from the end of additionOrder (LIFO - Last In First Out)
+        while (removedCount < excessTickets && additionOrder.isNotEmpty) {
+          // Get the last added item
+          String lastItemId = additionOrder.last;
+          
+          // Remove this ticket from cart
+          if (cartItems.containsKey(lastItemId) && cartItems[lastItemId]! > 0) {
+            cartItems[lastItemId] = cartItems[lastItemId]! - 1;
+            
+            // If quantity becomes 0, remove the item completely
+            if (cartItems[lastItemId] == 0) {
+              cartItems.remove(lastItemId);
+            }
+            
+            // Remove from addition order (remove the last entry)
+            additionOrder.removeLast();
+            removedCount++;
+          } else {
+            // If for some reason the item doesn't exist in cart, just remove from order
+            additionOrder.removeLast();
+          }
+        }
+        
+        _logger.info('Removed exactly $removedCount excess tickets (lastly added), new total: $totalItems');
+      }
+    });
+  }
+
   void _goToCheckout() async {
+    // Check if we have too many tickets before proceeding
+    if (totalItems > maxAllowedTickets) {
+      _showTicketLimitDialog();
+      return;
+    }
+
     _logger.info('Proceeding to cart with $totalItems items');
     final result = await Navigator.push(
       context,
@@ -144,6 +339,14 @@ class _ShopPageState extends State<ShopPage> {
     if (result != null && result is Map<String, int>) {
       setState(() {
         cartItems = result;
+        // Rebuild the addition order based on current cart items
+        // This is a simplified approach - in a real app, you might want to persist the order
+        additionOrder.clear();
+        cartItems.forEach((itemId, quantity) {
+          for (int i = 0; i < quantity; i++) {
+            additionOrder.add(itemId);
+          }
+        });
       });
       _logger.info(
         'Cart updated with $totalItems items after returning from cart confirmation',

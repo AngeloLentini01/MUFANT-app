@@ -2,7 +2,7 @@ import "package:app/presentation/styles/all.dart";
 import "package:app/presentation/views/tabBarPages/shop_page.dart";
 import "package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart";
 import "package:app/presentation/widgets/shop/cart_summary.dart";
-import "package:app/presentation/widgets/shop/shop_card.dart";
+import "package:app/presentation/widgets/shop/confirmation_card.dart";
 import "package:flutter/material.dart";
 
 class CartConfirmationPage extends StatefulWidget {
@@ -45,32 +45,9 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
     return cardGroup.values.fold(0, (sum, quantity) => sum + quantity);
   }
 
-  void _updateQuantity(String itemId, int change) {
-    setState(() {
-      final currentQuantity = cardGroup[itemId] ?? 0;
-      final newQuantity = currentQuantity + change;
-
-      if (newQuantity <= 0) {
-        cardGroup.remove(itemId);
-      } else {
-        cardGroup[itemId] = newQuantity;
-      }
-    });
-  }
-
   void _removeItem(String itemId) {
     setState(() {
       cardGroup.remove(itemId);
-    });
-  }
-
-  void _setQuantity(String itemId, int newQuantity) {
-    setState(() {
-      if (newQuantity <= 0) {
-        cardGroup.remove(itemId);
-      } else {
-        cardGroup[itemId] = newQuantity;
-      }
     });
   }
 
@@ -173,17 +150,10 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                                     cardGroup[item.id]! > 0,
                               )
                               .map(
-                                (item) => ShopCard(
+                                (item) => ConfirmationCard(
                                   item: item,
-                                  cartQuantity: cardGroup[item.id] ?? 0,
-                                  onAddToCart: () =>
-                                      _updateQuantity(item.id, 1),
-                                  onRemoveFromCart: () =>
-                                      _updateQuantity(item.id, -1),
-                                  showDeleteButton: true,
+                                  quantity: cardGroup[item.id] ?? 0,
                                   onDelete: () => _removeItem(item.id),
-                                  onQuantityEdit: (newQuantity) =>
-                                      _setQuantity(item.id, newQuantity),
                                 ),
                               )
                               .toList(),
@@ -201,6 +171,13 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                         checkoutText: 'Confirm Checkout',
                         onCheckout: () {
                           // TODO: Navigate to checkout
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Proceeding to checkout with $totalItems tickets'),
+                              backgroundColor: kPinkColor,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                       ),
                   ],
