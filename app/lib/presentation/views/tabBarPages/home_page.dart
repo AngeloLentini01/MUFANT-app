@@ -273,7 +273,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     /*todo: implement search functionality*/
                   },
                   showLogo: true, // Show logo on homepage
-                  forceHideBackButton: true, // Never show back button on home page
+                  forceHideBackButton:
+                      true, // Never show back button on home page
                 ),
                 SliverPadding(
                   padding: kBodyPadding,
