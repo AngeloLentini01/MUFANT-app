@@ -1,6 +1,8 @@
 import "package:app/presentation/styles/all.dart";
 import "package:app/presentation/views/tabBarPages/shop_page.dart";
 import "package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart";
+import "package:app/presentation/widgets/shop/cart_summary.dart";
+import "package:app/presentation/widgets/shop/shop_card.dart";
 import "package:flutter/material.dart";
 
 class CartConfirmationPage extends StatefulWidget {
@@ -30,180 +32,180 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
     ); // Initialize with cartItems
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          //TODO: appbar
-        ),
-        body: cardGroup.isEmpty
-            ? Stack(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 120,
-                      left: 32,
-                      right: 32,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Oops! Your cart's still in hypersleep. Wake it up with a purchase!",
-                          style: TextStyle(fontSize: 22),
-                          textAlign: TextAlign.center,
-                        ),
-                        kSpaceBetweenSections,
-                        OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: kPinkColor,
-                              width: 2,
-                            ), // Colored border
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                18,
-                              ), // Rounded corners
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ShopPage(),
-                              ),
-                            );
-                          },
-                          child: Center(
-                            child: Text(
-                              "Browse Tickets",
-                              style: TextStyle(fontSize: 16, color: kPinkColor),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Image.asset(
-                      "assets/images/shop_bot/sad_bot_cut.png", // Use your asset path here
-                      height: 300, // Adjust size as needed
-                    ),
-                  ),
-                ],
-              )
-            : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.itemList
-                        .where(
-                          (item) =>
-                              cardGroup.containsKey(item.id) &&
-                              cardGroup[item.id]! > 0,
-                        )
-                        .map((item) => _shopCard(item))
-                        .toList(),
-                  ),
-                ),
-              ),
-        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
-      ),
-    );
+  double get totalAmount {
+    double total = 0;
+    cardGroup.forEach((id, quantity) {
+      final item = widget.itemList.firstWhere((item) => item.id == id);
+      total += item.price * quantity;
+    });
+    return total;
   }
 
-  Widget _shopCard(ShopItem item) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.grey[850]!, Colors.grey[800]!],
+  int get totalItems {
+    return cardGroup.values.fold(0, (sum, quantity) => sum + quantity);
+  }
+
+  void _updateQuantity(String itemId, int change) {
+    setState(() {
+      final currentQuantity = cardGroup[itemId] ?? 0;
+      final newQuantity = currentQuantity + change;
+
+      if (newQuantity <= 0) {
+        cardGroup.remove(itemId);
+      } else {
+        cardGroup[itemId] = newQuantity;
+      }
+    });
+  }
+
+  void _removeItem(String itemId) {
+    setState(() {
+      cardGroup.remove(itemId);
+    });
+  }
+
+  void _setQuantity(String itemId, int newQuantity) {
+    setState(() {
+      if (newQuantity <= 0) {
+        cardGroup.remove(itemId);
+      } else {
+        cardGroup[itemId] = newQuantity;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false, // Prevent default pop behavior since we handle it manually
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context, cardGroup);
+        }
+      },
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: kBlackColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              onPressed: () => Navigator.pop(context, cardGroup),
+            ),
+            centerTitle: true,
+            title: Image.asset(
+              'assets/images/logo.png',
+              height: 40,
+              color: Colors.white,
+            ),
           ),
-          border: Border.all(
-            color: kPinkColor.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [kPinkColor.withValues(alpha: 0.8), kPinkColor],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    item.imageAsset,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.museum, color: Colors.white, size: 30);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          body: cardGroup.isEmpty
+              ? Stack(
                   children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 120,
+                        left: 32,
+                        right: 32,
                       ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Oops! Your cart's still in hypersleep. Wake it up with a purchase!",
+                            style: TextStyle(fontSize: 22),
+                            textAlign: TextAlign.center,
+                          ),
+                          kSpaceBetweenSections,
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: kPinkColor,
+                                width: 2,
+                              ), // Colored border
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  18,
+                                ), // Rounded corners
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 16,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, cardGroup);
+                            },
+                            child: Center(
+                              child: Text(
+                                "Browse Tickets",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: kPinkColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    if (item.subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        item.subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[400]),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      '€${item.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Image.asset(
+                        "assets/images/shop_bot/sad_bot_cut.png", // Use your asset path here
+                        height: 300, // Adjust size as needed
                       ),
                     ),
                   ],
+                )
+              : Column(
+                  children: [
+                    // Cart items list using the same shop cards
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: widget.itemList
+                              .where(
+                                (item) =>
+                                    cardGroup.containsKey(item.id) &&
+                                    cardGroup[item.id]! > 0,
+                              )
+                              .map(
+                                (item) => ShopCard(
+                                  item: item,
+                                  cartQuantity: cardGroup[item.id] ?? 0,
+                                  onAddToCart: () =>
+                                      _updateQuantity(item.id, 1),
+                                  onRemoveFromCart: () =>
+                                      _updateQuantity(item.id, -1),
+                                  showDeleteButton: true,
+                                  onDelete: () => _removeItem(item.id),
+                                  onQuantityEdit: (newQuantity) =>
+                                      _setQuantity(item.id, newQuantity),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                    // Checkout button
+                    if (cardGroup.isNotEmpty)
+                      CartSummary(
+                        totalAmount: totalAmount,
+                        totalItems: totalItems,
+                        showClearButton:
+                            false, // Don't show clear button in cart page
+                        showCheckoutButton: true,
+                        checkoutText: 'Confirm Checkout',
+                        onCheckout: () {
+                          // TODO: Navigate to checkout
+                        },
+                      ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: 16),
-            ],
-          ),
+          bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
         ),
       ),
     );

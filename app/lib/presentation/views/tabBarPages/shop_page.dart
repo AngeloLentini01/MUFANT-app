@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
-import 'dart:async';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -16,9 +15,6 @@ class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
-  Timer? _timer;
-  String? _activeTimerItemId;
-  bool _isIncrementing = false;
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
@@ -87,6 +83,74 @@ class _ShopPageState extends State<ShopPage> {
     return cartItems.values.fold(0, (sum, quantity) => sum + quantity);
   }
 
+  void _addToCart(String itemId) {
+    setState(() {
+      cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
+    });
+  }
+
+  void _removeFromCart(String itemId) {
+    setState(() {
+      final currentQuantity = cartItems[itemId] ?? 0;
+      if (currentQuantity > 1) {
+        cartItems[itemId] = currentQuantity - 1;
+      } else {
+        cartItems.remove(itemId);
+      }
+    });
+  }
+
+  void _clearCart() {
+    setState(() {
+      cartItems.clear();
+    });
+    _logger.info('Cart cleared');
+  }
+
+  void _setQuantity(String itemId, int newQuantity) {
+    setState(() {
+      if (newQuantity <= 0) {
+        cartItems.remove(itemId);
+        _logger.info('Item $itemId removed from cart');
+      } else {
+        cartItems[itemId] = newQuantity;
+        _logger.info('Item $itemId quantity set to $newQuantity');
+      }
+    });
+  }
+
+  void _removeAllOfItem(String itemId) {
+    setState(() {
+      final removedQuantity = cartItems[itemId] ?? 0;
+      cartItems.remove(itemId);
+      _logger.info('All $removedQuantity items of $itemId removed from cart');
+    });
+  }
+
+  void _goToCheckout() async {
+    _logger.info('Proceeding to cart with $totalItems items');
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartConfirmationPage(
+          cartItems: cartItems,
+          totalAmount: totalAmount,
+          itemList: items,
+        ),
+      ),
+    );
+
+    // Update cart items if changes were made in cart confirmation
+    if (result != null && result is Map<String, int>) {
+      setState(() {
+        cartItems = result;
+      });
+      _logger.info(
+        'Cart updated with $totalItems items after returning from cart confirmation',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -123,7 +187,19 @@ class _ShopPageState extends State<ShopPage> {
                   delegate: SliverChildBuilderDelegate((context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: _buildShopItemCard(filteredItems[index]),
+                      child: ShopCard(
+                        item: filteredItems[index],
+                        cartQuantity: cartItems[filteredItems[index].id] ?? 0,
+                        onAddToCart: () => _addToCart(filteredItems[index].id),
+                        onRemoveFromCart: () =>
+                            _removeFromCart(filteredItems[index].id),
+                        showDeleteButton:
+                            (cartItems[filteredItems[index].id] ?? 0) > 0,
+                        onDelete: () =>
+                            _removeAllOfItem(filteredItems[index].id),
+                        onQuantityEdit: (newQuantity) =>
+                            _setQuantity(filteredItems[index].id, newQuantity),
+                      ),
                     );
                   }, childCount: filteredItems.length),
                 ),
@@ -142,7 +218,12 @@ class _ShopPageState extends State<ShopPage> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: _buildCartSummary(),
+                child: CartSummary(
+                  totalAmount: totalAmount,
+                  totalItems: totalItems,
+                  onClearCart: _clearCart,
+                  onCheckout: _goToCheckout,
+                ),
               ),
           ],
         ),
@@ -212,338 +293,9 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildShopItemCard(ShopItem item) {
-    final quantity = cartItems[item.id] ?? 0;
-    final isInCart = quantity > 0;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.grey[850]!, Colors.grey[800]!],
-          ),
-          border: Border.all(
-            color: kPinkColor.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [kPinkColor.withValues(alpha: 0.8), kPinkColor],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    item.imageAsset,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.museum, color: Colors.white, size: 30);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (item.subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        item.subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[400]),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      '€${item.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: isInCart
-                    ? Row(
-                        key: ValueKey('quantity_controls_${item.id}'),
-                        children: [
-                          GestureDetector(
-                            onTapDown: (_) => _startOperation(item.id, false),
-                            onTapUp: (_) => _stopOperation(),
-                            onTapCancel: () => _stopOperation(),
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[700],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.remove,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              quantity.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTapDown: (_) => _startOperation(item.id, true),
-                            onTapUp: (_) => _stopOperation(),
-                            onTapCancel: () => _stopOperation(),
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[700],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      )
-                    : ElevatedButton(
-                        key: ValueKey('add_button_${item.id}'),
-                        onPressed: () {
-                          setState(() {
-                            cartItems[item.id] = 1;
-                          });
-                          _logger.info('Added ${item.title} to cart');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kPinkColor,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Text(
-                          'Add',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCartSummary() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Total to pay',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                ),
-                Text(
-                  '€${totalAmount.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                //todo: add clear button to remove all items from cart
-                Text(
-                  '$totalItems item${totalItems > 1 ? 's' : ''}',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                // Clear cart button
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      cartItems.clear();
-                    });
-                    _logger.info('Cart cleared');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[700],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Clear',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Checkout button
-                ElevatedButton(
-                  onPressed: () {
-                    _logger.info('Proceeding to cart with $totalItems items');
-                    // TODO: Navigate to cart page or checkout
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CartConfirmationPage(
-                          cartItems: cartItems,
-                          totalAmount: totalAmount,
-                          itemList: items,
-                        ),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPinkColor,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Checkout',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _startOperation(String itemId, bool isIncrementing) {
-    // Immediate action
-    _performOperation(itemId, isIncrementing);
-
-    // Set up for continuous operation
-    _activeTimerItemId = itemId;
-    _isIncrementing = isIncrementing;
-
-    // Start continuous operation after a delay
-    _timer = Timer(const Duration(milliseconds: 500), () {
-      _startContinuousOperation();
-    });
-  }
-
-  void _startContinuousOperation() {
-    if (_activeTimerItemId == null) return;
-
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (_activeTimerItemId == null) {
-        timer.cancel();
-        return;
-      }
-
-      _performOperation(_activeTimerItemId!, _isIncrementing);
-
-      // Stop if item is removed from cart
-      if (!_isIncrementing && (cartItems[_activeTimerItemId!] ?? 0) == 0) {
-        _stopOperation();
-      }
-    });
-  }
-
-  void _performOperation(String itemId, bool isIncrementing) {
-    setState(() {
-      if (isIncrementing) {
-        cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
-      } else {
-        final currentQuantity = cartItems[itemId] ?? 0;
-        if (currentQuantity > 1) {
-          cartItems[itemId] = currentQuantity - 1;
-        } else {
-          cartItems.remove(itemId);
-        }
-      }
-    });
-  }
-
-  void _stopOperation() {
-    _timer?.cancel();
-    _activeTimerItemId = null;
   }
 }
 
