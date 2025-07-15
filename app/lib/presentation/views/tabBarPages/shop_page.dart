@@ -93,12 +93,12 @@ class _ShopPageState extends State<ShopPage> {
         _showTicketLimitDialog();
         return;
       }
-      
+
       // If this is the first time adding this item, track it
       if (!cartItems.containsKey(itemId)) {
         additionOrder.add(itemId);
       }
-      
+
       cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
       // Also add to the order for each individual ticket
       additionOrder.add(itemId);
@@ -146,10 +146,12 @@ class _ShopPageState extends State<ShopPage> {
         final newTotal = totalItems - currentQuantity + newQuantity;
         if (newTotal > maxAllowedTickets) {
           // Show the dialog but DON'T update the cart yet
-          _logger.info('Quantity change would exceed limit. Current: $totalItems, Requested total: $newTotal');
+          _logger.info(
+            'Quantity change would exceed limit. Current: $totalItems, Requested total: $newTotal',
+          );
           // We need to temporarily update the cart to reflect the new state for the dialog
           cartItems[itemId] = newQuantity;
-          
+
           // Update order tracking for the temporary state
           if (newQuantity > currentQuantity) {
             // Adding tickets - add to order
@@ -168,11 +170,11 @@ class _ShopPageState extends State<ShopPage> {
               }
             }
           }
-          
+
           _showTicketLimitDialog();
           return;
         }
-        
+
         // Update order tracking
         if (newQuantity > currentQuantity) {
           // Adding tickets - add to order
@@ -191,7 +193,7 @@ class _ShopPageState extends State<ShopPage> {
             }
           }
         }
-        
+
         cartItems[itemId] = newQuantity;
         _logger.info('Item $itemId quantity set to $newQuantity');
       }
@@ -236,10 +238,7 @@ class _ShopPageState extends State<ShopPage> {
           ),
           content: Text(
             "We're sorry. Unfortunately, the museum can't host more than $maxAllowedTickets visitors.",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           actions: [
             TextButton(
@@ -249,10 +248,7 @@ class _ShopPageState extends State<ShopPage> {
               },
               child: Text(
                 'Dismiss Checkout',
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             ),
             ElevatedButton(
@@ -269,10 +265,7 @@ class _ShopPageState extends State<ShopPage> {
               ),
               child: const Text(
                 'Remove Exceeding Tickets',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -287,21 +280,21 @@ class _ShopPageState extends State<ShopPage> {
       if (currentTotal > maxAllowedTickets) {
         int excessTickets = currentTotal - maxAllowedTickets;
         int removedCount = 0;
-        
+
         // Remove from the end of additionOrder (LIFO - Last In First Out)
         while (removedCount < excessTickets && additionOrder.isNotEmpty) {
           // Get the last added item
           String lastItemId = additionOrder.last;
-          
+
           // Remove this ticket from cart
           if (cartItems.containsKey(lastItemId) && cartItems[lastItemId]! > 0) {
             cartItems[lastItemId] = cartItems[lastItemId]! - 1;
-            
+
             // If quantity becomes 0, remove the item completely
             if (cartItems[lastItemId] == 0) {
               cartItems.remove(lastItemId);
             }
-            
+
             // Remove from addition order (remove the last entry)
             additionOrder.removeLast();
             removedCount++;
@@ -310,8 +303,10 @@ class _ShopPageState extends State<ShopPage> {
             additionOrder.removeLast();
           }
         }
-        
-        _logger.info('Removed exactly $removedCount excess tickets (lastly added), new total: $totalItems');
+
+        _logger.info(
+          'Removed exactly $removedCount excess tickets (lastly added), new total: $totalItems',
+        );
       }
     });
   }

@@ -85,7 +85,7 @@ class ConfirmationCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[400],
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],
@@ -110,6 +110,7 @@ class ConfirmationCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[400],
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                 ],

@@ -173,7 +173,9 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                           // TODO: Navigate to checkout
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Proceeding to checkout with $totalItems tickets'),
+                              content: Text(
+                                'Proceeding to checkout with $totalItems tickets',
+                              ),
                               backgroundColor: kPinkColor,
                               duration: const Duration(seconds: 2),
                             ),
