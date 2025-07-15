@@ -109,42 +109,14 @@ class BadgeDetailModal extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Badge title with status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: isEarned ? Colors.white : Colors.grey[400],
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                if (isEarned)
-                  Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green, width: 1),
-                    ),
-                    child: const Text(
-                      'EARNED',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
+            Text(
+              title,
+              style: TextStyle(
+                color: isEarned ? Colors.white : Colors.grey[400],
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 16),
