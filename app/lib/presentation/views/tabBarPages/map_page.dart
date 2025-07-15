@@ -76,7 +76,10 @@ class _MapPageState extends State<MapPage> {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [kBlackColor, kBlackColor.withOpacity(0.8)],
+                        colors: [
+                          kBlackColor,
+                          kBlackColor.withValues(alpha: 0.8),
+                        ],
                       ),
                     ),
                     child: const SafeArea(

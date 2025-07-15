@@ -1,24 +1,26 @@
 // Simple test to verify badge data
 import 'package:app/presentation/views/tabBarPages/profilePage/badge_data.dart';
+import 'package:logging/logging.dart';
 
 void main() {
-  print('Testing Badge Data Provider...');
+  final log = Logger('BadgeDataTest');
+  log.info('Testing Badge Data Provider...');
 
   for (int i = 0; i < BadgeDataProvider.badges.length; i++) {
     final badge = BadgeDataProvider.badges[i];
-    print('Badge ${i + 1}:');
-    print('  Title: ${badge.title}');
-    print('  ImagePath: ${badge.imagePath}');
-    print('  Color: ${badge.color}');
-    print('  IsEarned: ${badge.isEarned}');
-    print('');
+    log.info('Badge ${i + 1}:');
+    log.info('  Title: ${badge.title}');
+    log.info('  ImagePath: ${badge.imagePath}');
+    log.info('  Color: ${badge.color}');
+    log.info('  IsEarned: ${badge.isEarned}');
+    log.info('');
   }
 
-  print('Testing earnBadge method...');
+  log.info('Testing earnBadge method...');
   final earnedBadge = BadgeDataProvider.earnBadge(BadgeType.spacePioneer);
-  print('Earned Badge:');
-  print('  Title: ${earnedBadge.title}');
-  print('  ImagePath: ${earnedBadge.imagePath}');
-  print('  IsEarned: ${earnedBadge.isEarned}');
-  print('  AchievedDate: ${earnedBadge.achievedDate}');
+  log.info('Earned Badge:');
+  log.info('  Title: ${earnedBadge.title}');
+  log.info('  ImagePath: ${earnedBadge.imagePath}');
+  log.info('  IsEarned: ${earnedBadge.isEarned}');
+  log.info('  AchievedDate: ${earnedBadge.achievedDate}');
 }
