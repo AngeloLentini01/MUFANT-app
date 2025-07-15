@@ -1,63 +1,72 @@
 // Test script to verify badge system functionality
 import 'package:app/data/services/badge_service.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/badge_data.dart';
+import 'package:logging/logging.dart';
+
+final _logger = Logger('BadgeSystemTest');
 
 void main() async {
-  print('=== MUFANT Badge System Test ===\n');
+  // Configure logging to display in console
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    print('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  _logger.info('=== MUFANT Badge System Test ===\n');
 
   final badgeService = BadgeService.instance;
 
   // Test 1: Initial badge status
-  print('🔍 Test 1: Initial Badge Status');
+  _logger.info('🔍 Test 1: Initial Badge Status');
   final allBadges = badgeService.getAllBadgesWithStatus();
-  print('Total badges: ${badgeService.totalBadgeCount}');
-  print('Earned badges: ${badgeService.earnedBadgeCount}');
+  _logger.info('Total badges: ${badgeService.totalBadgeCount}');
+  _logger.info('Earned badges: ${badgeService.earnedBadgeCount}');
 
   for (int i = 0; i < allBadges.length; i++) {
     final badge = allBadges[i];
-    print(
+    _logger.info(
       '${i + 1}. ${badge.title} - ${badge.isEarned ? "✅ EARNED" : "🔒 LOCKED"}',
     );
   }
 
-  print('\n🚀 Test 2: Earning Space Pioneer Badge');
+  _logger.info('\n🚀 Test 2: Earning Space Pioneer Badge');
   await badgeService.earnSpacePioneerBadge();
-  print('Space Pioneer badge earned! ✅');
+  _logger.info('Space Pioneer badge earned! ✅');
 
-  print('\n👽 Test 3: Earning Galactic Speaker Badge');
+  _logger.info('\n👽 Test 3: Earning Galactic Speaker Badge');
   await badgeService.earnGalacticSpeakerBadge();
-  print('Galactic Speaker badge earned! ✅');
+  _logger.info('Galactic Speaker badge earned! ✅');
 
-  print('\n📊 Test 4: Updated Badge Status');
+  _logger.info('\n📊 Test 4: Updated Badge Status');
   final updatedBadges = badgeService.getAllBadgesWithStatus();
-  print('Total badges: ${badgeService.totalBadgeCount}');
-  print('Earned badges: ${badgeService.earnedBadgeCount}');
+  _logger.info('Total badges: ${badgeService.totalBadgeCount}');
+  _logger.info('Earned badges: ${badgeService.earnedBadgeCount}');
 
   for (int i = 0; i < updatedBadges.length; i++) {
     final badge = updatedBadges[i];
-    print(
+    _logger.info(
       '${i + 1}. ${badge.title} - ${badge.isEarned ? "✅ EARNED" : "🔒 LOCKED"}',
     );
     if (badge.isEarned && badge.achievedDate != null) {
-      print('   Achieved: ${badge.achievedDate}');
+      _logger.info('   Achieved: ${badge.achievedDate}');
     }
   }
 
-  print('\n🔄 Test 5: Reset All Badges');
+  _logger.info('\n🔄 Test 5: Reset All Badges');
   await badgeService.resetAllBadges();
-  print('All badges reset! 🔄');
+  _logger.info('All badges reset! 🔄');
 
-  print('\n📊 Test 6: Final Badge Status');
-  final finalBadges = badgeService.getAllBadgesWithStatus();
-  print('Total badges: ${badgeService.totalBadgeCount}');
-  print('Earned badges: ${badgeService.earnedBadgeCount}');
+  _logger.info('\n📊 Test 6: Final Badge Status');
+  badgeService.getAllBadgesWithStatus(); // Just call to verify it works
+  _logger.info('Total badges: ${badgeService.totalBadgeCount}');
+  _logger.info('Earned badges: ${badgeService.earnedBadgeCount}');
 
-  print('\n✅ Badge System Test Complete!');
-  print('🎯 Space-themed MUFANT badges are ready to use!');
-  print('\nBadge Images:');
+  _logger.info('\n✅ Badge System Test Complete!');
+  _logger.info('🎯 Space-themed MUFANT badges are ready to use!');
+  _logger.info('\nBadge Images:');
   for (final badge in BadgeDataProvider.badges) {
     if (badge.imagePath != null) {
-      print('${badge.title}: ${badge.imagePath}');
+      _logger.info('${badge.title}: ${badge.imagePath}');
     }
   }
 }
