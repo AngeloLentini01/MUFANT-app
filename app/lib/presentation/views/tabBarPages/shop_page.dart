@@ -25,8 +25,6 @@ class _ShopPageState extends State<ShopPage> {
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
   // Guided tour pricing logic
-  static const int tourGroupMin = 1;
-  static const int tourGroupMax = 5;
   static const double tourGroupPrice = 60.0;
   static const double tourAdultPrice = 13.0;
   static const double tourReducedPrice = 11.0;
