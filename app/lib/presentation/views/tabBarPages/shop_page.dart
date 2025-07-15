@@ -24,6 +24,14 @@ class _ShopPageState extends State<ShopPage> {
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
 
+  // Guided tour pricing logic
+  static const int tourGroupMin = 1;
+  static const int tourGroupMax = 5;
+  static const double tourGroupPrice = 60.0;
+  static const double tourAdultPrice = 13.0;
+  static const double tourReducedPrice = 11.0;
+  static const double tourKidsPrice = 11.0;
+
   final List<ShopItem> items = [
     ShopItem(
       id: '1',
@@ -103,6 +111,43 @@ class _ShopPageState extends State<ShopPage> {
             ),
           )
           .toList();
+    } else if (categories[selectedTabIndex] == 'Tours') {
+      // Custom guided tour card(s)
+      return [
+        ShopItem(
+          id: 'tour_group',
+          title: 'Guided Tour (1-5 participants)',
+          subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+          price: tourGroupPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_adult',
+          title: 'Guided Tour (Adult, 6+ participants)',
+          subtitle: 'Per adult, 90 min. tour (reservation required)',
+          price: tourAdultPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_reduced',
+          title: 'Guided Tour (Disabled, 6+ participants)',
+          subtitle:
+              'Per disabled participant, 90 min. tour (reservation required)',
+          price: tourReducedPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_kid',
+          title: 'Guided Tour (Kids 4-10, 6+ participants)',
+          subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+          price: tourKidsPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+      ];
     } else {
       return items
           .where((item) => item.category == categories[selectedTabIndex])
@@ -110,30 +155,63 @@ class _ShopPageState extends State<ShopPage> {
     }
   }
 
+  // Helper to get all possible items (museum, events, tours)
+  List<ShopItem> get allItems {
+    return [
+      ...items,
+      ...eventItems.map(
+        (e) => ShopItem(
+          id: e.id,
+          title: e.title,
+          subtitle: e.subtitle,
+          price: e.price,
+          category: e.category,
+          imageAsset: e.imageAsset,
+        ),
+      ),
+      // Add tour items
+      ShopItem(
+        id: 'tour_group',
+        title: 'Guided Tour (1-5 participants)',
+        subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+        price: tourGroupPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_adult',
+        title: 'Guided Tour (Adult, 6+ participants)',
+        subtitle: 'Per adult, 90 min. tour (reservation required)',
+        price: tourAdultPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_reduced',
+        title: 'Guided Tour (Disabled, 6+ participants)',
+        subtitle:
+            'Per disabled participant, 90 min. tour (reservation required)',
+        price: tourReducedPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_kid',
+        title: 'Guided Tour (Kids 4-10, 6+ participants)',
+        subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+        price: tourKidsPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+    ];
+  }
+
   double get totalAmount {
     double total = 0;
     cartItems.forEach((id, quantity) {
-      final item = items.cast<ShopItem?>().firstWhere(
-        (item) => item != null && item.id == id,
-        orElse: () => null,
-      );
-      if (item != null) {
-        total += item.price * quantity;
-      } else {
-        final eventItem = eventItems.firstWhere(
-          (e) => e.id == id,
-          orElse: () => ShopEventItem(
-            id: '',
-            title: '',
-            subtitle: '',
-            price: 0.0,
-            category: '',
-            imageAsset: '',
-          ),
-        );
-        if (eventItem.id != '') {
-          total += eventItem.price * quantity;
-        }
+      final found = allItems.where((item) => item.id == id);
+      if (found.isNotEmpty) {
+        total += found.first.price * quantity;
       }
     });
     return total;
@@ -327,18 +405,7 @@ class _ShopPageState extends State<ShopPage> {
     }
 
     _logger.info('Proceeding to cart with $totalItems items');
-    // Combine static items and event items for confirmation page
-    final List<ShopItem> allItems = [
-      ...items,
-      ...eventItems.map((e) => ShopItem(
-            id: e.id,
-            title: e.title,
-            subtitle: e.subtitle,
-            price: e.price,
-            category: e.category,
-            imageAsset: e.imageAsset,
-          )),
-    ];
+    // Use allItems (museum, events, tours) for confirmation page
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
