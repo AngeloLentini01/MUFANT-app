@@ -55,7 +55,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
 
   Future<void> _initializeUser() async {
     _currentUser = await _createCurrentUser();
-    
+
     // Load demo messages after user is initialized
     if (_currentUser != null) {
       _chatService.loadDemoMessages(widget.community, _currentUser!);
@@ -98,11 +98,13 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
     if (sessionUser != null) {
       // Convert User to UserModel
       final now = DateTime.now();
-      
+
       // Try to get saved avatar from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
-      final savedAvatar = prefs.getString('user_avatar_${sessionUser.username}');
-      
+      final savedAvatar = prefs.getString(
+        'user_avatar_${sessionUser.username}',
+      );
+
       return UserModel(
         id: Ulid(),
         username: sessionUser.username,
@@ -114,14 +116,16 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
           name: sessionUser.firstName ?? sessionUser.username,
           description: 'Current user',
           notes: 'Logged in user',
-          imageUrlOrPath: savedAvatar ?? 'assets/images/avatar/avatar_robot.png', // Default avatar
+          imageUrlOrPath:
+              savedAvatar ??
+              'assets/images/avatar/avatar_robot.png', // Default avatar
           updatedAt: now,
         ),
         createdAt: sessionUser.createdAt,
         updatedAt: sessionUser.updatedAt,
       );
     }
-    
+
     // Fallback to demo user if no one is logged in
     final now = DateTime.now();
     return UserModel(
@@ -135,7 +139,8 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         name: 'You',
         description: 'Current user',
         notes: 'Current logged in user',
-        imageUrlOrPath: 'assets/images/avatar/avatar_robot.png', // Default avatar
+        imageUrlOrPath:
+            'assets/images/avatar/avatar_robot.png', // Default avatar
         updatedAt: now,
       ),
       createdAt: now,
@@ -207,7 +212,9 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 reverse: true,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
-                  final isCurrentUser = _currentUser != null && message.sender.id == _currentUser!.id;
+                  final isCurrentUser =
+                      _currentUser != null &&
+                      message.sender.id == _currentUser!.id;
                   return _buildMessageBubble(message, isCurrentUser);
                 },
               ),
@@ -299,19 +306,12 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
   }
 
   Widget _buildAvatar(UserModel user) {
-    return Container(
+    return SizedBox(
       width: 32,
       height: 32,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [kPinkColor.withValues(alpha: .8), kPinkColor],
-        ),
-        shape: BoxShape.circle,
-      ),
       child: ClipOval(
-        child: user.details.imageUrlOrPath != null &&
+        child:
+            user.details.imageUrlOrPath != null &&
                 user.details.imageUrlOrPath!.isNotEmpty
             ? Image.asset(
                 user.details.imageUrlOrPath!,
@@ -319,30 +319,54 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 height: 32,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  // Fallback to letter avatar if image fails to load
-                  return Center(
-                    child: Text(
-                      user.details.name.isNotEmpty
-                          ? user.details.name[0].toUpperCase()
-                          : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                  // Fallback to letter avatar with pink background if image fails to load
+                  return Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [kPinkColor.withValues(alpha: .8), kPinkColor],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        user.details.name.isNotEmpty
+                            ? user.details.name[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   );
                 },
               )
-            : Center(
-                child: Text(
-                  user.details.name.isNotEmpty
-                      ? user.details.name[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+            : Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [kPinkColor.withValues(alpha: .8), kPinkColor],
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    user.details.name.isNotEmpty
+                        ? user.details.name[0].toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
