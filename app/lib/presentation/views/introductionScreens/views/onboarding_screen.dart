@@ -27,40 +27,61 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        child: IntroductionScreen(
-          pages: _buildPages(context),
-          onDone: () => _onFinish(context),
-          onSkip: () => _onFinish(context),
-          onChange: (page) => setState(() => _currentPage = page),
-          showSkipButton: _currentPage < 2, // Only show Skip on pages 1-2
-          showNextButton: _currentPage < 2, // Only show Next on pages 1-2
-          showDoneButton: _currentPage < 2, // Only show Done on pages 1-2
-          skipOrBackFlex: 0,
-          nextFlex: 0,
-          skip: Text(
-            'Skip',
-            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-          ),
-          next: Icon(Icons.arrow_forward, color: kPinkColor),
-          done: Text(
-            'Done',
-            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-          ),
-          curve: Curves.easeInOut,
-          controlsMargin: const EdgeInsets.all(16),
-          controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-          dotsDecorator: DotsDecorator(
-            size: const Size(10.0, 10.0),
-            color: Colors.grey[400]!,
-            activeSize: const Size(22.0, 10.0),
-            activeColor: kPinkColor,
-            activeShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
+        child: Stack(
+          children: [
+            IntroductionScreen(
+              pages: _buildPages(context),
+              onDone: () => _onFinish(context),
+              onSkip: () => _onFinish(context),
+              onChange: (page) => setState(() => _currentPage = page),
+              showSkipButton: _currentPage < 2, // Show normally on pages 1-2
+              showNextButton: _currentPage < 2, // Show normally on pages 1-2
+              showDoneButton: false,
+              skipOrBackFlex: 0,
+              nextFlex: 0,
+              skip: Text(
+                'Skip',
+                style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
+              ),
+              next: Icon(Icons.arrow_forward, color: kPinkColor),
+              curve: Curves.easeInOut,
+              controlsMargin: const EdgeInsets.all(16),
+              controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+              dotsDecorator: DotsDecorator(
+                size: const Size(0, 0), // Hide original dots on ALL pages
+                color: Colors.transparent,
+                activeSize: const Size(0, 0), // Hide original dots on ALL pages
+                activeColor: Colors.transparent,
+                activeShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+              globalBackgroundColor: Colors.transparent,
             ),
-          ),
-          globalBackgroundColor: Colors.transparent,
-          // Remove custom footer to place buttons above dots
-          // globalFooter: _currentPage == 2 ? _buildLastPageFooter(context) : null,
+            // Absolutely positioned dots centered horizontally and vertically aligned with Skip/arrow
+            Positioned(
+              bottom: 40, // Adjust to match Skip text and arrow vertical position
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(3, (index) {
+                    bool isActive = index == _currentPage;
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      width: isActive ? 22.0 : 10.0,
+                      height: 10.0,
+                      decoration: BoxDecoration(
+                        color: isActive ? kPinkColor : Colors.grey[400]!,
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
