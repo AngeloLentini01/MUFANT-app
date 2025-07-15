@@ -50,12 +50,6 @@ class _MapPageState extends State<MapPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 24),
-                      // Testo di descrizione generale
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
-                      ),
-                      const SizedBox(height: 16),
                       // Testo sopra la prima immagine
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.0),

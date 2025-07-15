@@ -1,8 +1,12 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/views/introductionScreens/models/onboarding_page_data.dart';
 import 'package:app/presentation/app_main.dart';
+import 'package:app/presentation/views/loginPage/login_page.dart';
+import 'package:app/presentation/views/loginPage/registration_page.dart';
+import 'package:app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:logging/logging.dart';
 
 /// Onboarding screen with 3 pages using introduction_screen package
 /// Appears after splash screen and navigates to home page
@@ -13,8 +17,14 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with TickerProviderStateMixin {
   int _currentPage = 0;
+  final GlobalKey<IntroductionScreenState> _introKey =
+      GlobalKey<IntroductionScreenState>();
+
+  // Logger for this class
+  static final Logger _logger = AppLogger.getLogger('OnboardingScreen');
 
   @override
   Widget build(BuildContext context) {
@@ -27,40 +37,73 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        child: IntroductionScreen(
-          pages: _buildPages(context),
-          onDone: () => _onFinish(context),
-          onSkip: () => _onFinish(context),
-          onChange: (page) => setState(() => _currentPage = page),
-          showSkipButton: _currentPage < 2, // Only show Skip on pages 1-2
-          showNextButton: _currentPage < 2, // Only show Next on pages 1-2
-          showDoneButton: _currentPage < 2, // Only show Done on pages 1-2
-          skipOrBackFlex: 0,
-          nextFlex: 0,
-          skip: Text(
-            'Skip',
-            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-          ),
-          next: Icon(Icons.arrow_forward, color: kPinkColor),
-          done: Text(
-            'Done',
-            style: TextStyle(color: kPinkColor, fontWeight: FontWeight.w600),
-          ),
-          curve: Curves.easeInOut,
-          controlsMargin: const EdgeInsets.all(16),
-          controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-          dotsDecorator: DotsDecorator(
-            size: const Size(10.0, 10.0),
-            color: Colors.grey[400]!,
-            activeSize: const Size(22.0, 10.0),
-            activeColor: kPinkColor,
-            activeShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
+        child: Stack(
+          children: [
+            IntroductionScreen(
+              key: _introKey,
+              pages: _buildPages(context),
+              onDone: () => _onFinish(context),
+              onSkip: () => _skipToLastPage(),
+              onChange: (page) => setState(() => _currentPage = page),
+              showSkipButton: _currentPage < 2,
+              showNextButton: _currentPage < 2,
+              showDoneButton: false,
+              skipOrBackFlex: 0,
+              nextFlex: 0,
+              scrollPhysics: const ClampingScrollPhysics(),
+              skip: Text(
+                'Skip',
+                style: TextStyle(
+                  color: kPinkColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              next: Icon(Icons.arrow_forward, color: kPinkColor),
+              curve: Curves.easeInOut,
+              controlsMargin: const EdgeInsets.all(16),
+              controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+              dotsDecorator: DotsDecorator(
+                size: const Size(0, 0),
+                color: Colors.transparent,
+                activeSize: const Size(0, 0),
+                activeColor: Colors.transparent,
+                activeShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0),
+                ),
+              ),
+              globalBackgroundColor: Colors.transparent,
             ),
-          ),
-          globalBackgroundColor: Colors.transparent,
-          // Remove custom footer to place buttons above dots
-          // globalFooter: _currentPage == 2 ? _buildLastPageFooter(context) : null,
+            // Custom dots
+            _buildCustomDots(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build custom dots widget
+  Widget _buildCustomDots() {
+    return Positioned(
+      bottom: 40,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(3, (index) {
+            bool isActive = index == _currentPage;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              width: isActive ? 22.0 : 10.0,
+              height: 10.0,
+              decoration: BoxDecoration(
+                color: isActive ? kPinkColor : Colors.grey[400]!,
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+            );
+          }),
         ),
       ),
     );
@@ -81,7 +124,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             children: [
               const SizedBox(height: 40),
               // Centered image from assets/images/IntroductionScreen
-              Container(
+              SizedBox(
                 height: 280,
                 width: 280,
                 child: Image.asset(pageData.imagePath, fit: BoxFit.contain),
@@ -131,24 +174,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   /// Build buttons for the third page positioned above the navigation dots
   Widget _buildThirdPageButtons(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Sign up button
           SizedBox(
             width: double.infinity,
-            height: 52,
+            height: 50,
             child: ElevatedButton(
               onPressed: () {
-                // TODO: Navigate to RegistrationPage() after RegistrationPage is implemented
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text(
-                      'Registration page not yet implemented',
-                    ),
-                    backgroundColor: kPinkColor,
-                    behavior: SnackBarBehavior.floating,
+                // Navigate to RegistrationPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RegistrationPage(),
                   ),
                 );
               },
@@ -168,19 +208,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
           // "Already have an account? Sign in" text
           TextButton(
             onPressed: () {
-              // TODO: Navigate to LoginPage() after LoginPage is implemented
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Login page not yet implemented'),
-                  backgroundColor: kPinkColor,
-                  behavior: SnackBarBehavior.floating,
-                ),
+              // Debug logger for sign in navigation
+              AppLogger.debug(
+                _logger,
+                'Sign in button pressed from onboarding screen',
               );
+              AppLogger.debug(_logger, 'Navigating to LoginPage...');
+
+              // Navigate to LoginPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              ).then((result) {
+                // Log when returning from login page
+                AppLogger.debug(
+                  _logger,
+                  'Returned from LoginPage with result: $result',
+                );
+              });
             },
             child: RichText(
               text: TextSpan(
@@ -201,12 +251,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
+
+          // "or" text only
+          Text(
+            'or',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.1,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 10),
 
           // Continue as Guest button
           SizedBox(
             width: double.infinity,
-            height: 44,
+            height: 42,
             child: OutlinedButton(
               onPressed: () {
                 // Navigate to main app as guest user
@@ -242,6 +306,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ],
       ),
     );
+  }
+
+  /// Skip to the last introduction screen page
+  void _skipToLastPage() {
+    _introKey.currentState?.animateScroll(2);
   }
 
   /// Navigate to main app with tab bar when onboarding is completed

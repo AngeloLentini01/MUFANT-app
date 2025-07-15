@@ -41,6 +41,8 @@ class DBMuseumActivityManager {
     }
   }
 
+  
+
   // Get activities by type (event or room)
   static Future<List<Map<String, dynamic>>> getActivitiesByType(
     String type,

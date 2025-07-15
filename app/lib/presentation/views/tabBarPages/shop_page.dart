@@ -1,8 +1,12 @@
+import 'package:app/presentation/views/cart_confirmation/cart_confirmation_page.dart';
+import 'package:app/presentation/models/cart_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
 import 'package:logging/logging.dart';
-import 'dart:async';
+import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+// import 'package:app/model/generic/details_model.dart';
+import 'package:app/presentation/models/shop_event_item.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -13,13 +17,18 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   static final Logger _logger = Logger('ShopPage');
+  static const int maxAllowedTickets = 1000;
   int selectedTabIndex = 0;
   Map<String, int> cartItems = {};
-  Timer? _timer;
-  String? _activeTimerItemId;
-  bool _isIncrementing = false;
+  List<String> additionOrder = []; // Track the order items were added
 
   final List<String> categories = ['Museum', 'Events', 'Tours'];
+
+  // Guided tour pricing logic
+  static const double tourGroupPrice = 60.0;
+  static const double tourAdultPrice = 13.0;
+  static const double tourReducedPrice = 11.0;
+  static const double tourKidsPrice = 11.0;
 
   final List<ShopItem> items = [
     ShopItem(
@@ -67,23 +76,362 @@ class _ShopPageState extends State<ShopPage> {
     ),
   ];
 
+  List<ShopEventItem> eventItems = [];
+  bool _eventsLoaded = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadEventsForShop();
+  }
+
+  Future<void> _loadEventsForShop() async {
+    final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
+    setState(() {
+      eventItems = events
+          .map((e) => ShopEventItem.fromDetailsModel(e))
+          .toList();
+      _eventsLoaded = true;
+    });
+  }
+
   List<ShopItem> get filteredItems {
-    return items
-        .where((item) => item.category == categories[selectedTabIndex])
-        .toList();
+    if (categories[selectedTabIndex] == 'Events') {
+      // Convert ShopEventItem to ShopItem for ShopCard compatibility
+      return eventItems
+          .map(
+            (e) => ShopItem(
+              id: e.id,
+              title: e.title,
+              subtitle: e.subtitle,
+              price: e.price,
+              category: e.category,
+              imageAsset: e.imageAsset,
+            ),
+          )
+          .toList();
+    } else if (categories[selectedTabIndex] == 'Tours') {
+      // Custom guided tour card(s)
+      return [
+        ShopItem(
+          id: 'tour_group',
+          title: 'Guided Tour (1-5 participants)',
+          subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+          price: tourGroupPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_adult',
+          title: 'Guided Tour (Adult, 6+ participants)',
+          subtitle: 'Per adult, 90 min. tour (reservation required)',
+          price: tourAdultPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_reduced',
+          title: 'Guided Tour (Disabled, 6+ participants)',
+          subtitle:
+              'Per disabled participant, 90 min. tour (reservation required)',
+          price: tourReducedPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+        ShopItem(
+          id: 'tour_kid',
+          title: 'Guided Tour (Kids 4-10, 6+ participants)',
+          subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+          price: tourKidsPrice,
+          category: 'Tours',
+          imageAsset: 'assets/images/logo.png',
+        ),
+      ];
+    } else {
+      return items
+          .where((item) => item.category == categories[selectedTabIndex])
+          .toList();
+    }
+  }
+
+  // Helper to get all possible items (museum, events, tours)
+  List<ShopItem> get allItems {
+    return [
+      ...items,
+      ...eventItems.map(
+        (e) => ShopItem(
+          id: e.id,
+          title: e.title,
+          subtitle: e.subtitle,
+          price: e.price,
+          category: e.category,
+          imageAsset: e.imageAsset,
+        ),
+      ),
+      // Add tour items
+      ShopItem(
+        id: 'tour_group',
+        title: 'Guided Tour (1-5 participants)',
+        subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+        price: tourGroupPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_adult',
+        title: 'Guided Tour (Adult, 6+ participants)',
+        subtitle: 'Per adult, 90 min. tour (reservation required)',
+        price: tourAdultPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_reduced',
+        title: 'Guided Tour (Disabled, 6+ participants)',
+        subtitle:
+            'Per disabled participant, 90 min. tour (reservation required)',
+        price: tourReducedPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_kid',
+        title: 'Guided Tour (Kids 4-10, 6+ participants)',
+        subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+        price: tourKidsPrice,
+        category: 'Tours',
+        imageAsset: 'assets/images/logo.png',
+      ),
+    ];
   }
 
   double get totalAmount {
     double total = 0;
     cartItems.forEach((id, quantity) {
-      final item = items.firstWhere((item) => item.id == id);
-      total += item.price * quantity;
+      final found = allItems.where((item) => item.id == id);
+      if (found.isNotEmpty) {
+        total += found.first.price * quantity;
+      }
     });
     return total;
   }
 
   int get totalItems {
     return cartItems.values.fold(0, (sum, quantity) => sum + quantity);
+  }
+
+  void _addToCart(String itemId) {
+    setState(() {
+      if (totalItems >= maxAllowedTickets) {
+        _showTicketLimitDialog();
+        return;
+      }
+      cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
+      additionOrder.add(itemId);
+    });
+  }
+
+  void _removeFromCart(String itemId) {
+    setState(() {
+      final currentQuantity = cartItems[itemId] ?? 0;
+      if (currentQuantity > 1) {
+        cartItems[itemId] = currentQuantity - 1;
+        // Remove the last occurrence of this item from the order
+        for (int i = additionOrder.length - 1; i >= 0; i--) {
+          if (additionOrder[i] == itemId) {
+            additionOrder.removeAt(i);
+            break;
+          }
+        }
+      } else {
+        cartItems.remove(itemId);
+        // Remove all occurrences of this item from the order
+        additionOrder.removeWhere((id) => id == itemId);
+      }
+    });
+  }
+
+  void _clearCart() {
+    setState(() {
+      cartItems.clear();
+      additionOrder.clear(); // Also clear the order tracking
+    });
+    _logger.info('Cart cleared');
+  }
+
+  void _setQuantity(String itemId, int newQuantity) {
+    setState(() {
+      if (newQuantity <= 0) {
+        cartItems.remove(itemId);
+        // Remove all occurrences of this item from the order
+        additionOrder.removeWhere((id) => id == itemId);
+        _logger.info('Item $itemId removed from cart');
+      } else {
+        // Check if setting this quantity would exceed the limit
+        final currentQuantity = cartItems[itemId] ?? 0;
+        final newTotal = totalItems - currentQuantity + newQuantity;
+        if (newTotal > maxAllowedTickets) {
+          // Show the dialog instead of just a snackbar
+          _showTicketLimitDialog();
+          return;
+        }
+
+        // Update order tracking
+        if (newQuantity > currentQuantity) {
+          // Adding tickets - add to order
+          for (int i = 0; i < (newQuantity - currentQuantity); i++) {
+            additionOrder.add(itemId);
+          }
+        } else if (newQuantity < currentQuantity) {
+          // Removing tickets - remove from order (last added first)
+          int toRemove = currentQuantity - newQuantity;
+          for (int i = 0; i < toRemove; i++) {
+            for (int j = additionOrder.length - 1; j >= 0; j--) {
+              if (additionOrder[j] == itemId) {
+                additionOrder.removeAt(j);
+                break;
+              }
+            }
+          }
+        }
+
+        cartItems[itemId] = newQuantity;
+        _logger.info('Item $itemId quantity set to $newQuantity');
+      }
+    });
+  }
+
+  void _removeAllOfItem(String itemId) {
+    setState(() {
+      final removedQuantity = cartItems[itemId] ?? 0;
+      cartItems.remove(itemId);
+      // Remove all occurrences of this item from the order
+      additionOrder.removeWhere((id) => id == itemId);
+      _logger.info('All $removedQuantity items of $itemId removed from cart');
+    });
+  }
+
+  void _showTicketLimitDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: kPinkColor, size: 28),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Too Many Tickets',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Text(
+            "We're sorry. Unfortunately, the museum can't host more than $maxAllowedTickets visitors.",
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _clearCart(); // Clear all tickets when dismissing checkout
+              },
+              child: Text(
+                'Dismiss checkout',
+                style: TextStyle(color: Colors.grey[400], fontSize: 16),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _removeExceedingTickets();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPinkColor,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Remove Lastly added tickets',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _removeExceedingTickets() {
+    setState(() {
+      _logger.info(
+        'Before removal: cartItems=$cartItems, additionOrder=$additionOrder',
+      );
+      final result = CartUtils.removeExceedingTickets(
+        cartItems: cartItems,
+        additionOrder: additionOrder,
+        maxAllowedTickets: maxAllowedTickets,
+      );
+      cartItems = Map<String, int>.from(result['cartItems']);
+      additionOrder = List<String>.from(result['additionOrder']);
+      _logger.info(
+        'After removal: cartItems=$cartItems, additionOrder=$additionOrder',
+      );
+      _logger.info(
+        'Removed exceeding tickets (lastly added), new total: $totalItems',
+      );
+    });
+  }
+
+  void _goToCheckout() async {
+    // Check if we have too many tickets before proceeding
+    if (totalItems > maxAllowedTickets) {
+      _showTicketLimitDialog();
+      return;
+    }
+
+    _logger.info('Proceeding to cart with $totalItems items');
+    // Use allItems (museum, events, tours) for confirmation page
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartConfirmationPage(
+          cartItems: cartItems,
+          totalAmount: totalAmount,
+          itemList: allItems,
+          additionOrder: List<String>.from(additionOrder),
+        ),
+      ),
+    );
+
+    // Update cart items and additionOrder if changes were made in cart confirmation
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        cartItems = Map<String, int>.from(result['cartItems'] ?? {});
+        // Rebuild additionOrder to match cartItems (order is not meaningful after confirmation)
+        additionOrder = [];
+        cartItems.forEach((id, quantity) {
+          for (int i = 0; i < quantity; i++) {
+            additionOrder.add(id);
+          }
+        });
+      });
+      _logger.info(
+        'Cart updated with $totalItems items after returning from cart confirmation (additionOrder rebuilt)',
+      );
+    }
   }
 
   @override
@@ -110,38 +458,56 @@ class _ShopPageState extends State<ShopPage> {
                   text: 'Shop',
                   onButtonPressed: () {
                     _logger.info('Shop app bar button pressed');
-                    // TODO: Implement shop-specific action
                   },
-                  showLogo: false, // Don't show logo on shop page
-                  showAppBarCTAButton: false, // Hide button on shop page
+                  showLogo: false,
+                  showAppBarCTAButton: false,
                   additionalContent: Column(
                     children: [_buildSearchBar(), _buildCategoryTabs()],
                   ),
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: _buildShopItemCard(filteredItems[index]),
-                    );
-                  }, childCount: filteredItems.length),
-                ),
-                // Add bottom padding to prevent content from being hidden behind cart summary
-                if (totalItems > 0)
+                if (!_eventsLoaded && categories[selectedTabIndex] == 'Events')
                   const SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 100,
-                    ), // Height of cart summary + padding
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ShopCard(
+                          item: filteredItems[index],
+                          cartQuantity: cartItems[filteredItems[index].id] ?? 0,
+                          onAddToCart: () =>
+                              _addToCart(filteredItems[index].id),
+                          onRemoveFromCart: () =>
+                              _removeFromCart(filteredItems[index].id),
+                          showDeleteButton:
+                              (cartItems[filteredItems[index].id] ?? 0) > 0,
+                          onDelete: () =>
+                              _removeAllOfItem(filteredItems[index].id),
+                          onQuantityEdit: (newQuantity) => _setQuantity(
+                            filteredItems[index].id,
+                            newQuantity,
+                          ),
+                        ),
+                      );
+                    }, childCount: filteredItems.length),
                   ),
+                if (totalItems > 0)
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
-            // Cart summary snapped to the bottom
             if (totalItems > 0)
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: _buildCartSummary(),
+                child: CartSummary(
+                  totalAmount: totalAmount,
+                  totalItems: totalItems,
+                  onClearCart: _clearCart,
+                  onCheckout: _goToCheckout,
+                ),
               ),
           ],
         ),
@@ -211,328 +577,9 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildShopItemCard(ShopItem item) {
-    final quantity = cartItems[item.id] ?? 0;
-    final isInCart = quantity > 0;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.transparent,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.grey[850]!, Colors.grey[800]!],
-          ),
-          border: Border.all(
-            color: kPinkColor.withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [kPinkColor.withValues(alpha: 0.8), kPinkColor],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    item.imageAsset,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(Icons.museum, color: Colors.white, size: 30);
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (item.subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        item.subtitle,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[400]),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      '€${item.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: isInCart
-                    ? Row(
-                        key: ValueKey('quantity_controls_${item.id}'),
-                        children: [
-                          GestureDetector(
-                            onTapDown: (_) => _startOperation(item.id, false),
-                            onTapUp: (_) => _stopOperation(),
-                            onTapCancel: () => _stopOperation(),
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[700],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.remove,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(
-                              quantity.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTapDown: (_) => _startOperation(item.id, true),
-                            onTapUp: (_) => _stopOperation(),
-                            onTapCancel: () => _stopOperation(),
-                            child: Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[700],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.add, color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      )
-                    : ElevatedButton(
-                        key: ValueKey('add_button_${item.id}'),
-                        onPressed: () {
-                          setState(() {
-                            cartItems[item.id] = 1;
-                          });
-                          _logger.info('Added ${item.title} to cart');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kPinkColor,
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                        child: const Text(
-                          'Add',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCartSummary() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Total to pay',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 14),
-                ),
-                Text(
-                  '€${totalAmount.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                //todo: add clear button to remove all items from cart
-                Text(
-                  '$totalItems item${totalItems > 1 ? 's' : ''}',
-                  style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                ),
-              ],
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                // Clear cart button
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      cartItems.clear();
-                    });
-                    _logger.info('Cart cleared');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey[700],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Clear',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Checkout button
-                ElevatedButton(
-                  onPressed: () {
-                    _logger.info('Proceeding to cart with $totalItems items');
-                    // TODO: Navigate to cart page or checkout
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kPinkColor,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: const Text(
-                    'Checkout',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _startOperation(String itemId, bool isIncrementing) {
-    // Immediate action
-    _performOperation(itemId, isIncrementing);
-
-    // Set up for continuous operation
-    _activeTimerItemId = itemId;
-    _isIncrementing = isIncrementing;
-
-    // Start continuous operation after a delay
-    _timer = Timer(const Duration(milliseconds: 500), () {
-      _startContinuousOperation();
-    });
-  }
-
-  void _startContinuousOperation() {
-    if (_activeTimerItemId == null) return;
-
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (_activeTimerItemId == null) {
-        timer.cancel();
-        return;
-      }
-
-      _performOperation(_activeTimerItemId!, _isIncrementing);
-
-      // Stop if item is removed from cart
-      if (!_isIncrementing && (cartItems[_activeTimerItemId!] ?? 0) == 0) {
-        _stopOperation();
-      }
-    });
-  }
-
-  void _performOperation(String itemId, bool isIncrementing) {
-    setState(() {
-      if (isIncrementing) {
-        cartItems[itemId] = (cartItems[itemId] ?? 0) + 1;
-      } else {
-        final currentQuantity = cartItems[itemId] ?? 0;
-        if (currentQuantity > 1) {
-          cartItems[itemId] = currentQuantity - 1;
-        } else {
-          cartItems.remove(itemId);
-        }
-      }
-    });
-  }
-
-  void _stopOperation() {
-    _timer?.cancel();
-    _activeTimerItemId = null;
   }
 }
 

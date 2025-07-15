@@ -91,6 +91,8 @@ flutter:
     - assets/images/
     - assets/images/badge/
     - assets/images/locandine/
+    - assets/images/payment_icon/
+    - assets/images/shop_bot/
     - assets/icons/login/
     - assets/images/avatar/
     - assets/images/ticket/

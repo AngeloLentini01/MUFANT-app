@@ -5,6 +5,7 @@ import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
+import 'package:logging/logging.dart';
 
 class LoginPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -95,30 +96,31 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF2B2A33),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () {
+              Logger('LoginPage').fine('Back button pressed');
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
-            // Back button
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  onPressed: () {
-                    Navigator.maybePop(context);
-                  },
-                ),
-              ),
-            ),
             // Main content
             Center(
               child: SingleChildScrollView(
