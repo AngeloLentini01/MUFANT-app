@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:app/data/services/chat_service.dart';
+import 'package:app/data/services/user_session_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:app/model/community/chat/all.dart';
 
@@ -27,7 +29,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
   static final Logger _logger = Logger('CommunityChatPage');
 
   late final ChatService _chatService;
-  late final UserModel _currentUser;
+  UserModel? _currentUser;
 
   List<CommunityChatMessageModel> _messages = [];
   final TextEditingController _messageController = TextEditingController();
@@ -37,10 +39,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
   void initState() {
     super.initState();
     _chatService = ChatService();
-    _currentUser = _createCurrentUser();
-
-    // Load demo messages
-    _chatService.loadDemoMessages(widget.community, _currentUser);
+    _initializeUser();
 
     // Listen to message updates
     _chatService.messagesStream.listen((messages) {
@@ -52,6 +51,15 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
 
     // Load initial messages
     _loadMessages();
+  }
+
+  Future<void> _initializeUser() async {
+    _currentUser = await _createCurrentUser();
+    
+    // Load demo messages after user is initialized
+    if (_currentUser != null) {
+      _chatService.loadDemoMessages(widget.community, _currentUser!);
+    }
   }
 
   @override
@@ -84,8 +92,37 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
     }
   }
 
-  /// Create current user for demo
-  UserModel _createCurrentUser() {
+  /// Create current user for demo or use actual logged-in user
+  Future<UserModel> _createCurrentUser() async {
+    final sessionUser = UserSessionManager.currentUser;
+    if (sessionUser != null) {
+      // Convert User to UserModel
+      final now = DateTime.now();
+      
+      // Try to get saved avatar from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final savedAvatar = prefs.getString('user_avatar_${sessionUser.username}');
+      
+      return UserModel(
+        id: Ulid(),
+        username: sessionUser.username,
+        email: sessionUser.email,
+        passwordHash: Uint8List.fromList([]), // Empty for chat display
+        cart: CartModel(id: Ulid(), cartItems: [], updatedAt: now),
+        details: DetailsModel(
+          id: Ulid(),
+          name: sessionUser.firstName ?? sessionUser.username,
+          description: 'Current user',
+          notes: 'Logged in user',
+          imageUrlOrPath: savedAvatar ?? 'assets/images/avatar/avatar_robot.png', // Default avatar
+          updatedAt: now,
+        ),
+        createdAt: sessionUser.createdAt,
+        updatedAt: sessionUser.updatedAt,
+      );
+    }
+    
+    // Fallback to demo user if no one is logged in
     final now = DateTime.now();
     return UserModel(
       id: Ulid(),
@@ -98,6 +135,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         name: 'You',
         description: 'Current user',
         notes: 'Current logged in user',
+        imageUrlOrPath: 'assets/images/avatar/avatar_robot.png', // Default avatar
         updatedAt: now,
       ),
       createdAt: now,
@@ -109,12 +147,12 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
     final textMessage = _messageController.text.trim();
     _logger.info('Send button pressed with message: "$textMessage"');
 
-    if (textMessage.isNotEmpty) {
+    if (textMessage.isNotEmpty && _currentUser != null) {
       try {
         _logger.info('Attempting to send message...');
         await _chatService.sendMessage(
           community: widget.community,
-          sender: _currentUser,
+          sender: _currentUser!,
           content: textMessage,
         );
         _logger.info('Message sent successfully!');
@@ -169,7 +207,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 reverse: true,
                 itemBuilder: (context, index) {
                   final message = _messages[index];
-                  final isCurrentUser = message.sender.id == _currentUser.id;
+                  final isCurrentUser = _currentUser != null && message.sender.id == _currentUser!.id;
                   return _buildMessageBubble(message, isCurrentUser);
                 },
               ),
@@ -272,17 +310,42 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         ),
         shape: BoxShape.circle,
       ),
-      child: Center(
-        child: Text(
-          user.details.name.isNotEmpty
-              ? user.details.name[0].toUpperCase()
-              : '?',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+      child: ClipOval(
+        child: user.details.imageUrlOrPath != null &&
+                user.details.imageUrlOrPath!.isNotEmpty
+            ? Image.asset(
+                user.details.imageUrlOrPath!,
+                width: 32,
+                height: 32,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback to letter avatar if image fails to load
+                  return Center(
+                    child: Text(
+                      user.details.name.isNotEmpty
+                          ? user.details.name[0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  );
+                },
+              )
+            : Center(
+                child: Text(
+                  user.details.name.isNotEmpty
+                      ? user.details.name[0].toUpperCase()
+                      : '?',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
       ),
     );
   }
