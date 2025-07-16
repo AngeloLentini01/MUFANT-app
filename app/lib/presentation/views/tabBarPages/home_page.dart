@@ -46,10 +46,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             return AlertDialog(
               backgroundColor: Colors.grey[900],
               title: Text(
-                'Search the app',
+                'What are you looking for?',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                  fontSize: 16,
                 ),
               ),
               content: Column(
@@ -60,7 +62,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     autofocus: true,
                     style: TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Enter search term',
+                      hintText: 'Type here to search...',
                       hintStyle: TextStyle(color: Colors.white54),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white54),
@@ -132,10 +134,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               title: Text(
                                 item['text'],
                                 style: TextStyle(color: Colors.white),
-                              ),
-                              subtitle: Text(
-                                'Score: �${item['score']}',
-                                style: TextStyle(color: Colors.white54),
                               ),
                               trailing: Icon(
                                 Icons.arrow_forward_ios,

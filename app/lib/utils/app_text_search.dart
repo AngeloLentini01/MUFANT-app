@@ -7,17 +7,20 @@ class AppTextSearch {
   static List<Map<String, dynamic>> search(
     String query, {
     int limit = 10,
-    int threshold = 60,
+    int threshold = 35, // Lowered for typo tolerance
   }) {
     final indexer = AppTextIndexer();
     final results = <Map<String, dynamic>>[];
     final lowerQuery = query.toLowerCase();
     for (final entry in indexer.textMap.entries) {
       final keyLower = entry.key.toLowerCase();
-      int score = ratio(keyLower, lowerQuery);
+      // Use multiple fuzzywuzzy algorithms for better typo tolerance
+      int score1 = ratio(keyLower, lowerQuery);
+      int score2 = partialRatio(keyLower, lowerQuery);
+      int score3 = tokenSortRatio(keyLower, lowerQuery);
+      int score = [score1, score2, score3].reduce((a, b) => a > b ? a : b);
       // If the query is a substring (infix) of the text, boost the score or always include
       if (keyLower.contains(lowerQuery)) {
-        // Give a perfect score for exact substring, or 90 for infix
         score = (keyLower == lowerQuery) ? 100 : 90;
       }
       if (score >= threshold) {
