@@ -17,9 +17,6 @@ import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:app/main.dart' as main_app;
 
-import 'package:app/utils/app_text_indexer.dart';
-import 'package:app/utils/app_text_search.dart';
-
 final homepageGreeting = 'greeting_hello'; // Replace with actual greeting logic
 
 final _logger = Logger('MufantApp');
@@ -57,102 +54,181 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   fontSize: 16,
                 ),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: controller,
-                    autofocus: true,
-                    style: TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Type here to search...',
-                      hintStyle: TextStyle(color: Colors.white54),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white54),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white, width: 2),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        if (value.trim().isEmpty) {
-                          results = [];
-                        } else {
-                          final searchResults = AppTextSearch.search(
-                            value.trim(),
-                            limit: 10,
-                            threshold: 40,
-                          );
-                          final inputLower = value.trim().toLowerCase();
-                          final startsWithInput = <Map<String, dynamic>>[];
-                          final containsInput = <Map<String, dynamic>>[];
-                          for (final item in searchResults) {
-                            final text = (item['text'] ?? '')
-                                .toString()
-                                .toLowerCase();
-                            if (text.startsWith(inputLower)) {
-                              startsWithInput.add(item);
-                            } else {
-                              containsInput.add(item);
-                            }
-                          }
-                          startsWithInput.sort(
-                            (a, b) => (a['text'] ?? '')
-                                .toString()
-                                .toLowerCase()
-                                .compareTo(
-                                  (b['text'] ?? '').toString().toLowerCase(),
-                                ),
-                          );
-                          containsInput.sort(
-                            (a, b) => (a['text'] ?? '')
-                                .toString()
-                                .toLowerCase()
-                                .compareTo(
-                                  (b['text'] ?? '').toString().toLowerCase(),
-                                ),
-                          );
-                          results = [...startsWithInput, ...containsInput];
-                        }
-                      });
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  if (results.isEmpty && controller.text.isNotEmpty)
-                    Text(
-                      'No results found.',
-                      style: TextStyle(color: Colors.white54),
-                    ),
-                  if (results.isNotEmpty)
-                    Flexible(
-                      child: SizedBox(
-                        width: 300,
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: results.length,
-                          itemBuilder: (context, idx) {
-                            final item = results[idx];
-                            return ListTile(
-                              title: Text(
-                                item['text'],
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              trailing: Icon(
-                                Icons.arrow_forward_ios,
-                                size: 16,
-                                color: Colors.white38,
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                // Optionally, do something with the result (e.g., navigate)
-                              },
-                            );
-                          },
+              content: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                  maxWidth: MediaQuery.of(context).size.width * 0.9,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Type here to search...',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white54),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white, width: 2),
                         ),
                       ),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value.trim().isEmpty) {
+                            results = [];
+                          } else {
+                            // Simple search through available events and rooms
+                            final searchTerm = value.trim().toLowerCase();
+                            final allItems = <Map<String, dynamic>>[];
+
+                            // Add events
+                            for (final event in _events) {
+                              allItems.add({
+                                'text': event.name,
+                                'type': 'Event',
+                                'description': event.description,
+                                'data': event,
+                              });
+                            }
+
+                            // Add rooms
+                            for (final room in _rooms) {
+                              allItems.add({
+                                'text': room.name,
+                                'type': 'Room',
+                                'description': room.description,
+                                'data': room,
+                              });
+                            }
+
+                            // Filter and sort results
+                            final filteredResults = allItems.where((item) {
+                              final text = item['text']
+                                  .toString()
+                                  .toLowerCase();
+                              final description = item['description']
+                                  .toString()
+                                  .toLowerCase();
+                              return text.contains(searchTerm) ||
+                                  description.contains(searchTerm);
+                            }).toList();
+
+                            // Sort by relevance (exact matches first, then partial matches)
+                            filteredResults.sort((a, b) {
+                              final aText = a['text'].toString().toLowerCase();
+                              final bText = b['text'].toString().toLowerCase();
+
+                              final aExact = aText == searchTerm;
+                              final bExact = bText == searchTerm;
+
+                              if (aExact && !bExact) return -1;
+                              if (!aExact && bExact) return 1;
+
+                              final aStartsWith = aText.startsWith(searchTerm);
+                              final bStartsWith = bText.startsWith(searchTerm);
+
+                              if (aStartsWith && !bStartsWith) return -1;
+                              if (!aStartsWith && bStartsWith) return 1;
+
+                              return aText.compareTo(bText);
+                            });
+
+                            results = filteredResults.take(10).toList();
+                          }
+                        });
+                      },
                     ),
-                ],
+                    SizedBox(height: 16),
+                    if (results.isEmpty && controller.text.isNotEmpty)
+                      Text(
+                        'No results found.',
+                        style: TextStyle(color: Colors.white54),
+                      ),
+                    if (results.isNotEmpty)
+                      Flexible(
+                        child: SizedBox(
+                          width: 300,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: results.length,
+                            itemBuilder: (context, idx) {
+                              final item = results[idx];
+                              return ListTile(
+                                title: Text(
+                                  item['text'],
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                subtitle: Text(
+                                  item['type'],
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                trailing: Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: Colors.white38,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  // Find the best matching substring in the found text
+                                  final foundText = item['text'].toString();
+                                  final searchTerm = controller.text.trim();
+                                  String highlightText = searchTerm;
+                                  
+                                  // Debug logging
+                                  print('DEBUG: Found text: "$foundText"');
+                                  print('DEBUG: Search term: "$searchTerm"');
+                                  
+                                  // Try to find the best matching substring (case-insensitive)
+                                  final foundTextLower = foundText.toLowerCase();
+                                  final searchTermLower = searchTerm.toLowerCase();
+                                  
+                                  if (foundTextLower.contains(searchTermLower)) {
+                                    // Use the search term as is
+                                    highlightText = searchTerm;
+                                    print('DEBUG: Found exact match, highlighting: "$highlightText"');
+                                  } else {
+                                    // Find the longest common substring
+                                    final words = searchTermLower.split(' ');
+                                    for (final word in words) {
+                                      if (word.length > 2 && foundTextLower.contains(word)) {
+                                        // Find the original case version of the word
+                                        final wordIndex = foundTextLower.indexOf(word);
+                                        highlightText = foundText.substring(wordIndex, wordIndex + word.length);
+                                        print('DEBUG: Found word match, highlighting: "$highlightText"');
+                                        break;
+                                      }
+                                    }
+                                  }
+                                  
+                                  print('DEBUG: Final highlight text: "$highlightText"');
+                                  
+                                  // Navigate to the appropriate page with highlighting
+                                  if (item['type'] == 'Event') {
+                                    _navigateToEventWithHighlight(
+                                      item['data'],
+                                      highlightText,
+                                    );
+                                  } else if (item['type'] == 'Room') {
+                                    _navigateToRoomWithHighlight(
+                                      item['data'],
+                                      highlightText,
+                                    );
+                                  }
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -370,22 +446,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _logger.finest(
         'Loaded ${events.length} events and ${rooms.length} rooms',
       );
-      // Index event and room names/descriptions for search (clear first)
-      final indexer = AppTextIndexer();
-      indexer.clear();
+      // Log events and rooms for debugging
       for (final event in events) {
         _logger.finer('Event: ${event.name}');
-        indexer.addText(event.name, source: 'event');
-        if (event.description != null) {
-          indexer.addText(event.description!, source: 'event');
-        }
       }
       for (final room in rooms) {
         _logger.finer('Room: ${room.name}');
-        indexer.addText(room.name, source: 'room');
-        if (room.description != null) {
-          indexer.addText(room.description!, source: 'room');
-        }
       }
       if (mounted) {
         setState(() {
@@ -416,6 +482,48 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         builder: (context) => RoomDetailsPage(title: room.name),
       ),
     );
+  }
+
+  void _navigateToEventWithHighlight(DetailsModel event, String searchTerm) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            EventPage(eventTitle: event.name, highlightText: searchTerm),
+      ),
+    ).then((_) {
+      // Show a snackbar to indicate the search term was found
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Found: "$searchTerm" in ${event.name}'),
+            backgroundColor: kPinkColor,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+  }
+
+  void _navigateToRoomWithHighlight(DetailsModel room, String searchTerm) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            RoomDetailsPage(title: room.name, highlightText: searchTerm),
+      ),
+    ).then((_) {
+      // Show a snackbar to indicate the search term was found
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Found: "$searchTerm" in ${room.name}'),
+            backgroundColor: kPinkColor,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    });
   }
 
   @override

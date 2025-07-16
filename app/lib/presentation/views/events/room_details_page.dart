@@ -8,16 +8,19 @@ import 'dart:ui';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:async'; // Added for Timer
 
 class RoomDetailsPage extends StatefulWidget {
   final String title;
-  const RoomDetailsPage({super.key, required this.title});
+  final String? highlightText;
+  const RoomDetailsPage({super.key, required this.title, this.highlightText});
 
   @override
   State<RoomDetailsPage> createState() => _RoomDetailsPageState();
 }
 
-class _RoomDetailsPageState extends State<RoomDetailsPage> {
+class _RoomDetailsPageState extends State<RoomDetailsPage>
+    with TickerProviderStateMixin {
   static const lightBlack = Color(
     0x80000000,
   ); // Increased opacity for better text readability
@@ -25,11 +28,43 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
 
   Map<String, dynamic>? roomData;
   bool isLoading = true;
+  AnimationController? _highlightController;
+  Animation<double>? _highlightAnimation;
 
   @override
   void initState() {
     super.initState();
     _loadRoomData();
+    _setupHighlightAnimation();
+  }
+
+  void _setupHighlightAnimation() {
+    if (widget.highlightText != null && widget.highlightText!.isNotEmpty) {
+      _highlightController = AnimationController(
+        duration: const Duration(milliseconds: 1000), // 1 second per cycle
+        vsync: this,
+      );
+
+      _highlightAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _highlightController!, curve: Curves.easeInOut),
+      );
+
+      // Start the animation and repeat it for 2 seconds
+      _highlightController!.repeat(reverse: true);
+
+      // Stop after 2 seconds
+      Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          _highlightController!.stop();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _highlightController?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadRoomData() async {
@@ -127,6 +162,117 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
         "assets/images/library.jpg"; // Default fallback
   }
 
+  Widget _buildHighlightedText(String text) {
+    if (widget.highlightText == null || widget.highlightText!.isEmpty) {
+      return Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: kPinkColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2.0,
+        ),
+      );
+    }
+
+    final highlightText = widget.highlightText!.toLowerCase();
+    final textLower = text.toLowerCase();
+    final index = textLower.indexOf(highlightText);
+
+    if (index == -1) {
+      return Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: kPinkColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2.0,
+        ),
+      );
+    }
+
+    // If no animation controller, return normal text
+    if (_highlightAnimation == null) {
+      return Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: kPinkColor,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2.0,
+        ),
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _highlightAnimation!,
+      builder: (context, child) {
+        final animationValue = _highlightAnimation!.value;
+
+        // Create more prominent color transitions
+        final highlightColor = Color.lerp(
+          kPinkColor, // Normal color
+          Colors.white, // Highlighted color
+          animationValue,
+        )!;
+
+        // Make background more prominent
+        final backgroundColor = animationValue > 0.1
+            ? kPinkColor.withValues(alpha: animationValue * 0.9)
+            : null;
+
+        return RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: text.substring(0, index).toUpperCase(),
+                style: TextStyle(
+                  color: kPinkColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              TextSpan(
+                text: text
+                    .substring(index, index + highlightText.length)
+                    .toUpperCase(),
+                style: TextStyle(
+                  color: highlightColor,
+                  backgroundColor: backgroundColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2.0,
+                  // Add shadow for better visibility
+                  shadows: [
+                    Shadow(
+                      offset: const Offset(0, 1),
+                      blurRadius: 2,
+                      color: Colors.black.withValues(
+                        alpha: animationValue * 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextSpan(
+                text: text
+                    .substring(index + highlightText.length)
+                    .toUpperCase(),
+                style: TextStyle(
+                  color: kPinkColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2.0,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     try {
@@ -221,15 +367,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
               color: Color(0x80000000), // Semi-transparent black background
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text(
-              (roomData!['name'] ?? widget.title),
-              style: TextStyle(
-                color: kPinkColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2.0,
-              ),
-            ),
+            child: _buildHighlightedText(roomData!['name'] ?? widget.title),
           ),
           centerTitle: true,
         ),
