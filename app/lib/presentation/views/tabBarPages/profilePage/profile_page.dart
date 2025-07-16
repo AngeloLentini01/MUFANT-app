@@ -63,6 +63,12 @@ class _ProfilePageState extends State<ProfilePage> {
             List<String> nameParts = user.username.split('_');
             if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
               firstName = nameParts[0];
+              // Properly capitalize the first name
+              if (firstName.isNotEmpty) {
+                firstName =
+                    firstName[0].toUpperCase() +
+                    firstName.substring(1).toLowerCase();
+              }
             }
           }
         }

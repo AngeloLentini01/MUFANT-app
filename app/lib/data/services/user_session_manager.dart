@@ -36,15 +36,64 @@ class User {
        updatedAt = updatedAt ?? DateTime.now();
 
   factory User.fromMap(Map<String, dynamic> map) {
-    // Extract names from username as fallback
+    AppLogger.info(
+      AppLogger.getLogger('User.fromMap'),
+      'Creating User from map: ${map.toString()}',
+    );
+    
+    // Try to get names from stored details first
     String? firstName;
     String? lastName;
 
-    String fullName = map['username']?.toString() ?? '';
-    List<String> nameParts = fullName.split('_');
-    if (nameParts.length > 1) {
-      firstName = nameParts[0];
-      lastName = nameParts[1];
+    // Check if we have details with the stored name
+    if (map['details'] != null) {
+      final details = map['details'] as Map<String, dynamic>;
+      AppLogger.info(
+        AppLogger.getLogger('User.fromMap'),
+        'Found details in map: ${details.toString()}',
+      );
+      final fullName = details['name']?.toString() ?? '';
+      if (fullName.isNotEmpty) {
+        final nameParts = fullName.split(' ');
+        if (nameParts.isNotEmpty) {
+          firstName = nameParts[0];
+          if (nameParts.length > 1) {
+            lastName = nameParts.sublist(1).join(' ');
+          }
+        }
+        AppLogger.info(
+          AppLogger.getLogger('User.fromMap'),
+          'Extracted name from details: firstName=$firstName, lastName=$lastName, fullName=$fullName',
+        );
+      }
+    } else {
+      AppLogger.info(
+        AppLogger.getLogger('User.fromMap'),
+        'No details found in map',
+      );
+    }
+
+    // Fallback to extracting from username if no details found
+    if (firstName == null || firstName.isEmpty) {
+      String fullName = map['username']?.toString() ?? '';
+      List<String> nameParts = fullName.split('_');
+      if (nameParts.length > 1) {
+        firstName = nameParts[0];
+        lastName = nameParts[1];
+      } else if (nameParts.length == 1) {
+        // If username doesn't have underscore, use the whole username as first name
+        firstName = nameParts[0];
+      }
+      
+      // Capitalize the first name properly
+      if (firstName != null && firstName.isNotEmpty) {
+        firstName = firstName[0].toUpperCase() + firstName.substring(1).toLowerCase();
+      }
+      
+      AppLogger.info(
+        AppLogger.getLogger('User.fromMap'),
+        'Fallback: Extracted name from username: firstName=$firstName, lastName=$lastName, username=$fullName',
+      );
     }
 
     return User(
@@ -168,23 +217,33 @@ class UserSessionManager {
           // Try to get the full user data from the database
           final userData = await DBUserManager.getUserByUsername(username);
 
-          if (userData != null) {
+                  if (userData != null) {
+          AppLogger.info(
+            _logger,
+            'User data retrieved from database: ${userData.toString()}',
+          );
+          _currentUser = User.fromMap(userData);
+          
+          // Note: Database is read-only, so we can't create details automatically
+          // The fallback logic in User.fromMap will handle extracting the name from username
+          if (_currentUser?.firstName == null || _currentUser!.firstName!.isEmpty) {
             AppLogger.info(
               _logger,
-              'User data retrieved from database: ${userData.toString()}',
-            );
-            _currentUser = User.fromMap(userData);
-            AppLogger.info(
-              _logger,
-              'User session loaded: ${_currentUser?.username}',
-            );
-            return true;
-          } else {
-            AppLogger.warning(
-              _logger,
-              'User data not found in database for username: $username',
+              'User has no details stored, using fallback from username',
             );
           }
+          
+          AppLogger.info(
+            _logger,
+            'User session loaded: ${_currentUser?.username}, firstName: ${_currentUser?.firstName}, lastName: ${_currentUser?.lastName}',
+          );
+          return true;
+        } else {
+          AppLogger.warning(
+            _logger,
+            'User data not found in database for username: $username',
+          );
+        }
         } else {
           AppLogger.warning(
             _logger,
