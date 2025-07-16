@@ -1,4 +1,4 @@
-import 'package:app/presentation/views/cart_confirmation/cart_confirmation_page.dart';
+import 'package:app/presentation/views/checkout/cart_confirmation/cart_confirmation_page.dart';
 import 'package:app/presentation/models/cart_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
@@ -6,6 +6,7 @@ import 'package:app/presentation/widgets/all.dart';
 import 'package:app/presentation/widgets/animated_tab_bar.dart';
 import 'package:logging/logging.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/data/services/user_session_manager.dart';
 // import 'package:app/model/generic/details_model.dart';
 
 import 'package:app/presentation/models/shop_event_item.dart';
@@ -30,8 +31,11 @@ class ShopItem {
   });
 }
 
+typedef GoToProfileCallback = void Function();
+
 class ShopPage extends StatefulWidget {
-  const ShopPage({super.key});
+  final GoToProfileCallback? onGoToProfile;
+  const ShopPage({super.key, this.onGoToProfile});
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -449,8 +453,38 @@ class _ShopPageState extends State<ShopPage> {
       return;
     }
 
+    // Check if user is logged in
+    final isLoggedIn = await UserSessionManager.isLoggedIn();
+    if (!isLoggedIn) {
+      // Use callback to switch to profile tab in AppMain
+      if (widget.onGoToProfile != null) {
+        widget.onGoToProfile!();
+        // Wait for navigation to complete before showing dialog
+        await Future.delayed(const Duration(milliseconds: 300));
+        if (!mounted) return;
+        // Only use context if still mounted
+        showDialog(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Login Required'),
+            content: const Text(
+              'User has to be logged in before purchasing tickets',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Got it!'),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+
     _logger.info('Proceeding to cart with $totalItems items');
     // Use allItems (museum, events, tours) for confirmation page
+    if (!mounted) return;
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -464,6 +498,7 @@ class _ShopPageState extends State<ShopPage> {
     );
 
     // Update cart items and additionOrder if changes were made in cart confirmation
+    if (!mounted) return;
     if (result != null && result is Map<String, dynamic>) {
       setState(() {
         cartItems = Map<String, int>.from(result['cartItems'] ?? {});

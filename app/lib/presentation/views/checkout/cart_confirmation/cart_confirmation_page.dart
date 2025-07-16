@@ -1,9 +1,9 @@
 import "package:app/presentation/styles/all.dart";
 import "package:app/presentation/views/tabBarPages/shop_page.dart";
-import "package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart";
 import "package:app/presentation/widgets/shop/cart_summary.dart";
 import "package:app/presentation/widgets/shop/confirmation_card.dart";
 import "package:flutter/material.dart";
+import 'package:app/presentation/views/checkout/checkout_page.dart';
 
 class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -208,25 +208,17 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                         showCheckoutButton: true,
                         checkoutText: 'Confirm Checkout',
                         onCheckout: () {
-                          // TODO: Navigate to checkout
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Proceeding to checkout with $totalItems tickets',
-                              ),
-                              backgroundColor: kPinkColor,
-                              duration: const Duration(seconds: 2),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CheckoutPage(),
                             ),
                           );
-                          Navigator.pop(context, {
-                            'cartItems': cardGroup,
-                            'additionOrder': localAdditionOrder,
-                          });
                         },
                       ),
                   ],
                 ),
-          bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+          // No tab bar in cart confirmation page
         ),
       ),
     );

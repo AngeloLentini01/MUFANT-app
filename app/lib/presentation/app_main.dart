@@ -19,11 +19,17 @@ class _MainAppState extends State<AppMain> {
   int _currentIndex = 0;
   Key _homePageKey = UniqueKey(); // Force rebuild when needed
 
+  void _goToProfileTab() {
+    setState(() {
+      _currentIndex = 2;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabBarPages = [
       HomePage(key: _homePageKey),
-      const ShopPage(),
+      ShopPage(onGoToProfile: _goToProfileTab),
       const ProfilePage(),
     ];
 
