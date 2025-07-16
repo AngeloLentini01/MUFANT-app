@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/dbManagers/database_helper.dart';
 import 'package:app/data/dbManagers/data_migration_helper.dart';
 import 'package:app/data/services/user_session_manager.dart';
+import 'package:app/data/services/badge_service.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -158,6 +159,18 @@ void _initializeDatabaseAsync() async {
       AppLogger.info(_logger, 'User session loaded');
     } catch (sessionError) {
       AppLogger.error(_logger, 'Failed to load user session', sessionError);
+    }
+
+    // Initialize badge service
+    try {
+      await BadgeService.instance.initialize();
+      AppLogger.info(_logger, 'Badge service initialized');
+    } catch (badgeError) {
+      AppLogger.error(
+        _logger,
+        'Failed to initialize badge service',
+        badgeError,
+      );
     }
 
     // Mark database as ready

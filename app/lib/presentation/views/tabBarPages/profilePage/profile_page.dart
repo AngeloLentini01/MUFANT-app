@@ -4,6 +4,8 @@ import 'package:app/presentation/views/tabBarPages/profilePage/badges_section.da
 import 'package:app/presentation/views/tabBarPages/profilePage/tickets_section.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/user_avatar_section.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/wallpaper_section.dart';
+import 'package:app/presentation/views/tabBarPages/profilePage/settings_page.dart';
+import 'package:app/presentation/views/notifications/notification_screen.dart';
 import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/services/user_session_manager.dart';
@@ -277,13 +279,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          // TODO: Replace with navigation to notification page
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Notification page not yet implemented',
-                              ),
-                              backgroundColor: greyColor,
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NotificationScreen(),
                             ),
                           );
                         },
@@ -330,14 +329,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                       onTap: () {
                                         Navigator.pop(context);
-                                        ScaffoldMessenger.of(
+                                        Navigator.push(
                                           context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Settings page not yet implemented',
-                                            ),
-                                            backgroundColor: greyColor,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SettingsPage(),
                                           ),
                                         );
                                       },
@@ -361,12 +357,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Settings page not yet implemented',
-                                ),
-                                backgroundColor: greyColor,
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsPage(),
                               ),
                             );
                           }

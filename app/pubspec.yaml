@@ -50,6 +50,13 @@ dependencies:
   gal: ^2.3.0
   introduction_screen: ^3.1.17
   fuzzywuzzy: ^1.2.0
+  photo_view: ^0.15.0
+
+  # Dependencies for notifications management
+  flutter_slidable: ^3.0.0
+  grouped_list: ^5.1.2
+  badges: ^3.1.1
+  flutter_staggered_animations: ^1.1.1
 
   # Add other dependencies as needed
 
@@ -84,6 +91,7 @@ flutter:
   # Add assets
   assets:
     - assets/images/
+    - assets/images/badge/
     - assets/images/locandine/
     - assets/images/payment_icon/
     - assets/images/shop_bot/

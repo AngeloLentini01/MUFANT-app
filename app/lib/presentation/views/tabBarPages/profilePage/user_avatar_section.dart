@@ -1,6 +1,8 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/avatar_selector_modal.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/profile_page.dart';
+import 'package:app/data/services/user_session_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class UserAvatarSection extends StatefulWidget {
@@ -16,11 +18,38 @@ class _UserAvatarSectionState extends State<UserAvatarSection> {
   /// Dynamic avatar image path - can be changed to implement avatar switching
   String avatarImagePath = 'assets/images/avatar/avatar_robot.png';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedAvatar();
+  }
+
+  /// Load saved avatar from SharedPreferences
+  void _loadSavedAvatar() async {
+    final currentUser = UserSessionManager.currentUser;
+    if (currentUser != null) {
+      final prefs = await SharedPreferences.getInstance();
+      final savedAvatar = prefs.getString('user_avatar_${currentUser.username}');
+      if (savedAvatar != null) {
+        setState(() {
+          avatarImagePath = savedAvatar;
+        });
+      }
+    }
+  }
+
   /// Handle avatar selection from the modal
-  void _onAvatarSelected(String newAvatarPath) {
+  void _onAvatarSelected(String newAvatarPath) async {
     setState(() {
       avatarImagePath = newAvatarPath;
     });
+    
+    // Save avatar to SharedPreferences for the current user
+    final currentUser = UserSessionManager.currentUser;
+    if (currentUser != null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_avatar_${currentUser.username}', newAvatarPath);
+    }
   }
 
   /// Opens the avatar selector modal bottom sheet

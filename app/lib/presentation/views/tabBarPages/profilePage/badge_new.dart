@@ -1,5 +1,4 @@
 import 'package:app/presentation/styles/colors/generic.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Badge extends StatelessWidget {
@@ -61,10 +60,7 @@ class Badge extends StatelessWidget {
   }
 
   Widget _buildBadgeContent() {
-    // Debug output
-    debugPrint('🔍 Badge: imagePath=$imagePath, isEarned=$isEarned');
-
-    if (imagePath != null && imagePath!.isNotEmpty) {
+    if (imagePath != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.asset(
@@ -73,8 +69,7 @@ class Badge extends StatelessWidget {
           height: 40,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            debugPrint('❌ Badge image error for $imagePath: $error');
-            // If image fails to load, use icon fallback
+            // Fallback to icon if image fails to load
             return Icon(
               icon ?? Icons.star,
               color: isEarned ? color : Colors.grey[500],
@@ -84,8 +79,6 @@ class Badge extends StatelessWidget {
         ),
       );
     } else {
-      debugPrint('⭐ Badge: Using icon fallback (imagePath is null/empty)');
-      // Use icon if no image path is provided
       return Icon(
         icon ?? Icons.star,
         color: isEarned ? color : Colors.grey[500],
