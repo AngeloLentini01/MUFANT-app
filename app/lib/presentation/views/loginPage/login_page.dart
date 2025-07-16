@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
         _showErrorDialog('invalid_credentials'.tr());
       }
     } catch (e) {
-      _showErrorDialog('login_failed'.tr() + ': $e');
+      _showErrorDialog('${'login_failed'.tr()}: $e');
     } finally {
       if (mounted) {
         setState(() {

@@ -1,6 +1,5 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BadgeDetailModal extends StatelessWidget {

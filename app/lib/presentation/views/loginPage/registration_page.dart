@@ -68,7 +68,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _showErrorDialog('registration_failed_exists'.tr());
       }
     } catch (e) {
-      _showErrorDialog('registration_failed'.tr() + ': $e');
+      _showErrorDialog('${'registration_failed'.tr()}: $e');
     } finally {
       if (mounted) {
         setState(() {
