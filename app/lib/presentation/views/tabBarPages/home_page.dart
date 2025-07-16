@@ -12,6 +12,7 @@ import 'package:app/presentation/views/tabBarPages/map_page.dart';
 import 'package:app/presentation/views/events/event_page.dart';
 import 'package:app/presentation/views/events/room_details_page.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:app/main.dart' as main_app;
 
@@ -176,10 +177,35 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   String get homePageMessage =>
       'greeting_hello'.tr(namedArgs: {'name': _username});
 
+  // Note: Database is read-only, so we can't update user details
+  // The fallback logic in User.fromMap should handle the name extraction
+
   // Public method to refresh user session
   void refreshUserSession() {
     _logger.info('Manually refreshing user session from external call');
     _loadUserSession();
+  }
+
+  // Debug method to check current user state
+  void debugUserState() {
+    final user = UserSessionManager.currentUser;
+    if (user != null) {
+      _logger.info('DEBUG - Current user state:');
+      _logger.info('  Username: ${user.username}');
+      _logger.info('  First Name: ${user.firstName}');
+      _logger.info('  Last Name: ${user.lastName}');
+      _logger.info('  Email: ${user.email}');
+
+      // Note: Database is read-only, so we can't update user details
+      // The fallback logic in User.fromMap should handle the name extraction
+      if (user.firstName == null || user.firstName!.isEmpty) {
+        _logger.info(
+          'No firstName found, but database is read-only - using fallback from username',
+        );
+      }
+    } else {
+      _logger.info('DEBUG - No current user found');
+    }
   }
 
   @override
@@ -191,6 +217,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     // Load user session and activities data
     _initializeData();
+
+    // Debug: Check user state after initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugUserState();
+      // Also inspect the database
+      DBUserManager.debugInspectDatabase();
+    });
     // No need to pre-initialize the text indexer; we only index app data after loading
   }
 
@@ -235,16 +268,25 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       if (isLoggedIn) {
         _logger.info('User is logged in, checking current user...');
 
+        // Force reload session to ensure we get the latest data
+        bool sessionLoaded = await UserSessionManager.loadSession();
+        _logger.info('Session loaded: $sessionLoaded');
+
         // Check if current user is already loaded
         if (UserSessionManager.currentUser != null) {
           _logger.info(
-            'Current user already loaded: ${UserSessionManager.currentUser!.username}',
+            'Current user loaded: ${UserSessionManager.currentUser!.username}',
           );
+
+          // Immediate debug of user data
+          final user = UserSessionManager.currentUser!;
+          _logger.info('IMMEDIATE DEBUG - User data:');
+          _logger.info('  Username: ${user.username}');
+          _logger.info('  First Name: ${user.firstName}');
+          _logger.info('  Last Name: ${user.lastName}');
+          _logger.info('  Email: ${user.email}');
         } else {
-          _logger.info('Current user not loaded, loading session...');
-          // Load user session from shared preferences
-          bool sessionLoaded = await UserSessionManager.loadSession();
-          _logger.info('Session loaded: $sessionLoaded');
+          _logger.info('Current user not loaded after session load');
         }
 
         if (UserSessionManager.currentUser != null) {
@@ -264,12 +306,40 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             List<String> nameParts = user.username.split('_');
             if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
               displayName = nameParts[0];
+              // Properly capitalize the first name
+              if (displayName.isNotEmpty) {
+                displayName =
+                    displayName[0].toUpperCase() +
+                    displayName.substring(1).toLowerCase();
+              }
               _logger.info('Using parsed username: $displayName');
             } else {
               displayName = user.username;
+              // Properly capitalize the username if no underscore found
+              if (displayName.isNotEmpty) {
+                displayName =
+                    displayName[0].toUpperCase() +
+                    displayName.substring(1).toLowerCase();
+              }
               _logger.info('Using full username: $displayName');
             }
           }
+
+          // Debug: Log all user information
+          _logger.info(
+            'DEBUG - User info: username=${user.username}, firstName=${user.firstName}, lastName=${user.lastName}',
+          );
+          _logger.info('DEBUG - Final displayName: $displayName');
+
+          // Note: Database is read-only, so we can't update user details
+          // The fallback logic in User.fromMap should handle the name extraction
+          if ((user.firstName == null || user.firstName!.isEmpty) &&
+              user.username.isNotEmpty) {
+            _logger.info(
+              'No firstName found, but database is read-only - using fallback from username',
+            );
+          }
+
           if (mounted) {
             setState(() {
               _username = displayName;

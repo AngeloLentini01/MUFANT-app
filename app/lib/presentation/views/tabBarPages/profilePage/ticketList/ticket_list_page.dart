@@ -82,6 +82,11 @@ class TicketListPageState extends State<TicketListPage> {
 
   /// Refresh tickets list
   Future<void> _refreshTickets() async {
+    // Show loading indicator
+    setState(() {
+      _tickets = []; // Clear current list to show loading
+    });
+
     await _ticketService.refreshTickets();
     await _loadTickets();
   }
@@ -545,14 +550,35 @@ class TicketListPageState extends State<TicketListPage> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Text(
-        'tickets_empty_state'.tr(),
-        style: TextStyle(
-          color: kWhiteColor.withValues(alpha: 0.7),
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-        textAlign: TextAlign.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.confirmation_number_outlined,
+            size: 64,
+            color: kWhiteColor.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No tickets found',
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.8),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'tickets_empty_state'.tr(),
+            style: TextStyle(
+              color: kWhiteColor.withValues(alpha: 0.6),
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

@@ -46,12 +46,11 @@ class TicketService {
 
   // Removed _loadTickets and all mock/demo ticket logic.
 
-  /// Refresh tickets (simulates API refresh)
+  /// Refresh tickets (reloads from storage)
   Future<void> refreshTickets() async {
-    // Simulate API call delay
+    // Reload tickets from storage instead of clearing them
     await Future.delayed(const Duration(seconds: 1));
-    _tickets.clear();
-    await _saveTickets();
+    await _loadTickets();
   }
 
   void _sortTickets() {

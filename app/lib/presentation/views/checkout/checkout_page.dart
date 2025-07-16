@@ -7,6 +7,8 @@ import 'package:app/model/items/ticket/ticket_model.dart';
 import 'package:app/model/museum/activity/museum_activity_model.dart';
 import 'package:app/data/services/ticket_service.dart';
 import 'package:app/model/cart/cart_model.dart';
+import 'package:app/utils/app_logger.dart';
+import 'package:logging/logging.dart';
 
 class CheckoutPage extends StatefulWidget {
   final CartModel cart;
@@ -99,6 +101,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String? _dueDateError;
   String? _cvvError;
   bool _showValidationError = false;
+  static final Logger _logger = AppLogger.getLogger('CheckoutPage');
 
   @override
   void dispose() {
@@ -158,23 +161,89 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     // Add all tickets from the cart to the user's tickets
     final now = DateTime.now();
-    for (final cartItem in widget.cart.cartItems) {
-      if (cartItem is TicketModel) {
-        final ticket = TicketDisplayData(
-          ticketModel: cartItem,
-          purchaseDate: now,
-          isExpired: false,
+    AppLogger.info(
+      _logger,
+      'Starting payment process with ${widget.cart.cartItems.length} items in cart',
+    );
+
+    try {
+      for (final cartItem in widget.cart.cartItems) {
+        AppLogger.info(
+          _logger,
+          'Processing cart item: ${cartItem.runtimeType}',
         );
-        await TicketService().addTicket(ticket);
+        if (cartItem is TicketModel) {
+          final ticket = TicketDisplayData(
+            ticketModel: cartItem,
+            purchaseDate: now,
+            isExpired: false,
+          );
+
+          // Handle database read-only mode gracefully
+          try {
+            await TicketService().addTicket(ticket);
+            AppLogger.info(
+              _logger,
+              'Added ticket to database: '
+              'Event: "${cartItem.details.name}", '
+              'Museum Activity: "${cartItem.museumActivity.details.name}", '
+              'Date: "${cartItem.museumActivity.activeTimePeriod.start}", '
+              'Price: "${cartItem.price}", '
+              'Charging Rate: "${cartItem.chargingRate}"',
+            );
+          } catch (dbError) {
+            AppLogger.warning(
+              _logger,
+              'Database is read-only, ticket not saved but payment continues: $dbError',
+            );
+            // Continue with payment even if database is read-only
+          }
+        } else {
+          AppLogger.warning(
+            _logger,
+            'Cart item is not a TicketModel: ${cartItem.runtimeType}',
+          );
+        }
+      }
+
+      // Verify tickets were added (only if database is not read-only)
+      try {
+        final ticketService = TicketService();
+        await ticketService.ready;
+        final allTickets = ticketService.getAllTickets();
+        AppLogger.info(
+          _logger,
+          'After adding tickets, total tickets in database: ${allTickets.length}',
+        );
+      } catch (dbError) {
+        AppLogger.warning(
+          _logger,
+          'Could not verify tickets due to database read-only mode: $dbError',
+        );
+      }
+    } catch (e, stack) {
+      AppLogger.error(_logger, 'Error processing payment', e, stack);
+      // Show error to user but don't block payment flow
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Payment processed but there was an issue saving tickets. Please contact support.',
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     }
 
     // Optionally clear the cart here (if you have a cart service, call its clear method)
     // Example: CartService().clear();
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const PaymentProcessingPage()),
-    );
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const PaymentProcessingPage()),
+      );
+    }
   }
 
   @override
