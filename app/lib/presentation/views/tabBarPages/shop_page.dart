@@ -9,17 +9,22 @@ import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:app/utils/button_scanner_wrapper.dart';
+import 'package:app/presentation/services/search_service.dart';
 // import 'package:app/model/generic/details_model.dart';
 
 import 'package:app/presentation/models/shop_event_item.dart';
 
 // Move ShopItem class here, after all imports
 
-class ShopItem {
+class ShopItem implements SearchableItem {
+  @override
   final String id;
+  @override
   final String title;
+  @override
   final String subtitle;
   final double price;
+  @override
   final String category;
   final String imageAsset;
 
@@ -31,6 +36,9 @@ class ShopItem {
     required this.category,
     required this.imageAsset,
   });
+
+  @override
+  String get searchableText => '$title $subtitle $category';
 }
 
 typedef GoToProfileCallback = void Function();
@@ -44,6 +52,16 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
+  late final SearchService _searchService;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchService = SearchService();
+    _loadEventsForShop();
+    _pageController = PageController(initialPage: selectedTabIndex);
+  }
+
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -61,10 +79,100 @@ class _ShopPageState extends State<ShopPage> {
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           ),
+          onTap: _onSearchPressed,
+          readOnly: true,
         ),
       ),
     );
   }
+
+  Future<void> _onSearchPressed() async {
+    if (!mounted) return;
+
+    // Get only shop-specific searchable items (museum tickets and tours only)
+    final shopSearchableItems = <SearchableItem>[];
+
+    // Add museum ticket items
+    shopSearchableItems.addAll(items);
+
+    // Add tour items
+    shopSearchableItems.addAll([
+      ShopItem(
+        id: 'tour_group',
+        title: 'guided_tour_group'.tr(),
+        subtitle: 'guided_tour_group_subtitle'.tr(),
+        price: tourGroupPrice,
+        category: 'tours'.tr(),
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_adult',
+        title: 'guided_tour_adult'.tr(),
+        subtitle: 'guided_tour_adult_subtitle'.tr(),
+        price: tourAdultPrice,
+        category: 'tours'.tr(),
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_reduced',
+        title: 'guided_tour_disabled'.tr(),
+        subtitle: 'guided_tour_disabled_subtitle'.tr(),
+        price: tourReducedPrice,
+        category: 'tours'.tr(),
+        imageAsset: 'assets/images/logo.png',
+      ),
+      ShopItem(
+        id: 'tour_kid',
+        title: 'guided_tour_kid'.tr(),
+        subtitle: 'guided_tour_kid_subtitle'.tr(),
+        price: tourKidsPrice,
+        category: 'tours'.tr(),
+        imageAsset: 'assets/images/logo.png',
+      ),
+    ]);
+
+    showDialog(
+      context: context,
+      builder: (context) => SearchDialog<SearchableItem>(
+        title: 'Shop Search',
+        items: shopSearchableItems,
+        searchService: _searchService,
+        hintText: 'Search tickets and tours...',
+        onItemSelected: (item, matchedText) {
+          _onSearchItemSelected(item, matchedText);
+        },
+      ),
+    );
+  }
+
+  void _onSearchItemSelected(SearchableItem item, String matchedText) {
+    // Since we only include ShopItem types in shop search, handle only those
+    if (item is ShopItem) {
+      _navigateToShopItem(item, matchedText);
+    }
+  }
+
+  void _navigateToShopItem(ShopItem item, String matchedText) {
+    // Switch to the appropriate tab based on category
+    int targetTabIndex = 0; // Default to museum tab
+
+    if (item.category == 'Events') {
+      targetTabIndex = 1;
+    } else if (item.category == 'Tours') {
+      targetTabIndex = 2;
+    }
+
+    // Switch to the appropriate tab
+    setState(() {
+      selectedTabIndex = targetTabIndex;
+    });
+    _pageController.animateToPage(
+      targetTabIndex,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+  }
+
 
   // Removed PageController
   static final Logger _logger = Logger('ShopPage');
@@ -127,12 +235,6 @@ class _ShopPageState extends State<ShopPage> {
 
   List<ShopEventItem> eventItems = [];
   bool _eventsLoaded = false;
-  @override
-  void initState() {
-    super.initState();
-    _loadEventsForShop();
-    _pageController = PageController(initialPage: selectedTabIndex);
-  }
 
   Future<void> _loadEventsForShop() async {
     final events = await DBMuseumActivityManager.getEventsAsDetailsModels();

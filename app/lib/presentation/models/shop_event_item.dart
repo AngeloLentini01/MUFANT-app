@@ -1,10 +1,15 @@
 import 'package:app/model/generic/details_model.dart';
+import 'package:app/presentation/services/search_service.dart';
 
-class ShopEventItem {
+class ShopEventItem implements SearchableItem {
+  @override
   final String id;
+  @override
   final String title;
+  @override
   final String subtitle;
   final double price;
+  @override
   final String category;
   final String imageAsset;
 
@@ -64,4 +69,7 @@ class ShopEventItem {
       imageAsset: model.imageUrlOrPath ?? '',
     );
   }
+
+  @override
+  String get searchableText => '$title $subtitle $category';
 }

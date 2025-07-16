@@ -180,35 +180,50 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   final foundText = item['text'].toString();
                                   final searchTerm = controller.text.trim();
                                   String highlightText = searchTerm;
-                                  
+
                                   // Debug logging
                                   print('DEBUG: Found text: "$foundText"');
                                   print('DEBUG: Search term: "$searchTerm"');
-                                  
+
                                   // Try to find the best matching substring (case-insensitive)
-                                  final foundTextLower = foundText.toLowerCase();
-                                  final searchTermLower = searchTerm.toLowerCase();
-                                  
-                                  if (foundTextLower.contains(searchTermLower)) {
+                                  final foundTextLower = foundText
+                                      .toLowerCase();
+                                  final searchTermLower = searchTerm
+                                      .toLowerCase();
+
+                                  if (foundTextLower.contains(
+                                    searchTermLower,
+                                  )) {
                                     // Use the search term as is
                                     highlightText = searchTerm;
-                                    print('DEBUG: Found exact match, highlighting: "$highlightText"');
+                                    print(
+                                      'DEBUG: Found exact match, highlighting: "$highlightText"',
+                                    );
                                   } else {
                                     // Find the longest common substring
                                     final words = searchTermLower.split(' ');
                                     for (final word in words) {
-                                      if (word.length > 2 && foundTextLower.contains(word)) {
+                                      if (word.length > 2 &&
+                                          foundTextLower.contains(word)) {
                                         // Find the original case version of the word
-                                        final wordIndex = foundTextLower.indexOf(word);
-                                        highlightText = foundText.substring(wordIndex, wordIndex + word.length);
-                                        print('DEBUG: Found word match, highlighting: "$highlightText"');
+                                        final wordIndex = foundTextLower
+                                            .indexOf(word);
+                                        highlightText = foundText.substring(
+                                          wordIndex,
+                                          wordIndex + word.length,
+                                        );
+                                        print(
+                                          'DEBUG: Found word match, highlighting: "$highlightText"',
+                                        );
                                         break;
                                       }
                                     }
                                   }
-                                  
-                                  print('DEBUG: Final highlight text: "$highlightText"');
-                                  
+
+                                  print(
+                                    'DEBUG: Final highlight text: "$highlightText"',
+                                  );
+
                                   // Navigate to the appropriate page with highlighting
                                   if (item['type'] == 'Event') {
                                     _navigateToEventWithHighlight(
@@ -491,18 +506,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         builder: (context) =>
             EventPage(eventTitle: event.name, highlightText: searchTerm),
       ),
-    ).then((_) {
-      // Show a snackbar to indicate the search term was found
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Found: "$searchTerm" in ${event.name}'),
-            backgroundColor: kPinkColor,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    });
+    );
   }
 
   void _navigateToRoomWithHighlight(DetailsModel room, String searchTerm) {
@@ -512,18 +516,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         builder: (context) =>
             RoomDetailsPage(title: room.name, highlightText: searchTerm),
       ),
-    ).then((_) {
-      // Show a snackbar to indicate the search term was found
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Found: "$searchTerm" in ${room.name}'),
-            backgroundColor: kPinkColor,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    });
+    );
   }
 
   @override
