@@ -13,6 +13,7 @@ import 'package:app/model/items/ticket/ticket_model.dart';
 import 'package:app/model/items/ticket/museum_activity_charging_rates.dart';
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/model/museum/activity/type_of_museum_activity_model.dart';
+import 'package:app/utils/app_logger.dart';
 
 class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -217,100 +218,120 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                         showCheckoutButton: true,
                         checkoutText: 'Confirm Checkout',
                         onCheckout: () async {
-                          // Build a CartModel from the current cartGroup
-                          final cartItems = <CartItemModel>[];
+                          try {
+                            // Build a CartModel from the current cartGroup
+                            final cartItems = <CartItemModel>[];
 
-                          // Load available activities from database
-                          final activitiesData =
-                              await DBMuseumActivityManager.getAllActivities();
-                          final availableActivities = activitiesData.map((
-                            data,
-                          ) {
-                            final details = DetailsModel(
-                              name: data['name'] ?? 'Unknown',
-                              description: data['description'] ?? '',
-                              notes: data['notes'],
-                              imageUrlOrPath: data['image_path'],
-                            );
+                            // Load available activities from database
+                            final activitiesData =
+                                await DBMuseumActivityManager.getAllActivities();
+                            final availableActivities = activitiesData.map((
+                              data,
+                            ) {
+                              final details = DetailsModel(
+                                name: data['name'] ?? 'Unknown',
+                                description: data['description'] ?? '',
+                                notes: data['notes'],
+                                imageUrlOrPath: data['image_path'],
+                              );
 
-                            return MuseumActivityModel(
-                              id: Ulid.parse(data['id'] ?? Ulid().toString()),
-                              location: data['location'] ?? 'MUFANT Museum',
-                              details: details,
-                              type: TypeOfMuseumActivityModel(
-                                id: Ulid(),
-                                details: DetailsModel(
-                                  name: data['type'] ?? 'Visit',
+                              return MuseumActivityModel(
+                                id: Ulid.parse(data['id'] ?? Ulid().toString()),
+                                location: data['location'] ?? 'MUFANT Museum',
+                                details: details,
+                                type: TypeOfMuseumActivityModel(
+                                  id: Ulid(),
+                                  details: DetailsModel(
+                                    name: data['type'] ?? 'Visit',
+                                  ),
                                 ),
-                              ),
-                              activeTimePeriod: DateTimeRange(
-                                start:
-                                    DateTime.tryParse(
-                                      data['start_date'] ??
-                                          DateTime.now().toIso8601String(),
-                                    ) ??
-                                    DateTime.now(),
-                                end:
-                                    DateTime.tryParse(
-                                      data['end_date'] ??
-                                          DateTime.now()
-                                              .add(const Duration(days: 365))
-                                              .toIso8601String(),
-                                    ) ??
-                                    DateTime.now().add(
-                                      const Duration(days: 365),
-                                    ),
-                              ),
-                            );
-                          }).toList();
+                                activeTimePeriod: DateTimeRange(
+                                  start:
+                                      DateTime.tryParse(
+                                        data['start_date'] ??
+                                            DateTime.now().toIso8601String(),
+                                      ) ??
+                                      DateTime.now(),
+                                  end:
+                                      DateTime.tryParse(
+                                        data['end_date'] ??
+                                            DateTime.now()
+                                                .add(const Duration(days: 365))
+                                                .toIso8601String(),
+                                      ) ??
+                                      DateTime.now().add(
+                                        const Duration(days: 365),
+                                      ),
+                                ),
+                              );
+                            }).toList();
 
-                          for (final entry in cardGroup.entries) {
-                            final itemId = entry.key;
-                            final quantity = entry.value;
+                            for (final entry in cardGroup.entries) {
+                              final itemId = entry.key;
+                              final quantity = entry.value;
 
-                            // Find the corresponding ShopItem
-                            final shopItem = widget.itemList.firstWhere(
-                              (item) => item.id == itemId,
+                              // Find the corresponding ShopItem
+                              final shopItem = widget.itemList.firstWhere(
+                                (item) => item.id == itemId,
+                              );
+
+                              // Convert ShopItem to TicketModel
+                              final ticketModel = _convertShopItemToTicketModel(
+                                shopItem,
+                                availableActivities,
+                              );
+
+                              // Log ticket creation for debugging
+                              AppLogger.info(
+                                AppLogger.getLogger('CartConfirmationPage'),
+                                'Created ticket for ShopItem: ${shopItem.title} (ID: ${shopItem.id})',
+                              );
+                              AppLogger.info(
+                                AppLogger.getLogger('CartConfirmationPage'),
+                                'Ticket event title: ${ticketModel.museumActivity.details.name}',
+                              );
+                              AppLogger.info(
+                                AppLogger.getLogger('CartConfirmationPage'),
+                                'Ticket charging rate: ${ticketModel.chargingRate}',
+                              );
+
+                              // Add the ticket to cart items (one for each quantity)
+                              for (int i = 0; i < quantity; i++) {
+                                cartItems.add(ticketModel);
+                              }
+                            }
+
+                            final cart = CartModel(
+                              id: Ulid(),
+                              cartItems: cartItems,
+                              updatedAt: DateTime.now(),
                             );
 
-                            // Convert ShopItem to TicketModel
-                            final ticketModel = _convertShopItemToTicketModel(
-                              shopItem,
-                              availableActivities,
+                            if (mounted && context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CheckoutPage(
+                                    cart: cart,
+                                    availableActivities: availableActivities,
+                                  ),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            AppLogger.error(
+                              AppLogger.getLogger('CartConfirmationPage'),
+                              'Error during checkout: $e',
                             );
-
-                            // Log ticket creation for debugging
-                            print(
-                              'Created ticket for ShopItem: ${shopItem.title} (ID: ${shopItem.id})',
-                            );
-                            print(
-                              'Ticket event title: ${ticketModel.museumActivity.details.name}',
-                            );
-                            print(
-                              'Ticket charging rate: ${ticketModel.chargingRate}',
-                            );
-
-                            // Add the ticket to cart items (one for each quantity)
-                            for (int i = 0; i < quantity; i++) {
-                              cartItems.add(ticketModel);
+                            if (mounted && context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error during checkout: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
                             }
                           }
-
-                          final cart = CartModel(
-                            id: Ulid(),
-                            cartItems: cartItems,
-                            updatedAt: DateTime.now(),
-                          );
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CheckoutPage(
-                                cart: cart,
-                                availableActivities: availableActivities,
-                              ),
-                            ),
-                          );
                         },
                       ),
                   ],
