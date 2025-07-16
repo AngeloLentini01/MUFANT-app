@@ -1,9 +1,13 @@
+import 'package:ulid/ulid.dart';
 import "package:app/presentation/styles/all.dart";
 import "package:app/presentation/views/tabBarPages/shop_page.dart";
 import "package:app/presentation/widgets/shop/cart_summary.dart";
 import "package:app/presentation/widgets/shop/confirmation_card.dart";
 import "package:flutter/material.dart";
 import 'package:app/presentation/views/checkout/checkout_page.dart';
+import 'package:app/model/cart/cart_model.dart';
+import 'package:app/model/cart/cart_item_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
 
 class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -208,10 +212,28 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                         showCheckoutButton: true,
                         checkoutText: 'Confirm Checkout',
                         onCheckout: () {
+                          // Build a CartModel from the current cartGroup
+                          final cartItems = <CartItemModel>[];
+                          for (final _ in cardGroup.entries) {
+                            // Placeholder: conversion logic goes here
+                          }
+                          final cart = CartModel(
+                            id: Ulid(),
+                            cartItems: cartItems,
+                            updatedAt: DateTime.now(),
+                          );
+                          // You also need to provide the list of available activities for ticket creation
+                          final availableActivities =
+                              <
+                                MuseumActivityModel
+                              >[]; // TODO: Provide real activities
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const CheckoutPage(),
+                              builder: (context) => CheckoutPage(
+                                cart: cart,
+                                availableActivities: availableActivities,
+                              ),
                             ),
                           );
                         },

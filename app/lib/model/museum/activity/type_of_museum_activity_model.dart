@@ -7,6 +7,16 @@ import 'package:ulid/ulid.dart';
 /// @property id Unique identifier for the activity type
 /// @property details Descriptive information about the activity type
 class TypeOfMuseumActivityModel {
+  Map<String, dynamic> toJson() => {
+    'id': id.toString(),
+    'details': details.toJson(),
+  };
+
+  factory TypeOfMuseumActivityModel.fromJson(Map<String, dynamic> json) =>
+      TypeOfMuseumActivityModel(
+        id: Ulid.parse(json['id'] as String),
+        details: DetailsModel.fromJson(json['details'] as Map<String, dynamic>),
+      );
   final Ulid id;
   final DetailsModel details;
 

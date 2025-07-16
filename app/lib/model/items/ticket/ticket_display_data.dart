@@ -17,6 +17,21 @@ class TicketDisplayData {
     required this.isExpired,
   });
 
+  Map<String, dynamic> toJson() => {
+    'ticketModel': ticketModel.toJson(),
+    'purchaseDate': purchaseDate.toIso8601String(),
+    'isExpired': isExpired,
+  };
+
+  factory TicketDisplayData.fromJson(Map<String, dynamic> json) =>
+      TicketDisplayData(
+        ticketModel: TicketModel.fromJson(
+          json['ticketModel'] as Map<String, dynamic>,
+        ),
+        purchaseDate: DateTime.parse(json['purchaseDate'] as String),
+        isExpired: json['isExpired'] as bool,
+      );
+
   // Convenience getters for UI display
   String get eventTitle => ticketModel.museumActivity.details.name;
   String get eventDescription =>

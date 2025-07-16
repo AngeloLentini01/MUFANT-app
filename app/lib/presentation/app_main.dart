@@ -19,6 +19,15 @@ class MainAppState extends State<AppMain> {
   int currentIndex = 0;
   Key homePageKey = UniqueKey(); // Force rebuild when needed
 
+  void setTab(int index) {
+    setState(() {
+      currentIndex = index;
+      if (index == 0) {
+        homePageKey = UniqueKey();
+      }
+    });
+  }
+
   void _goToProfileTab() {
     setState(() {
       currentIndex = 2;

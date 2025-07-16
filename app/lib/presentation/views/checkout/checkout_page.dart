@@ -1,9 +1,20 @@
 import 'package:app/presentation/styles/all.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/views/checkout/payment_processing_page.dart';
+import 'package:app/model/items/ticket/ticket_display_data.dart';
+import 'package:app/model/items/ticket/ticket_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
+import 'package:app/data/services/ticket_service.dart';
+import 'package:app/model/cart/cart_model.dart';
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({super.key});
+  final CartModel cart;
+  final List<MuseumActivityModel> availableActivities;
+  const CheckoutPage({
+    super.key,
+    required this.cart,
+    required this.availableActivities,
+  });
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -121,7 +132,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return true;
   }
 
-  void _handlePayNow() {
+  Future<void> _handlePayNow() async {
     if (!_isPayEnabled) {
       setState(() {
         _showValidationError = true;
@@ -143,6 +154,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
       );
       return;
     }
+
+    // Add all tickets from the cart to the user's tickets
+    final now = DateTime.now();
+    for (final cartItem in widget.cart.cartItems) {
+      if (cartItem is TicketModel) {
+        final ticket = TicketDisplayData(
+          ticketModel: cartItem,
+          purchaseDate: now,
+          isExpired: false,
+        );
+        await TicketService().addTicket(ticket);
+      }
+    }
+
+    // Optionally clear the cart here (if you have a cart service, call its clear method)
+    // Example: CartService().clear();
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const PaymentProcessingPage()),
     );

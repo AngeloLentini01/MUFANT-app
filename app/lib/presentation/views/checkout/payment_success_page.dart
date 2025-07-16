@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/all.dart';
+import 'package:app/main.dart' show appMainKey;
+import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   final VoidCallback? onGoHome;
@@ -39,9 +41,19 @@ class PaymentSuccessPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    onPressed: () {
-                      // TODO: Navigate to tickets page
-                      // Navigator.pushReplacement(...)
+                    onPressed: () async {
+                      // Pop to root (AppMain)
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      // Switch to profile tab
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      appMainKey.currentState?.setTab(2);
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      // Push TicketListPage
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (context) => const TicketListPage(),
+                        ),
+                      );
                     },
                     child: const Text(
                       'View My Tickets',

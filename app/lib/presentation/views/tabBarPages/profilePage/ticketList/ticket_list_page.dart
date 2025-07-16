@@ -72,16 +72,17 @@ class TicketListPageState extends State<TicketListPage> {
     _loadTickets();
   }
 
-  /// Load tickets from the service
-  void _loadTickets() {
-    _tickets = _ticketService.getAllTickets();
-    setState(() {});
+  Future<void> _loadTickets() async {
+    await _ticketService.ready;
+    setState(() {
+      _tickets = _ticketService.getAllTickets();
+    });
   }
 
   /// Refresh tickets list
   Future<void> _refreshTickets() async {
     await _ticketService.refreshTickets();
-    _loadTickets();
+    await _loadTickets();
   }
 
   /// Shows ticket details modal
@@ -532,33 +533,14 @@ class TicketListPageState extends State<TicketListPage> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.confirmation_number_outlined,
-            size: 80,
-            color: kWhiteColor.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'No tickets yet',
-            style: TextStyle(
-              color: kWhiteColor.withValues(alpha: 0.7),
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Your purchased tickets will appear here',
-            style: TextStyle(
-              color: kWhiteColor.withValues(alpha: 0.5),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Text(
+        'Tickets will show here when you buy them',
+        style: TextStyle(
+          color: kWhiteColor.withValues(alpha: 0.7),
+          fontSize: 20,
+          fontWeight: FontWeight.w500,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
