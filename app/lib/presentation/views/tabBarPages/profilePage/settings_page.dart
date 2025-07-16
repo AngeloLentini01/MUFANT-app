@@ -378,20 +378,6 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
 
-                      _buildSettingsTile(
-                        icon: Icons.language_outlined,
-                        title: 'Language',
-                        subtitle: 'English (US)',
-                        trailing: const Icon(
-                          Icons.chevron_right,
-                          color: Colors.grey,
-                        ),
-                        onTap: () {
-                          // Show language selection
-                          _showComingSoon();
-                        },
-                      ),
-
                       const SizedBox(height: 24),
 
                       // About Section
