@@ -70,7 +70,14 @@ class _MapPageState extends State<MapPage> {
                   pinned: false,
                   floating: false,
                   expandedHeight: 100,
-                  iconTheme: const IconThemeData(color: Colors.white),
+                  leading: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: kWhiteColor,
+                      size: 24,
+                    ),
+                  ),
                   flexibleSpace: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(

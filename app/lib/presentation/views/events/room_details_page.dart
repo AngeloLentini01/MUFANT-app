@@ -134,8 +134,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.transparent,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: kWhiteColor,
+                size: 24,
+              ),
             ),
             title: Text(
               widget.title.toUpperCase(),
@@ -163,8 +167,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.transparent,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: kWhiteColor,
+                size: 24,
+              ),
             ),
             title: Text(
               widget.title.toUpperCase(),
@@ -195,8 +203,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
           shadowColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.light,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
           ),
           title: Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -420,8 +432,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.transparent,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
           ),
           title: Text(
             "ROOM DETAILS",

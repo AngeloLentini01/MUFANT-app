@@ -183,8 +183,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
       appBar: AppBar(
         backgroundColor: kBlackColor,
         elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
+        ),
         title: Text("Shop", style: TextStyle(color: kWhiteColor)),
-        iconTheme: IconThemeData(color: kWhiteColor),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -194,11 +197,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             children: [
               Text(
                 "Choose your payment method",
-                style: TextStyle(
-                  color: kPinkColor,
-                  fontSize: 28,
-                  height: 1.2,
-                ),
+                style: TextStyle(color: kPinkColor, fontSize: 28, height: 1.2),
               ),
               kSpaceBetweenSections,
               PaymentType(
@@ -244,8 +243,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             labelText: "Card Number",
                             border: OutlineInputBorder(),
                             errorText:
-                                _showValidationError &&
-                                    _cardNumberError != null
+                                _showValidationError && _cardNumberError != null
                                 ? _cardNumberError
                                 : null,
                           ),
@@ -292,8 +290,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   labelText: "CVV",
                                   border: OutlineInputBorder(),
                                   errorText:
-                                      _showValidationError &&
-                                          _cvvError != null
+                                      _showValidationError && _cvvError != null
                                       ? _cvvError
                                       : null,
                                 ),
