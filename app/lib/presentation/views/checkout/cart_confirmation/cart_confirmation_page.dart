@@ -14,6 +14,8 @@ import 'package:app/model/items/ticket/museum_activity_charging_rates.dart';
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/model/museum/activity/type_of_museum_activity_model.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -102,110 +104,110 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
           });
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: kBlackColor,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onPressed: () => Navigator.pop(context, {
-                'cartItems': cardGroup,
-                'additionOrder': localAdditionOrder,
-              }),
-            ),
-            centerTitle: true,
-            title: Image.asset(
-              'assets/images/logo.png',
-              height: 40,
-              color: Colors.white,
+      child: Scaffold(
+        backgroundColor: kBlackColor,
+        appBar: AppBar(
+          backgroundColor: kBlackColor,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context, {
+              'cartItems': cardGroup,
+              'additionOrder': localAdditionOrder,
+            }),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
             ),
           ),
-          body: cardGroup.isEmpty
-              ? Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: 120,
-                        left: 32,
-                        right: 32,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Oops! Your cart's still in hypersleep. Wake it up with a purchase!",
-                            style: TextStyle(fontSize: 22),
-                            textAlign: TextAlign.center,
-                          ),
-                          kSpaceBetweenSections,
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: kPinkColor,
-                                width: 2,
-                              ), // Colored border
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  18,
-                                ), // Rounded corners
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context, {
-                                'cartItems': cardGroup,
-                                'additionOrder': localAdditionOrder,
-                              });
-                            },
-                            child: Center(
-                              child: Text(
-                                "Browse Tickets",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: kPinkColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+          centerTitle: true,
+          title: Image.asset(
+            'assets/images/logo.png',
+            height: 40,
+            color: Colors.white,
+          ),
+        ),
+        body: cardGroup.isEmpty
+            ? Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 120,
+                      left: 32,
+                      right: 32,
                     ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Image.asset(
-                        "assets/images/shop_bot/sad_bot_cut.png", // Use your asset path here
-                        height: 300, // Adjust size as needed
-                      ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: [
-                    // Cart items list using the same shop cards
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: widget.itemList
-                              .where(
-                                (item) =>
-                                    cardGroup.containsKey(item.id) &&
-                                    cardGroup[item.id]! > 0,
-                              )
-                              .map(
-                                (item) => ConfirmationCard(
-                                  item: item,
-                                  quantity: cardGroup[item.id] ?? 0,
-                                  onDelete: () => _removeItem(item.id),
-                                ),
-                              )
-                              .toList(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Oops! Your cart's still in hypersleep. Wake it up with a purchase!",
+                          style: TextStyle(fontSize: 22),
+                          textAlign: TextAlign.center,
                         ),
+                        kSpaceBetweenSections,
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: kPinkColor,
+                              width: 2,
+                            ), // Colored border
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                18,
+                              ), // Rounded corners
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context, {
+                              'cartItems': cardGroup,
+                              'additionOrder': localAdditionOrder,
+                            });
+                          },
+                          child: Center(
+                            child: Text(
+                              "browse_tickets".tr(),
+                              style: TextStyle(fontSize: 16, color: kPinkColor),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Image.asset(
+                      "assets/images/shop_bot/sad_bot_cut.png", // Use your asset path here
+                      height: 300, // Adjust size as needed
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  // Cart items list using the same shop cards
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: widget.itemList
+                            .where(
+                              (item) =>
+                                  cardGroup.containsKey(item.id) &&
+                                  cardGroup[item.id]! > 0,
+                            )
+                            .map(
+                              (item) => ConfirmationCard(
+                                item: item,
+                                quantity: cardGroup[item.id] ?? 0,
+                                onDelete: () => _removeItem(item.id),
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                     // Checkout button

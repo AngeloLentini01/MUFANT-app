@@ -126,6 +126,10 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
+        ),
         title: const Text(
           'Community Chats',
           style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),

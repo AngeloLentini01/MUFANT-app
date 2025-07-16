@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/all.dart';
 import 'package:app/main.dart' show appMainKey;
 import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PaymentSuccessPage extends StatefulWidget {
   final VoidCallback? onGoHome;
@@ -26,9 +27,9 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
               children: [
                 const Icon(Icons.celebration, size: 80, color: kPinkColor),
                 const SizedBox(height: 32),
-                const Text(
-                  "Congratulations! You'll visit MUFANT soon",
-                  style: TextStyle(
+                Text(
+                  "payment_success".tr(),
+                  style: const TextStyle(
                     color: kPinkColor,
                     fontSize: 26,
                     fontWeight: FontWeight.bold,

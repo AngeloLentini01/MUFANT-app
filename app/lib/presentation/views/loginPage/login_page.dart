@@ -7,6 +7,7 @@ import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LoginPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -64,10 +65,10 @@ class _LoginPageState extends State<LoginPage> {
           }
         }
       } else {
-        _showErrorDialog('Invalid username or password');
+        _showErrorDialog('invalid_credentials'.tr());
       }
     } catch (e) {
-      _showErrorDialog('Login failed: $e');
+      _showErrorDialog('login_failed'.tr() + ': $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -103,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
               Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
               Text(
-                'Login Error',
+                'login_error'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -129,8 +130,8 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'OK',
+                  child: Text(
+                    'ok'.tr(),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -182,7 +183,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const SizedBox(height: 32),
                       Text(
-                        'Welcome back to',
+                        'welcome_back_to'.tr(),
                         style: GoogleFonts.montserrat(
                           color: Colors.white,
                           fontSize: 26,
@@ -200,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 18),
                       Text(
-                        'Login to your account!',
+                        'login_title'.tr(),
                         style: GoogleFonts.montserrat(
                           color: Color(0xFFFF7CA3),
                           fontSize: 20,
@@ -223,14 +224,14 @@ class _LoginPageState extends State<LoginPage> {
                               Icons.person,
                               color: Colors.white70,
                             ),
-                            hintText: 'Email',
+                            hintText: 'email'.tr(),
                             hintStyle: TextStyle(color: Colors.white54),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 18),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your email';
+                              return 'email_required'.tr();
                             }
                             return null;
                           },
@@ -249,7 +250,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             prefixIcon: Icon(Icons.lock, color: Colors.white70),
-                            hintText: 'Password',
+                            hintText: 'password'.tr(),
                             hintStyle: TextStyle(color: Colors.white54),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(vertical: 18),
@@ -269,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter your password';
+                              return 'password_required'.tr();
                             }
                             return null;
                           },
@@ -294,7 +295,7 @@ class _LoginPageState extends State<LoginPage> {
                                   color: Colors.white,
                                 )
                               : Text(
-                                  'Sign in',
+                                  'sign_in'.tr(),
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -309,9 +310,9 @@ class _LoginPageState extends State<LoginPage> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {},
-                          child: const Text(
-                            'Forgot password?',
-                            style: TextStyle(
+                          child: Text(
+                            'forgot_password'.tr(),
+                            style: const TextStyle(
                               color: Colors.white70,
                               decoration: TextDecoration.underline,
                               fontSize: 14,
@@ -331,7 +332,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           Text(
-                            'or continue with',
+                            'or_continue_with'.tr(),
                             style: GoogleFonts.montserrat(
                               color: Color(0xFFFF7CA3),
                               fontSize: 15,
@@ -369,7 +370,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "You don't have an account? ",
+                            "no_account_text".tr(),
                             style: GoogleFonts.montserrat(
                               color: Colors.white70,
                               fontSize: 15,
@@ -396,7 +397,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
                             },
                             child: Text(
-                              'Sign up',
+                              'sign_up'.tr(),
                               style: GoogleFonts.montserrat(
                                 color: Color(0xFFFF7CA3),
                                 fontSize: 15,

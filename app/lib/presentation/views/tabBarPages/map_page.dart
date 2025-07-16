@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -70,7 +71,14 @@ class _MapPageState extends State<MapPage> {
                   pinned: false,
                   floating: false,
                   expandedHeight: 100,
-                  iconTheme: const IconThemeData(color: Colors.white),
+                  leading: IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      color: kWhiteColor,
+                      size: 24,
+                    ),
+                  ),
                   flexibleSpace: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -82,14 +90,14 @@ class _MapPageState extends State<MapPage> {
                         ],
                       ),
                     ),
-                    child: const SafeArea(
+                    child: SafeArea(
                       child: Column(
                         children: [
                           SizedBox(height: 16),
                           Padding(
                             padding: EdgeInsets.only(top: 8.0),
                             child: Text(
-                              'Map',
+                              'map'.tr(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -109,10 +117,10 @@ class _MapPageState extends State<MapPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Testo sopra la prima immagine
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
-                          'Ground floor',
+                          'ground_floor'.tr(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -137,10 +145,10 @@ class _MapPageState extends State<MapPage> {
                       ),
                       const SizedBox(height: 16),
                       // Testo sopra la seconda immagine
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
-                          'First floor',
+                          'first_floor'.tr(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

@@ -2,6 +2,7 @@ import 'package:app/presentation/widgets/scrollViews/wallpaper_carousel.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/fullscreen_wallpaper_view.dart';
 import 'package:app/presentation/styles/typography/section.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class WallpaperSection extends StatelessWidget {
   const WallpaperSection({super.key});
@@ -20,10 +21,7 @@ class WallpaperSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'My Wallpapers',
-          style: kSectionTitleTextStyle,
-        ),
+        Text('my_wallpapers'.tr(), style: kSectionTitleTextStyle),
         const SizedBox(height: 16),
         WallpaperCarousel(
           wallpapers: wallpapers,

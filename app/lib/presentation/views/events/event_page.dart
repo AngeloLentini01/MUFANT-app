@@ -1,7 +1,9 @@
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EventPage extends StatefulWidget {
   final String? eventTitle;
@@ -24,11 +26,17 @@ class _EventPageState extends State<EventPage> {
 
   Future<void> _loadEventData() async {
     try {
-      AppLogger.info(_logger, 'EventPage: Loading data for event title: "${widget.eventTitle}"');
-      
+      AppLogger.info(
+        _logger,
+        'EventPage: Loading data for event title: "${widget.eventTitle}"',
+      );
+
       Map<String, dynamic>? data;
       if (widget.eventTitle != null) {
-        AppLogger.info(_logger, 'EventPage: Searching for specific event: "${widget.eventTitle}"');
+        AppLogger.info(
+          _logger,
+          'EventPage: Searching for specific event: "${widget.eventTitle}"',
+        );
         data = await DBMuseumActivityManager.getActivityByTitle(
           widget.eventTitle!,
         );
@@ -39,13 +47,19 @@ class _EventPageState extends State<EventPage> {
           '30 ANNI DI SAILOR',
         );
       }
-      
+
       if (data != null) {
-        AppLogger.info(_logger, 'EventPage: Successfully loaded event data: "${data['name']}"');
+        AppLogger.info(
+          _logger,
+          'EventPage: Successfully loaded event data: "${data['name']}"',
+        );
       } else {
-        AppLogger.warning(_logger, 'EventPage: No event data found for title: "${widget.eventTitle}"');
+        AppLogger.warning(
+          _logger,
+          'EventPage: No event data found for title: "${widget.eventTitle}"',
+        );
       }
-      
+
       setState(() {
         eventData = data;
         isLoading = false;
@@ -71,10 +85,17 @@ class _EventPageState extends State<EventPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
+          ),
           centerTitle: true,
-          title: const Text(
-            'Loading...',
+          title: Text(
+            'loading'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -95,10 +116,17 @@ class _EventPageState extends State<EventPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
+          ),
           centerTitle: true,
-          title: const Text(
-            'Event Not Found',
+          title: Text(
+            'event_not_found'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -107,8 +135,11 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
         ),
-        body: const Center(
-          child: Text('Event not found', style: TextStyle(color: Colors.white)),
+        body: Center(
+          child: Text(
+            'event_not_found_message'.tr(),
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -118,7 +149,10 @@ class _EventPageState extends State<EventPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
+        ),
         centerTitle: true,
         title: Text(
           eventData!['name'] ?? 'Event',
@@ -218,8 +252,8 @@ class _EventPageState extends State<EventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'SCHEDULE',
+                      Text(
+                        'schedule'.tr(),
                         style: TextStyle(
                           color: Color(0xFFFF7CA3),
                           fontWeight: FontWeight.bold,
@@ -229,7 +263,7 @@ class _EventPageState extends State<EventPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        eventData!['notes'] ?? 'Schedule TBD',
+                        eventData!['notes'] ?? 'schedule_tbd'.tr(),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -244,8 +278,8 @@ class _EventPageState extends State<EventPage> {
                 ),
                 const SizedBox(height: 28),
                 // Tickets & Info
-                const Text(
-                  'TICKETS & INFO',
+                Text(
+                  'tickets_info'.tr(),
                   style: TextStyle(
                     color: Color(0xFFFF7CA3),
                     fontWeight: FontWeight.bold,
@@ -256,14 +290,16 @@ class _EventPageState extends State<EventPage> {
                 const SizedBox(height: 10),
                 Text(
                   eventData!['price'] != null
-                      ? 'MUFANT ticket\nStudents: €${eventData!['price']} (with ID)\nMuseum Pass not valid'
+                      ? 'mufant_ticket_info'.tr(
+                          namedArgs: {'price': eventData!['price'].toString()},
+                        )
                       : '',
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Info: +39 347 5405096\n+39 349 8171960\ninfo@mufant.it',
+                Text(
+                  'contact_info'.tr(),
                   style: TextStyle(color: Colors.white70, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),

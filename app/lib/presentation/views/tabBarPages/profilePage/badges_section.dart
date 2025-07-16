@@ -4,6 +4,7 @@ import 'package:app/presentation/views/tabBarPages/profilePage/badge_data.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/badge_detail_modal.dart';
 import 'package:app/data/services/badge_service.dart';
 import 'package:flutter/material.dart' hide Badge;
+import 'package:easy_localization/easy_localization.dart';
 
 class BadgesSection extends StatefulWidget {
   const BadgesSection({super.key});
@@ -56,7 +57,7 @@ class _BadgesSectionState extends State<BadgesSection> {
       children: [
         const SizedBox(height: 16),
         Text(
-          'Test Badge Earning (Development)',
+          'test_badge_earning'.tr(),
           style: TextStyle(
             color: Colors.grey[600],
             fontSize: 12,
@@ -114,7 +115,7 @@ class _BadgesSectionState extends State<BadgesSection> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('My Badges', style: kSectionTitleTextStyle),
+          Text('my_badges'.tr(), style: kSectionTitleTextStyle),
           const SizedBox(height: 16),
           const Center(child: CircularProgressIndicator()),
         ],
@@ -131,7 +132,7 @@ class _BadgesSectionState extends State<BadgesSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('My Badges', style: kSectionTitleTextStyle),
+            Text('my_badges'.tr(), style: kSectionTitleTextStyle),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -139,7 +140,12 @@ class _BadgesSectionState extends State<BadgesSection> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '$earnedCount/$totalCount',
+                'badge_count'.tr(
+                  namedArgs: {
+                    'earned': earnedCount.toString(),
+                    'total': totalCount.toString(),
+                  },
+                ),
                 style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 12,

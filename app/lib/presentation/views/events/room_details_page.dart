@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class RoomDetailsPage extends StatefulWidget {
   final String title;
@@ -87,13 +88,17 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
   String _getWelcomeMessage() {
     final roomName = roomData?['name']?.toLowerCase() ?? '';
     if (roomName.contains('star wars')) {
-      return "Welcome to a galaxy far, far away!";
+      return "welcome_star_wars".tr();
     } else if (roomName.contains('library')) {
-      return "Welcome to the Literary Universe!";
+      return "welcome_library".tr();
     } else if (roomName.contains('superhero')) {
-      return "Welcome to the Hall of Heroes!";
+      return "welcome_superhero".tr();
     }
-    return "Welcome to ${roomData?['name'] ?? 'this amazing room'}!";
+    final name = roomData?['name'];
+    if (name != null) {
+      return "welcome_room".tr(namedArgs: {'room': name});
+    }
+    return "welcome_room_default".tr();
   }
 
   String _getDetailedDescription() {
@@ -134,8 +139,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.transparent,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: kWhiteColor,
+                size: 24,
+              ),
             ),
             title: Text(
               widget.title.toUpperCase(),
@@ -163,8 +172,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.transparent,
             leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white),
               onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: kWhiteColor,
+                size: 24,
+              ),
             ),
             title: Text(
               widget.title.toUpperCase(),
@@ -177,9 +190,9 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
             ),
             centerTitle: true,
           ),
-          body: const Center(
+          body: Center(
             child: Text(
-              'Room not found',
+              'room_not_found'.tr(),
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
@@ -195,8 +208,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
           shadowColor: Colors.transparent,
           systemOverlayStyle: SystemUiOverlayStyle.light,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
           ),
           title: Container(
             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -306,7 +323,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              "You are here",
+                              "you_are_here".tr(),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -345,7 +362,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
                                 ),
                                 SizedBox(width: 10),
                                 Text(
-                                  "Listen to the audioguide",
+                                  "listen_audioguide".tr(),
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white,
@@ -420,11 +437,15 @@ class _RoomDetailsPageState extends State<RoomDetailsPage> {
           surfaceTintColor: Colors.transparent,
           shadowColor: Colors.transparent,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
           ),
           title: Text(
-            "ROOM DETAILS",
+            "room_details".tr(),
             style: TextStyle(
               color: kPinkColor,
               fontSize: 18,

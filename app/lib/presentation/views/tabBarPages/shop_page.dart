@@ -7,6 +7,7 @@ import 'package:app/presentation/widgets/animated_tab_bar.dart';
 import 'package:logging/logging.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 // import 'package:app/model/generic/details_model.dart';
 
 import 'package:app/presentation/models/shop_event_item.dart';
@@ -53,7 +54,7 @@ class _ShopPageState extends State<ShopPage> {
         child: TextField(
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintText: 'Search',
+            hintText: 'search'.tr(),
             hintStyle: TextStyle(color: Colors.grey[400]),
             prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
             border: InputBorder.none,
@@ -72,7 +73,7 @@ class _ShopPageState extends State<ShopPage> {
   Map<String, int> cartItems = {};
   List<String> additionOrder = []; // Track the order items were added
 
-  final List<String> categories = ['Museum', 'Events', 'Tours'];
+  List<String> get categories => ['museum'.tr(), 'events'.tr(), 'tours'.tr()];
 
   // Guided tour pricing logic
   static const double tourGroupPrice = 60.0;
@@ -80,48 +81,45 @@ class _ShopPageState extends State<ShopPage> {
   static const double tourReducedPrice = 11.0;
   static const double tourKidsPrice = 11.0;
 
-  final List<ShopItem> items = [
+  List<ShopItem> get items => [
     ShopItem(
       id: '1',
-      title: 'MUFANT - Full price',
-      subtitle: '> 10 years',
+      title: 'mufant_full_price'.tr(),
+      subtitle: 'age_over_10'.tr(),
       price: 8.00,
-      category: 'Museum',
+      category: 'museum'.tr(),
       imageAsset: 'assets/images/logo.png',
     ),
     ShopItem(
       id: '2',
-      title: 'MUFANT - Reduced price',
-      subtitle:
-          'University students;\nSenior over 65 years;\nAIACE Torino Partners',
+      title: 'mufant_reduced_price'.tr(),
+      subtitle: 'university_students'.tr(),
       price: 7.00,
-      category: 'Museum',
+      category: 'museum'.tr(),
       imageAsset: 'assets/images/logo.png',
     ),
     ShopItem(
       id: '3',
-      title: 'MUFANT - Reduced price',
-      subtitle:
-          'disabled people (free companion);\npossessors Torino+Piemonte Card',
+      title: 'mufant_reduced_price'.tr(),
+      subtitle: 'disabled_people'.tr(),
       price: 6.00,
-      category: 'Museum',
+      category: 'museum'.tr(),
       imageAsset: 'assets/images/logo.png',
     ),
     ShopItem(
       id: '4',
-      title: 'MUFANT - Kids',
-      subtitle: 'From 4 to 10 years',
+      title: 'mufant_kids'.tr(),
+      subtitle: 'age_4_to_10'.tr(),
       price: 5.00,
-      category: 'Museum',
+      category: 'museum'.tr(),
       imageAsset: 'assets/images/logo.png',
     ),
     ShopItem(
       id: '5',
-      title: 'MUFANT - Free',
-      subtitle:
-          '< 4 years;\npossessors "Abbonamento Musei Piemonte e Valle d\'Aosta"',
+      title: 'mufant_free'.tr(),
+      subtitle: 'ticket_discount_info'.tr(),
       price: 0.00,
-      category: 'Museum',
+      category: 'museum'.tr(),
       imageAsset: 'assets/images/logo.png',
     ),
   ];
@@ -146,7 +144,7 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   List<ShopItem> get filteredItems {
-    if (categories[selectedTabIndex] == 'Events') {
+    if (categories[selectedTabIndex] == 'events'.tr()) {
       // Convert ShopEventItem to ShopItem for ShopCard compatibility
       return eventItems
           .map(
@@ -160,40 +158,39 @@ class _ShopPageState extends State<ShopPage> {
             ),
           )
           .toList();
-    } else if (categories[selectedTabIndex] == 'Tours') {
+    } else if (categories[selectedTabIndex] == 'tours'.tr()) {
       // Custom guided tour card(s)
       return [
         ShopItem(
           id: 'tour_group',
-          title: 'Guided Tour (1-5 participants)',
-          subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+          title: 'guided_tour_group'.tr(),
+          subtitle: 'guided_tour_group_subtitle'.tr(),
           price: tourGroupPrice,
-          category: 'Tours',
+          category: 'tours'.tr(),
           imageAsset: 'assets/images/logo.png',
         ),
         ShopItem(
           id: 'tour_adult',
-          title: 'Guided Tour (Adult, 6+ participants)',
-          subtitle: 'Per adult, 90 min. tour (reservation required)',
+          title: 'guided_tour_adult'.tr(),
+          subtitle: 'guided_tour_adult_subtitle'.tr(),
           price: tourAdultPrice,
-          category: 'Tours',
+          category: 'tours'.tr(),
           imageAsset: 'assets/images/logo.png',
         ),
         ShopItem(
           id: 'tour_reduced',
-          title: 'Guided Tour (Disabled, 6+ participants)',
-          subtitle:
-              'Per disabled participant, 90 min. tour (reservation required)',
+          title: 'guided_tour_disabled'.tr(),
+          subtitle: 'guided_tour_disabled_subtitle'.tr(),
           price: tourReducedPrice,
-          category: 'Tours',
+          category: 'tours'.tr(),
           imageAsset: 'assets/images/logo.png',
         ),
         ShopItem(
           id: 'tour_kid',
-          title: 'Guided Tour (Kids 4-10, 6+ participants)',
-          subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+          title: 'guided_tour_kid'.tr(),
+          subtitle: 'guided_tour_kid_subtitle'.tr(),
           price: tourKidsPrice,
-          category: 'Tours',
+          category: 'tours'.tr(),
           imageAsset: 'assets/images/logo.png',
         ),
       ];
@@ -388,7 +385,9 @@ class _ShopPageState extends State<ShopPage> {
             ],
           ),
           content: Text(
-            "We're sorry. Unfortunately, the museum can't host more than $maxAllowedTickets visitors.",
+            "max_tickets_error".tr(
+              namedArgs: {'maxTickets': maxAllowedTickets.toString()},
+            ),
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           actions: [

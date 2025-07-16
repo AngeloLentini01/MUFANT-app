@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,6 +15,102 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _darkModeEnabled = true;
   bool _soundEnabled = true;
   double _textSize = 16.0;
+  Locale _currentLocale = const Locale('en');
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_currentLocale == const Locale('en')) {
+      try {
+        _currentLocale = context.locale;
+      } catch (e) {
+        // Fallback to English if context.locale fails
+        _currentLocale = const Locale('en');
+      }
+    }
+  }
+
+  Future<void> _changeLanguage(Locale locale) async {
+    setState(() {
+      _currentLocale = locale;
+    });
+    await context.setLocale(locale);
+
+    // Save locale to SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('locale', locale.languageCode);
+  }
+
+  void _showLanguageDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            'language_selection'.tr(),
+            style: const TextStyle(color: kWhiteColor),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Radio<Locale>(
+                  value: const Locale('en'),
+                  groupValue: _currentLocale,
+                  onChanged: (Locale? value) {
+                    if (value != null) {
+                      _changeLanguage(value);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  activeColor: kPinkColor,
+                ),
+                title: Text(
+                  'english'.tr(),
+                  style: const TextStyle(color: kWhiteColor),
+                ),
+                onTap: () {
+                  _changeLanguage(const Locale('en'));
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: Radio<Locale>(
+                  value: const Locale('it'),
+                  groupValue: _currentLocale,
+                  onChanged: (Locale? value) {
+                    if (value != null) {
+                      _changeLanguage(value);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  activeColor: kPinkColor,
+                ),
+                title: Text(
+                  'italian'.tr(),
+                  style: const TextStyle(color: kWhiteColor),
+                ),
+                onTap: () {
+                  _changeLanguage(const Locale('it'));
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'cancel'.tr(),
+                style: const TextStyle(color: kPinkColor),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,22 +137,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     IconButton(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(
-                        Icons.arrow_back,
+                        Icons.arrow_back_ios,
                         color: kWhiteColor,
                         size: 24,
                       ),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Settings',
+                        'settings_title',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: kWhiteColor,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
-                      ),
+                      ).tr(),
                     ),
                     const SizedBox(width: 48), // Balance the back button
                   ],
@@ -69,13 +167,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // App Preferences Section
-                      _buildSectionHeader('App Preferences'),
+                      _buildSectionHeader('app_preferences'.tr()),
                       const SizedBox(height: 12),
+
+                      // Language Picker
+                      _buildSettingsTile(
+                        icon: Icons.language_outlined,
+                        title: 'language'.tr(),
+                        subtitle: _currentLocale.languageCode == 'en'
+                            ? 'english'.tr()
+                            : 'italian'.tr(),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                        onTap: () => _showLanguageDialog(),
+                      ),
 
                       _buildSettingsTile(
                         icon: Icons.notifications_outlined,
-                        title: 'Notifications',
-                        subtitle: 'Receive push notifications',
+                        title: 'notifications'.tr(),
+                        subtitle: 'notifications_subtitle'.tr(),
                         trailing: Switch(
                           value: _notificationsEnabled,
                           onChanged: (value) {
@@ -91,8 +204,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       _buildSettingsTile(
                         icon: Icons.dark_mode_outlined,
-                        title: 'Dark Mode',
-                        subtitle: 'Use dark theme',
+                        title: 'dark_mode'.tr(),
+                        subtitle: 'dark_mode_subtitle'.tr(),
                         trailing: Switch(
                           value: _darkModeEnabled,
                           onChanged: (value) {

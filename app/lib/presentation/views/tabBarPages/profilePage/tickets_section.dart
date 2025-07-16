@@ -9,6 +9,8 @@ import 'package:app/model/items/ticket/ticket_display_data.dart';
 import 'package:barcode/barcode.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 /// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
@@ -130,7 +132,7 @@ class MyTicketWidget extends StatelessWidget {
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Ticket Details',
+      barrierLabel: 'ticket_details'.tr(),
       barrierColor: Colors.black.withValues(alpha: 0.5),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
@@ -168,8 +170,8 @@ class MyTicketWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Ticket Details',
-                            style: TextStyle(
+                            'ticket_details'.tr(),
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: kBlackColor,
@@ -471,7 +473,7 @@ class _TicketsSectionState extends State<TicketsSection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('My tickets', style: kSectionTitleTextStyle),
+            Text('my_tickets'.tr(), style: kSectionTitleTextStyle),
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -481,10 +483,10 @@ class _TicketsSectionState extends State<TicketsSection> {
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
-                    'See all',
-                    style: TextStyle(color: lightGreyColor, fontSize: 16),
+                    'see_all'.tr(),
+                    style: const TextStyle(color: lightGreyColor, fontSize: 16),
                   ),
                   SizedBox(width: 4),
                   Icon(
@@ -532,9 +534,9 @@ class _TicketsSectionState extends State<TicketsSection> {
                   venueAddress: _latestTicket!.venueAddress,
                 )._showTicketDetails(context);
               },
-              child: const Text(
-                'View Details',
-                style: TextStyle(color: lightGreyColor, fontSize: 14),
+              child: Text(
+                'view_details'.tr(),
+                style: const TextStyle(color: lightGreyColor, fontSize: 14),
               ),
             ),
           ),
@@ -551,7 +553,7 @@ class _TicketsSectionState extends State<TicketsSection> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Tickets will show here when you buy them',
+                   'tickets_empty_state'.tr(),
                   style: TextStyle(
                     color: Colors.grey.withValues(alpha: 0.7),
                     fontSize: 16,
