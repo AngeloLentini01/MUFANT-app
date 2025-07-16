@@ -83,15 +83,31 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                           final startsWithInput = <Map<String, dynamic>>[];
                           final containsInput = <Map<String, dynamic>>[];
                           for (final item in searchResults) {
-                            final text = (item['text'] ?? '').toString().toLowerCase();
+                            final text = (item['text'] ?? '')
+                                .toString()
+                                .toLowerCase();
                             if (text.startsWith(inputLower)) {
                               startsWithInput.add(item);
                             } else {
                               containsInput.add(item);
                             }
                           }
-                          startsWithInput.sort((a, b) => (a['text'] ?? '').toString().toLowerCase().compareTo((b['text'] ?? '').toString().toLowerCase()));
-                          containsInput.sort((a, b) => (a['text'] ?? '').toString().toLowerCase().compareTo((b['text'] ?? '').toString().toLowerCase()));
+                          startsWithInput.sort(
+                            (a, b) => (a['text'] ?? '')
+                                .toString()
+                                .toLowerCase()
+                                .compareTo(
+                                  (b['text'] ?? '').toString().toLowerCase(),
+                                ),
+                          );
+                          containsInput.sort(
+                            (a, b) => (a['text'] ?? '')
+                                .toString()
+                                .toLowerCase()
+                                .compareTo(
+                                  (b['text'] ?? '').toString().toLowerCase(),
+                                ),
+                          );
                           results = [...startsWithInput, ...containsInput];
                         }
                       });
