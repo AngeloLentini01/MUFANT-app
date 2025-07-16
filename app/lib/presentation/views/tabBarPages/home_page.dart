@@ -11,6 +11,7 @@ import 'package:app/presentation/widgets/all.dart';
 import 'package:app/presentation/views/tabBarPages/map_page.dart';
 import 'package:app/presentation/views/events/event_page.dart';
 import 'package:app/presentation/views/events/room_details_page.dart';
+import 'package:app/presentation/views/button_scanner_demo.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
@@ -496,6 +497,39 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                               kSpaceBetweenSections,
                               CommunityChatSectionWidget(),
+                              kSpaceBetweenSections,
+                              // Button Scanner Demo Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ButtonScannerDemo(),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: kPinkColor,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Button Scanner Demo',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               kSpaceBetweenSections,
                               const VisitorsGuideWidget(textColor: kPinkColor),
                             ],

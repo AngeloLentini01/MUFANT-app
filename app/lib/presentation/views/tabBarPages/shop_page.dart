@@ -8,6 +8,7 @@ import 'package:logging/logging.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/utils/button_scanner_wrapper.dart';
 // import 'package:app/model/generic/details_model.dart';
 
 import 'package:app/presentation/models/shop_event_item.dart';
@@ -517,182 +518,192 @@ class _ShopPageState extends State<ShopPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kBlackColor, Colors.grey[900]!],
+    return ButtonScannerWrapper(
+      pageName: 'ShopPage',
+      child: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [kBlackColor, Colors.grey[900]!],
+            ),
           ),
-        ),
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  color: kBlackColor,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 18,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Shop',
-                          style: TextStyle(
-                            color: kWhiteColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    color: kBlackColor,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 18,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Shop',
+                            style: TextStyle(
+                              color: kWhiteColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      // Add more actions if needed
-                    ],
+                        // Add more actions if needed
+                      ],
+                    ),
                   ),
-                ),
-                _buildSearchBar(), // Ensure _buildSearchBar is defined and used correctly
-                AnimatedTabBar(
-                  tabs: categories,
-                  selectedIndex: selectedTabIndex,
-                  onTabSelected: (index) {
-                    setState(() {
-                      selectedTabIndex = index;
-                    });
-                    _pageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.ease,
-                    );
-                  },
-                ),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: categories.length,
-                    onPageChanged: (index) {
+                  _buildSearchBar(), // Ensure _buildSearchBar is defined and used correctly
+                  AnimatedTabBar(
+                    tabs: categories,
+                    selectedIndex: selectedTabIndex,
+                    onTabSelected: (index) {
                       setState(() {
                         selectedTabIndex = index;
                       });
-                    },
-                    itemBuilder: (context, pageIndex) {
-                      if (!_eventsLoaded && categories[pageIndex] == 'Events') {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      final itemsForPage = () {
-                        if (categories[pageIndex] == 'Events') {
-                          return eventItems
-                              .map(
-                                (e) => ShopItem(
-                                  id: e.id,
-                                  title: e.title,
-                                  subtitle: e.subtitle,
-                                  price: e.price,
-                                  category: e.category,
-                                  imageAsset: e.imageAsset,
-                                ),
-                              )
-                              .toList();
-                        } else if (categories[pageIndex] == 'Tours') {
-                          return [
-                            ShopItem(
-                              id: 'tour_group',
-                              title: 'Guided Tour (1-5 participants)',
-                              subtitle:
-                                  '90 min. tour for 1 to 5 people (reservation required)',
-                              price: tourGroupPrice,
-                              category: 'Tours',
-                              imageAsset: 'assets/images/logo.png',
-                            ),
-                            ShopItem(
-                              id: 'tour_adult',
-                              title: 'Guided Tour (Adult, 6+ participants)',
-                              subtitle:
-                                  'Per adult, 90 min. tour (reservation required)',
-                              price: tourAdultPrice,
-                              category: 'Tours',
-                              imageAsset: 'assets/images/logo.png',
-                            ),
-                            ShopItem(
-                              id: 'tour_reduced',
-                              title: 'Guided Tour (Disabled, 6+ participants)',
-                              subtitle:
-                                  'Per disabled participant, 90 min. tour (reservation required)',
-                              price: tourReducedPrice,
-                              category: 'Tours',
-                              imageAsset: 'assets/images/logo.png',
-                            ),
-                            ShopItem(
-                              id: 'tour_kid',
-                              title: 'Guided Tour (Kids 4-10, 6+ participants)',
-                              subtitle:
-                                  'Per kid (4-10 years), 90 min. tour (reservation required)',
-                              price: tourKidsPrice,
-                              category: 'Tours',
-                              imageAsset: 'assets/images/logo.png',
-                            ),
-                          ];
-                        } else {
-                          return items
-                              .where(
-                                (item) =>
-                                    item.category == categories[pageIndex],
-                              )
-                              .toList();
-                        }
-                      }();
-                      return ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 100),
-                        itemCount: itemsForPage.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 4,
-                            ),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(minHeight: 176),
-                              child: ShopCard(
-                                item: itemsForPage[index],
-                                cartQuantity:
-                                    cartItems[itemsForPage[index].id] ?? 0,
-                                onAddToCart: () =>
-                                    _addToCart(itemsForPage[index].id),
-                                onRemoveFromCart: () =>
-                                    _removeFromCart(itemsForPage[index].id),
-                                showDeleteButton:
-                                    (cartItems[itemsForPage[index].id] ?? 0) >
-                                    0,
-                                onDelete: () =>
-                                    _removeAllOfItem(itemsForPage[index].id),
-                                onQuantityEdit: (newQuantity) => _setQuantity(
-                                  itemsForPage[index].id,
-                                  newQuantity,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.ease,
                       );
                     },
                   ),
-                ),
-              ],
-            ),
-            if (totalItems > 0)
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: CartSummary(
-                  totalAmount: totalAmount,
-                  totalItems: totalItems,
-                  onClearCart: _clearCart,
-                  onCheckout: _goToCheckout,
-                ),
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: categories.length,
+                      onPageChanged: (index) {
+                        setState(() {
+                          selectedTabIndex = index;
+                        });
+                      },
+                      itemBuilder: (context, pageIndex) {
+                        if (!_eventsLoaded &&
+                            categories[pageIndex] == 'Events') {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        final itemsForPage = () {
+                          if (categories[pageIndex] == 'Events') {
+                            return eventItems
+                                .map(
+                                  (e) => ShopItem(
+                                    id: e.id,
+                                    title: e.title,
+                                    subtitle: e.subtitle,
+                                    price: e.price,
+                                    category: e.category,
+                                    imageAsset: e.imageAsset,
+                                  ),
+                                )
+                                .toList();
+                          } else if (categories[pageIndex] == 'Tours') {
+                            return [
+                              ShopItem(
+                                id: 'tour_group',
+                                title: 'Guided Tour (1-5 participants)',
+                                subtitle:
+                                    '90 min. tour for 1 to 5 people (reservation required)',
+                                price: tourGroupPrice,
+                                category: 'Tours',
+                                imageAsset: 'assets/images/logo.png',
+                              ),
+                              ShopItem(
+                                id: 'tour_adult',
+                                title: 'Guided Tour (Adult, 6+ participants)',
+                                subtitle:
+                                    'Per adult, 90 min. tour (reservation required)',
+                                price: tourAdultPrice,
+                                category: 'Tours',
+                                imageAsset: 'assets/images/logo.png',
+                              ),
+                              ShopItem(
+                                id: 'tour_reduced',
+                                title:
+                                    'Guided Tour (Disabled, 6+ participants)',
+                                subtitle:
+                                    'Per disabled participant, 90 min. tour (reservation required)',
+                                price: tourReducedPrice,
+                                category: 'Tours',
+                                imageAsset: 'assets/images/logo.png',
+                              ),
+                              ShopItem(
+                                id: 'tour_kid',
+                                title:
+                                    'Guided Tour (Kids 4-10, 6+ participants)',
+                                subtitle:
+                                    'Per kid (4-10 years), 90 min. tour (reservation required)',
+                                price: tourKidsPrice,
+                                category: 'Tours',
+                                imageAsset: 'assets/images/logo.png',
+                              ),
+                            ];
+                          } else {
+                            return items
+                                .where(
+                                  (item) =>
+                                      item.category == categories[pageIndex],
+                                )
+                                .toList();
+                          }
+                        }();
+                        return ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 100),
+                          itemCount: itemsForPage.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 4,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  minHeight: 176,
+                                ),
+                                child: ShopCard(
+                                  item: itemsForPage[index],
+                                  cartQuantity:
+                                      cartItems[itemsForPage[index].id] ?? 0,
+                                  onAddToCart: () =>
+                                      _addToCart(itemsForPage[index].id),
+                                  onRemoveFromCart: () =>
+                                      _removeFromCart(itemsForPage[index].id),
+                                  showDeleteButton:
+                                      (cartItems[itemsForPage[index].id] ?? 0) >
+                                      0,
+                                  onDelete: () =>
+                                      _removeAllOfItem(itemsForPage[index].id),
+                                  onQuantityEdit: (newQuantity) => _setQuantity(
+                                    itemsForPage[index].id,
+                                    newQuantity,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-          ],
+              if (totalItems > 0)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: CartSummary(
+                    totalAmount: totalAmount,
+                    totalItems: totalItems,
+                    onClearCart: _clearCart,
+                    onCheckout: _goToCheckout,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
