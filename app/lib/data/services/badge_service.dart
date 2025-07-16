@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/badge_data.dart';
@@ -193,7 +192,7 @@ class BadgeService extends ChangeNotifier {
       'title': badge.title,
       'description': badge.description,
       'imagePath': badge.imagePath,
-      'color': badge.color.value,
+      'color': badge.color.toARGB32(),
       'achievedDate': badge.achievedDate?.millisecondsSinceEpoch,
       'isEarned': badge.isEarned,
     };
@@ -216,16 +215,14 @@ class BadgeService extends ChangeNotifier {
   /// Get badge type from badge data (based on title)
   BadgeType _getBadgeType(BadgeData badge) {
     if (badge.title.contains('Space Pioneer')) return BadgeType.spacePioneer;
-    if (badge.title.contains('Galactic Speaker'))
+    if (badge.title.contains('Galactic Speaker')) {
       return BadgeType.galacticSpeaker;
+    }
     if (badge.title.contains('Time Voyager')) return BadgeType.timeVoyager;
-    if (badge.title.contains('Identity Shifter'))
+    if (badge.title.contains('Identity Shifter')) {
       return BadgeType.identityShifter;
+    }
     throw Exception('Unknown badge type: ${badge.title}');
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }

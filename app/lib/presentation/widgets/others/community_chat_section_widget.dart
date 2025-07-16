@@ -21,7 +21,7 @@ class CommunityChatSectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Connect with Other Visitors',
+            'Connect with Other Users',
             style: kSectionTitleTextStyle,
           ),
           kSpaceBetweenCommunityTitleAndParagraph,

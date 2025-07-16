@@ -1,7 +1,7 @@
 import 'package:app/presentation/styles/spacing/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:app/presentation/widgets/animated_fade_in_column.dart';
 
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/presentation/styles/all.dart';
@@ -13,6 +13,9 @@ import 'package:app/presentation/views/events/room_details_page.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:app/main.dart' as main_app;
+
+import 'package:app/utils/app_text_indexer.dart';
+import 'package:app/utils/app_text_search.dart';
 
 final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
 
@@ -26,10 +29,148 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  bool isSkeletonLoading = true;
+  bool _showContent = false;
   String _username = 'User'; // Default fallback username
   List<DetailsModel> _events = [];
   List<DetailsModel> _rooms = [];
+
+  Future<void> _onSearchPressed() async {
+    final TextEditingController controller = TextEditingController();
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        List<Map<String, dynamic>> results = [];
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900],
+              title: Text(
+                'What are you looking for?',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.1,
+                  fontSize: 16,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    style: TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Type here to search...',
+                      hintStyle: TextStyle(color: Colors.white54),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white54),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white, width: 2),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value.trim().isEmpty) {
+                          results = [];
+                        } else {
+                          final searchResults = AppTextSearch.search(
+                            value.trim(),
+                            limit: 10,
+                            threshold: 40,
+                          );
+                          final inputLower = value.trim().toLowerCase();
+                          final startsWithInput = <Map<String, dynamic>>[];
+                          final containsInput = <Map<String, dynamic>>[];
+                          for (final item in searchResults) {
+                            final text = (item['text'] ?? '')
+                                .toString()
+                                .toLowerCase();
+                            if (text.startsWith(inputLower)) {
+                              startsWithInput.add(item);
+                            } else {
+                              containsInput.add(item);
+                            }
+                          }
+                          startsWithInput.sort(
+                            (a, b) => (a['text'] ?? '')
+                                .toString()
+                                .toLowerCase()
+                                .compareTo(
+                                  (b['text'] ?? '').toString().toLowerCase(),
+                                ),
+                          );
+                          containsInput.sort(
+                            (a, b) => (a['text'] ?? '')
+                                .toString()
+                                .toLowerCase()
+                                .compareTo(
+                                  (b['text'] ?? '').toString().toLowerCase(),
+                                ),
+                          );
+                          results = [...startsWithInput, ...containsInput];
+                        }
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  if (results.isEmpty && controller.text.isNotEmpty)
+                    Text(
+                      'No results found.',
+                      style: TextStyle(color: Colors.white54),
+                    ),
+                  if (results.isNotEmpty)
+                    Flexible(
+                      child: SizedBox(
+                        width: 300,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: results.length,
+                          itemBuilder: (context, idx) {
+                            final item = results[idx];
+                            return ListTile(
+                              title: Text(
+                                item['text'],
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                                color: Colors.white38,
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                // Optionally, do something with the result (e.g., navigate)
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'Close',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ...existing code...
 
   String get homePageMessage => '$homepageGreeting, $_username!';
 
@@ -48,9 +189,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     // Load user session and activities data
     _initializeData();
-
-    // Set isLoading to false after 6 seconds
-    _mockDataLoadingUISkeletonEffect();
+    // No need to pre-initialize the text indexer; we only index app data after loading
   }
 
   @override
@@ -76,6 +215,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     await _loadUserSession();
     await _loadActivitiesData();
+    if (mounted) {
+      setState(() {
+        _showContent = true;
+      });
+    }
   }
 
   Future<void> _loadUserSession() async {
@@ -124,64 +268,52 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               _logger.info('Using full username: $displayName');
             }
           }
-
-          _logger.info('Final display name: $displayName');
-
           if (mounted) {
             setState(() {
               _username = displayName;
             });
             _logger.info('Updated UI with username: $_username');
           }
-        } else {
-          _logger.warning('Current user is null after loading session');
-        }
-      } else {
-        _logger.info('No user session found - user not logged in');
-        // Set a more welcoming default message for visitors
-        if (mounted) {
-          setState(() {
-            _username = 'Visitor';
-          });
         }
       }
-    } catch (e, stackTrace) {
+    } catch (e) {
+      // Handle error - could show a snackbar or log the error
       _logger.severe('Error loading user session: $e');
-      _logger.severe('Stack trace: $stackTrace');
-      // Keep default "User" username
     }
   }
 
   Future<void> _loadActivitiesData() async {
     try {
       _logger.fine('Waiting for database initialization...');
-
-      // Wait for database to be fully initialized
       bool dbReady = await main_app.waitForDatabaseInitialization();
-
       if (!dbReady) {
         _logger.severe('Database initialization failed');
         return;
       }
-
       _logger.finer('Database is ready, loading activities...');
-
-      // Debug: List all available activities
       await DBMuseumActivityManager.debugListAllActivities();
-
       final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
       final rooms = await DBMuseumActivityManager.getRoomsAsDetailsModels();
-
       _logger.finest(
         'Loaded ${events.length} events and ${rooms.length} rooms',
       );
+      // Index event and room names/descriptions for search (clear first)
+      final indexer = AppTextIndexer();
+      indexer.clear();
       for (final event in events) {
         _logger.finer('Event: ${event.name}');
+        indexer.addText(event.name, source: 'event');
+        if (event.description != null) {
+          indexer.addText(event.description!, source: 'event');
+        }
       }
       for (final room in rooms) {
         _logger.finer('Room: ${room.name}');
+        indexer.addText(room.name, source: 'room');
+        if (room.description != null) {
+          indexer.addText(room.description!, source: 'room');
+        }
       }
-
       if (mounted) {
         setState(() {
           _events = events;
@@ -189,23 +321,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         });
       }
     } catch (e) {
-      // Handle error - could show a snackbar or log the error
       _logger.severe('Error loading activities from database: $e');
     }
   }
 
-  void _mockDataLoadingUISkeletonEffect() {
-    Future.delayed(
-      const Duration(seconds: kSkeletonLoadingDurationSeconds),
-      () {
-        if (mounted) {
-          setState(() {
-            isSkeletonLoading = false;
-          });
-        }
-      },
-    );
-  }
+  // Removed _mockDataLoadingUISkeletonEffect (no longer needed)
 
   void _navigateToEventDetails(DetailsModel event) {
     Navigator.push(
@@ -229,10 +349,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(
-          bottom: 16.0,
-          right: 4.0,
-        ), // Più sollevato
+        padding: const EdgeInsets.only(bottom: 16.0, right: 4.0),
         child: FloatingActionButton(
           onPressed: () {
             Navigator.push(
@@ -245,85 +362,84 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      body: Skeletonizer(
-        enabled: isSkeletonLoading,
-        effect: ShimmerEffect(
-          baseColor: kSkeletonBaseColor,
-          highlightColor: kSkeletonHighlightColor,
-          duration: Duration(seconds: kSkeletonLoadingWaveSeconds),
-        ), // Wrap the home page with Skeletonizer
-        child: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [kBlackColor, Colors.grey[900]!],
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [kBlackColor, Colors.grey[900]!],
+            ),
+          ),
+          child: CustomScrollView(
+            slivers: [
+              AppBarWidget(
+                textColor: kWhiteColor,
+                backgroundColor: kBlackColor,
+                logger: _logger,
+                iconImage: Icons.search,
+                text: homePageMessage,
+                onButtonPressed: _onSearchPressed,
+                showLogo: true, // Show logo on homepage
               ),
-            ),
-            child: CustomScrollView(
-              slivers: [
-                AppBarWidget(
-                  textColor: kWhiteColor,
-                  backgroundColor: kBlackColor,
-                  logger: _logger,
-                  iconImage: Icons.search,
-                  text: homePageMessage,
-                  onButtonPressed: () {
-                    /*todo: implement search functionality*/
-                  },
-                  showLogo: true, // Show logo on homepage
-                  forceHideBackButton:
-                      true, // Never show back button on home page
+              SliverPadding(
+                padding: kBodyPadding,
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _showContent
+                        ? AnimatedFadeInColumn(
+                            children: [
+                              CustomListWidget(
+                                title: "Our Events",
+                                textColor: kPinkColor,
+                                onItemTap: _navigateToEventDetails,
+                                activities: _events.isNotEmpty
+                                    ? _events
+                                    : [
+                                        DetailsModel(
+                                          name: 'Loading Events...',
+                                          description:
+                                              'Please wait while we load events',
+                                          imageUrlOrPath:
+                                              'assets/images/logo.png',
+                                        ),
+                                      ],
+                              ),
+                              kSpaceBetweenSections,
+                              CustomListWidget(
+                                title: "Discover the Rooms",
+                                textColor: kPinkColor,
+                                onItemTap: _navigateToRoomDetails,
+                                activities: _rooms.isNotEmpty
+                                    ? _rooms
+                                    : [
+                                        DetailsModel(
+                                          name: 'Loading Rooms...',
+                                          description:
+                                              'Please wait while we load rooms',
+                                          imageUrlOrPath:
+                                              'assets/images/logo.png',
+                                        ),
+                                      ],
+                              ),
+                              kSpaceBetweenSections,
+                              CommunityChatSectionWidget(),
+                              kSpaceBetweenSections,
+                              const VisitorsGuideWidget(textColor: kPinkColor),
+                            ],
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 60.0),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: kPinkColor,
+                              ),
+                            ),
+                          ),
+                  ]),
                 ),
-                SliverPadding(
-                  padding: kBodyPadding,
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      // Removed homePageMessage text since it's now in the app bar
-                      CustomListWidget(
-                        title: "Our Events",
-                        textColor: kPinkColor,
-                        onItemTap: _navigateToEventDetails,
-                        activities: _events.isNotEmpty
-                            ? _events
-                            : [
-                                // Fallback data if no events are loaded
-                                DetailsModel(
-                                  name: 'Loading Events...',
-                                  description:
-                                      'Please wait while we load events',
-                                  imageUrlOrPath: 'assets/images/logo.png',
-                                ),
-                              ],
-                      ),
-                      kSpaceBetweenSections,
-                      CustomListWidget(
-                        title: "Discover the Rooms",
-                        textColor: kPinkColor,
-                        onItemTap: _navigateToRoomDetails,
-                        activities: _rooms.isNotEmpty
-                            ? _rooms
-                            : [
-                                // Fallback data if no rooms are loaded
-                                DetailsModel(
-                                  name: 'Loading Rooms...',
-                                  description:
-                                      'Please wait while we load rooms',
-                                  imageUrlOrPath: 'assets/images/logo.png',
-                                ),
-                              ],
-                      ), // Replace with actual data
-                      kSpaceBetweenSections,
-                      // Community Chat Section
-                      CommunityChatSectionWidget(),
-                      kSpaceBetweenSections,
-                      const VisitorsGuideWidget(textColor: kPinkColor),
-                    ]),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

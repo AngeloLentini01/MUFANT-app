@@ -3,10 +3,32 @@ import 'package:app/presentation/models/cart_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/widgets/all.dart';
+import 'package:app/presentation/widgets/animated_tab_bar.dart';
 import 'package:logging/logging.dart';
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
 // import 'package:app/model/generic/details_model.dart';
+
 import 'package:app/presentation/models/shop_event_item.dart';
+
+// Move ShopItem class here, after all imports
+
+class ShopItem {
+  final String id;
+  final String title;
+  final String subtitle;
+  final double price;
+  final String category;
+  final String imageAsset;
+
+  ShopItem({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.price,
+    required this.category,
+    required this.imageAsset,
+  });
+}
 
 class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
@@ -16,9 +38,33 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[800],
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: TextField(
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Search',
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Removed PageController
   static final Logger _logger = Logger('ShopPage');
   static const int maxAllowedTickets = 1000;
   int selectedTabIndex = 0;
+  late final PageController _pageController;
   Map<String, int> cartItems = {};
   List<String> additionOrder = []; // Track the order items were added
 
@@ -82,6 +128,7 @@ class _ShopPageState extends State<ShopPage> {
   void initState() {
     super.initState();
     _loadEventsForShop();
+    _pageController = PageController(initialPage: selectedTabIndex);
   }
 
   Future<void> _loadEventsForShop() async {
@@ -447,54 +494,156 @@ class _ShopPageState extends State<ShopPage> {
         ),
         child: Stack(
           children: [
-            // Main content with CustomScrollView
-            CustomScrollView(
-              slivers: [
-                AppBarWidget(
-                  textColor: kWhiteColor,
-                  backgroundColor: kBlackColor,
-                  logger: _logger,
-                  iconImage: Icons.shopping_cart,
-                  text: 'Shop',
-                  onButtonPressed: () {
-                    _logger.info('Shop app bar button pressed');
-                  },
-                  showLogo: false,
-                  showAppBarCTAButton: false,
-                  additionalContent: Column(
-                    children: [_buildSearchBar(), _buildCategoryTabs()],
+            Column(
+              children: [
+                Container(
+                  color: kBlackColor,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
                   ),
-                ),
-                if (!_eventsLoaded && categories[selectedTabIndex] == 'Events')
-                  const SliverToBoxAdapter(
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: ShopCard(
-                          item: filteredItems[index],
-                          cartQuantity: cartItems[filteredItems[index].id] ?? 0,
-                          onAddToCart: () =>
-                              _addToCart(filteredItems[index].id),
-                          onRemoveFromCart: () =>
-                              _removeFromCart(filteredItems[index].id),
-                          showDeleteButton:
-                              (cartItems[filteredItems[index].id] ?? 0) > 0,
-                          onDelete: () =>
-                              _removeAllOfItem(filteredItems[index].id),
-                          onQuantityEdit: (newQuantity) => _setQuantity(
-                            filteredItems[index].id,
-                            newQuantity,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Shop',
+                          style: TextStyle(
+                            color: kWhiteColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    }, childCount: filteredItems.length),
+                      ),
+                      // Add more actions if needed
+                    ],
                   ),
-                if (totalItems > 0)
-                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                ),
+                _buildSearchBar(), // Ensure _buildSearchBar is defined and used correctly
+                AnimatedTabBar(
+                  tabs: categories,
+                  selectedIndex: selectedTabIndex,
+                  onTabSelected: (index) {
+                    setState(() {
+                      selectedTabIndex = index;
+                    });
+                    _pageController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+                  },
+                ),
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: categories.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        selectedTabIndex = index;
+                      });
+                    },
+                    itemBuilder: (context, pageIndex) {
+                      if (!_eventsLoaded && categories[pageIndex] == 'Events') {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final itemsForPage = () {
+                        if (categories[pageIndex] == 'Events') {
+                          return eventItems
+                              .map(
+                                (e) => ShopItem(
+                                  id: e.id,
+                                  title: e.title,
+                                  subtitle: e.subtitle,
+                                  price: e.price,
+                                  category: e.category,
+                                  imageAsset: e.imageAsset,
+                                ),
+                              )
+                              .toList();
+                        } else if (categories[pageIndex] == 'Tours') {
+                          return [
+                            ShopItem(
+                              id: 'tour_group',
+                              title: 'Guided Tour (1-5 participants)',
+                              subtitle:
+                                  '90 min. tour for 1 to 5 people (reservation required)',
+                              price: tourGroupPrice,
+                              category: 'Tours',
+                              imageAsset: 'assets/images/logo.png',
+                            ),
+                            ShopItem(
+                              id: 'tour_adult',
+                              title: 'Guided Tour (Adult, 6+ participants)',
+                              subtitle:
+                                  'Per adult, 90 min. tour (reservation required)',
+                              price: tourAdultPrice,
+                              category: 'Tours',
+                              imageAsset: 'assets/images/logo.png',
+                            ),
+                            ShopItem(
+                              id: 'tour_reduced',
+                              title: 'Guided Tour (Disabled, 6+ participants)',
+                              subtitle:
+                                  'Per disabled participant, 90 min. tour (reservation required)',
+                              price: tourReducedPrice,
+                              category: 'Tours',
+                              imageAsset: 'assets/images/logo.png',
+                            ),
+                            ShopItem(
+                              id: 'tour_kid',
+                              title: 'Guided Tour (Kids 4-10, 6+ participants)',
+                              subtitle:
+                                  'Per kid (4-10 years), 90 min. tour (reservation required)',
+                              price: tourKidsPrice,
+                              category: 'Tours',
+                              imageAsset: 'assets/images/logo.png',
+                            ),
+                          ];
+                        } else {
+                          return items
+                              .where(
+                                (item) =>
+                                    item.category == categories[pageIndex],
+                              )
+                              .toList();
+                        }
+                      }();
+                      return ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 100),
+                        itemCount: itemsForPage.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(minHeight: 176),
+                              child: ShopCard(
+                                item: itemsForPage[index],
+                                cartQuantity:
+                                    cartItems[itemsForPage[index].id] ?? 0,
+                                onAddToCart: () =>
+                                    _addToCart(itemsForPage[index].id),
+                                onRemoveFromCart: () =>
+                                    _removeFromCart(itemsForPage[index].id),
+                                showDeleteButton:
+                                    (cartItems[itemsForPage[index].id] ?? 0) >
+                                    0,
+                                onDelete: () =>
+                                    _removeAllOfItem(itemsForPage[index].id),
+                                onQuantityEdit: (newQuantity) => _setQuantity(
+                                  itemsForPage[index].id,
+                                  newQuantity,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
             if (totalItems > 0)
@@ -515,88 +664,11 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(25),
-        ),
-        child: TextField(
-          style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
-            hintText: 'Search',
-            hintStyle: TextStyle(color: Colors.grey[400]),
-            prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 12,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryTabs() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: Row(
-        children: categories.asMap().entries.map((entry) {
-          final index = entry.key;
-          final category = entry.value;
-          final isSelected = selectedTabIndex == index;
-
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: GestureDetector(
-                onTap: () => setState(() => selectedTabIndex = index),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? kPinkColor : Colors.grey[800],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    category,
-                    style: TextStyle(
-                      color: isSelected ? Colors.black : Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+  // _buildCategoryTabs removed, now using AnimatedTabBar
 
   @override
   void dispose() {
+    _pageController.dispose();
     super.dispose();
   }
-}
-
-class ShopItem {
-  final String id;
-  final String title;
-  final String subtitle;
-  final double price;
-  final String category;
-  final String imageAsset;
-
-  ShopItem({
-    required this.id,
-    required this.title,
-    required this.subtitle,
-    required this.price,
-    required this.category,
-    required this.imageAsset,
-  });
 }
