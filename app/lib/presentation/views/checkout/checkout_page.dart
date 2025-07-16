@@ -182,8 +182,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
             _logger,
             'Added ticket to database: '
             'Event: "${cartItem.details.name}", '
+            'Museum Activity: "${cartItem.museumActivity.details.name}", '
             'Date: "${cartItem.museumActivity.activeTimePeriod.start}", '
-            'Price: "${cartItem.price}"',
+            'Price: "${cartItem.price}", '
+            'Charging Rate: "${cartItem.chargingRate}"',
           );
         } else {
           AppLogger.warning(

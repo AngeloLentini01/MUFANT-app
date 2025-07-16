@@ -279,6 +279,17 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                               availableActivities,
                             );
 
+                            // Log ticket creation for debugging
+                            print(
+                              'Created ticket for ShopItem: ${shopItem.title} (ID: ${shopItem.id})',
+                            );
+                            print(
+                              'Ticket event title: ${ticketModel.museumActivity.details.name}',
+                            );
+                            print(
+                              'Ticket charging rate: ${ticketModel.chargingRate}',
+                            );
+
                             // Add the ticket to cart items (one for each quantity)
                             for (int i = 0; i < quantity; i++) {
                               cartItems.add(ticketModel);
@@ -315,10 +326,19 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
     ShopItem shopItem,
     List<MuseumActivityModel> availableActivities,
   ) {
-    // Find a suitable museum activity (use the first one for now, or create a default one)
+    // Find the corresponding museum activity based on shop item
     MuseumActivityModel museumActivity;
 
-    if (availableActivities.isNotEmpty) {
+    // Try to find a matching activity based on shop item properties
+    MuseumActivityModel? matchingActivity = _findMatchingActivity(
+      shopItem,
+      availableActivities,
+    );
+
+    if (matchingActivity != null) {
+      museumActivity = matchingActivity;
+    } else if (availableActivities.isNotEmpty) {
+      // Fallback to first activity if no match found
       museumActivity = availableActivities.first;
     } else {
       // Create a default museum activity if none are available
@@ -374,5 +394,76 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
       chargingRate: chargingRate,
       museumActivity: museumActivity,
     );
+  }
+
+  /// Find a matching museum activity based on shop item properties
+  MuseumActivityModel? _findMatchingActivity(
+    ShopItem shopItem,
+    List<MuseumActivityModel> availableActivities,
+  ) {
+    // For museum tickets (IDs 1-5), use a default MUFANT activity
+    if (shopItem.id == '1' ||
+        shopItem.id == '2' ||
+        shopItem.id == '3' ||
+        shopItem.id == '4' ||
+        shopItem.id == '5') {
+      // Create a default MUFANT museum activity for regular tickets
+      final details = DetailsModel(
+        name: 'MUFANT Museum Visit',
+        description: 'General admission to MUFANT Museum',
+      );
+
+      return MuseumActivityModel(
+        id: Ulid(),
+        location: 'MUFANT Museum',
+        details: details,
+        type: TypeOfMuseumActivityModel(
+          id: Ulid(),
+          details: DetailsModel(name: 'Museum Visit'),
+        ),
+        activeTimePeriod: DateTimeRange(
+          start: DateTime.now(),
+          end: DateTime.now().add(const Duration(days: 365)),
+        ),
+      );
+    }
+
+    // For events, try to match by title similarity
+    for (final activity in availableActivities) {
+      final activityName = activity.details.name.toLowerCase();
+      final shopItemTitle = shopItem.title.toLowerCase();
+
+      // Check if the shop item title contains or matches the activity name
+      if (activityName.contains(shopItemTitle) ||
+          shopItemTitle.contains(activityName) ||
+          activityName == shopItemTitle) {
+        return activity;
+      }
+    }
+
+    // For tours, create a specific tour activity
+    if (shopItem.id.startsWith('tour_')) {
+      final details = DetailsModel(
+        name: shopItem.title,
+        description: shopItem.subtitle,
+      );
+
+      return MuseumActivityModel(
+        id: Ulid(),
+        location: 'MUFANT Museum',
+        details: details,
+        type: TypeOfMuseumActivityModel(
+          id: Ulid(),
+          details: DetailsModel(name: 'Guided Tour'),
+        ),
+        activeTimePeriod: DateTimeRange(
+          start: DateTime.now(),
+          end: DateTime.now().add(const Duration(days: 365)),
+        ),
+      );
+    }
+
+    // If no match found, return null
+    return null;
   }
 }
