@@ -1,4 +1,5 @@
 import 'package:app/data/dbManagers/db_museum_activity_manager.dart';
+import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
@@ -24,11 +25,17 @@ class _EventPageState extends State<EventPage> {
 
   Future<void> _loadEventData() async {
     try {
-      AppLogger.info(_logger, 'EventPage: Loading data for event title: "${widget.eventTitle}"');
-      
+      AppLogger.info(
+        _logger,
+        'EventPage: Loading data for event title: "${widget.eventTitle}"',
+      );
+
       Map<String, dynamic>? data;
       if (widget.eventTitle != null) {
-        AppLogger.info(_logger, 'EventPage: Searching for specific event: "${widget.eventTitle}"');
+        AppLogger.info(
+          _logger,
+          'EventPage: Searching for specific event: "${widget.eventTitle}"',
+        );
         data = await DBMuseumActivityManager.getActivityByTitle(
           widget.eventTitle!,
         );
@@ -39,13 +46,19 @@ class _EventPageState extends State<EventPage> {
           '30 ANNI DI SAILOR',
         );
       }
-      
+
       if (data != null) {
-        AppLogger.info(_logger, 'EventPage: Successfully loaded event data: "${data['name']}"');
+        AppLogger.info(
+          _logger,
+          'EventPage: Successfully loaded event data: "${data['name']}"',
+        );
       } else {
-        AppLogger.warning(_logger, 'EventPage: No event data found for title: "${widget.eventTitle}"');
+        AppLogger.warning(
+          _logger,
+          'EventPage: No event data found for title: "${widget.eventTitle}"',
+        );
       }
-      
+
       setState(() {
         eventData = data;
         isLoading = false;
@@ -71,7 +84,14 @@ class _EventPageState extends State<EventPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
+          ),
           centerTitle: true,
           title: const Text(
             'Loading...',
@@ -95,7 +115,14 @@ class _EventPageState extends State<EventPage> {
         appBar: AppBar(
           backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: kWhiteColor,
+              size: 24,
+            ),
+          ),
           centerTitle: true,
           title: const Text(
             'Event Not Found',
@@ -118,7 +145,10 @@ class _EventPageState extends State<EventPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF2B2A33).withValues(alpha: 0.95),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
+        ),
         centerTitle: true,
         title: Text(
           eventData!['name'] ?? 'Event',

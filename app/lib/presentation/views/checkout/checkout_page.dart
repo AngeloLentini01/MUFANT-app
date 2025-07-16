@@ -178,208 +178,207 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Shop", style: TextStyle(color: kWhiteColor)),
+    return Scaffold(
+      backgroundColor: kBlackColor,
+      appBar: AppBar(
+        backgroundColor: kBlackColor,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsetsGeometry.all(32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Choose your payment method",
-                  style: TextStyle(
-                    color: kPinkColor,
-                    fontSize: 28,
-                    height: 1.2,
-                  ),
-                ),
-                kSpaceBetweenSections,
-                PaymentType(
-                  asset: "assets/images/payment_icon/paypal_logo.png",
-                  name: "Paypal",
-                  groupValue: isChecked,
-                  value: "Paypal",
-                  onChanged: (String newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                      _showValidationError = false;
-                    });
-                  },
-                ),
-                kSpaceBetweenSections,
-                PaymentType(
-                  asset: "assets/images/payment_icon/mastercard_logo.png",
-                  name: "Master Card",
-                  groupValue: isChecked,
-                  value: "Master Card",
-                  onChanged: (String newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                      _showValidationError = false;
-                    });
-                  },
-                ),
-                if (isChecked == "Master Card")
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: kPinkColor),
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          TextField(
-                            controller: _cardNumberController,
-                            decoration: InputDecoration(
-                              labelText: "Card Number",
-                              border: OutlineInputBorder(),
-                              errorText:
-                                  _showValidationError &&
-                                      _cardNumberError != null
-                                  ? _cardNumberError
-                                  : null,
-                            ),
-                            keyboardType: TextInputType.number,
-                            onChanged: (_) {
-                              if (_showValidationError) setState(() {});
-                            },
+        title: Text("Shop", style: TextStyle(color: kWhiteColor)),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsetsGeometry.all(32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Choose your payment method",
+                style: TextStyle(color: kPinkColor, fontSize: 28, height: 1.2),
+              ),
+              kSpaceBetweenSections,
+              PaymentType(
+                asset: "assets/images/payment_icon/paypal_logo.png",
+                name: "Paypal",
+                groupValue: isChecked,
+                value: "Paypal",
+                onChanged: (String newValue) {
+                  setState(() {
+                    isChecked = newValue;
+                    _showValidationError = false;
+                  });
+                },
+              ),
+              kSpaceBetweenSections,
+              PaymentType(
+                asset: "assets/images/payment_icon/mastercard_logo.png",
+                name: "Master Card",
+                groupValue: isChecked,
+                value: "Master Card",
+                onChanged: (String newValue) {
+                  setState(() {
+                    isChecked = newValue;
+                    _showValidationError = false;
+                  });
+                },
+              ),
+              if (isChecked == "Master Card")
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: kPinkColor),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        TextField(
+                          controller: _cardNumberController,
+                          decoration: InputDecoration(
+                            labelText: "Card Number",
+                            border: OutlineInputBorder(),
+                            errorText:
+                                _showValidationError && _cardNumberError != null
+                                ? _cardNumberError
+                                : null,
                           ),
-                          if (_showValidationError && _cardNumberError != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
-                              child: Text(
-                                _cardNumberError!,
-                                style: const TextStyle(color: Colors.red),
-                              ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (_) {
+                            if (_showValidationError) setState(() {});
+                          },
+                        ),
+                        if (_showValidationError && _cardNumberError != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Text(
+                              _cardNumberError!,
+                              style: const TextStyle(color: Colors.red),
                             ),
-                          cardOtherDistance,
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _dueDateController,
-                                  decoration: InputDecoration(
-                                    labelText: "Due date",
-                                    hintText: "MM/YY",
-                                    border: OutlineInputBorder(),
-                                    errorText:
-                                        _showValidationError &&
-                                            _dueDateError != null
-                                        ? _dueDateError
-                                        : null,
-                                  ),
-                                  keyboardType: TextInputType.datetime,
-                                  onChanged: (_) {
-                                    if (_showValidationError) setState(() {});
-                                  },
-                                ),
-                              ),
-                              dateCvvDistance,
-                              Expanded(
-                                child: TextField(
-                                  controller: _cvvController,
-                                  decoration: InputDecoration(
-                                    labelText: "CVV",
-                                    border: OutlineInputBorder(),
-                                    errorText:
-                                        _showValidationError &&
-                                            _cvvError != null
-                                        ? _cvvError
-                                        : null,
-                                  ),
-                                  keyboardType: TextInputType.number,
-                                  obscureText: true,
-                                  onChanged: (_) {
-                                    if (_showValidationError) setState(() {});
-                                  },
-                                ),
-                              ),
-                            ],
                           ),
-                          if (_showValidationError &&
-                              (_dueDateError != null || _cvvError != null))
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4.0),
-                              child: Column(
-                                children: [
-                                  if (_dueDateError != null)
-                                    Text(
-                                      _dueDateError!,
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
-                                  if (_cvvError != null)
-                                    Text(
-                                      _cvvError!,
-                                      style: const TextStyle(color: Colors.red),
-                                    ),
-                                ],
+                        cardOtherDistance,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _dueDateController,
+                                decoration: InputDecoration(
+                                  labelText: "Due date",
+                                  hintText: "MM/YY",
+                                  border: OutlineInputBorder(),
+                                  errorText:
+                                      _showValidationError &&
+                                          _dueDateError != null
+                                      ? _dueDateError
+                                      : null,
+                                ),
+                                keyboardType: TextInputType.datetime,
+                                onChanged: (_) {
+                                  if (_showValidationError) setState(() {});
+                                },
                               ),
                             ),
-                        ],
-                      ),
-                    ),
-                  ),
-                kSpaceBetweenSections,
-                PaymentType(
-                  asset: "assets/images/payment_icon/apple_pay_logo.png",
-                  name: "Apple Pay",
-                  groupValue: isChecked,
-                  value: "Apple Pay",
-                  onChanged: (String newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                      _showValidationError = false;
-                    });
-                  },
-                ),
-                kSpaceBetweenSections,
-                PaymentType(
-                  asset: "assets/images/payment_icon/google_pay_logo.jpg",
-                  name: "Google Pay",
-                  groupValue: isChecked,
-                  value: "Google Pay",
-                  onChanged: (String newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                      _showValidationError = false;
-                    });
-                  },
-                ),
-                kSpaceBetweenSections,
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _isPayEnabled ? kPinkColor : Colors.grey,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onPressed: _isPayEnabled ? _handlePayNow : _handlePayNow,
-                    child: const Text(
-                      'Pay Now',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            dateCvvDistance,
+                            Expanded(
+                              child: TextField(
+                                controller: _cvvController,
+                                decoration: InputDecoration(
+                                  labelText: "CVV",
+                                  border: OutlineInputBorder(),
+                                  errorText:
+                                      _showValidationError && _cvvError != null
+                                      ? _cvvError
+                                      : null,
+                                ),
+                                keyboardType: TextInputType.number,
+                                obscureText: true,
+                                onChanged: (_) {
+                                  if (_showValidationError) setState(() {});
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_showValidationError &&
+                            (_dueDateError != null || _cvvError != null))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0),
+                            child: Column(
+                              children: [
+                                if (_dueDateError != null)
+                                  Text(
+                                    _dueDateError!,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                if (_cvvError != null)
+                                  Text(
+                                    _cvvError!,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                              ],
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
+              kSpaceBetweenSections,
+              PaymentType(
+                asset: "assets/images/payment_icon/apple_pay_logo.png",
+                name: "Apple Pay",
+                groupValue: isChecked,
+                value: "Apple Pay",
+                onChanged: (String newValue) {
+                  setState(() {
+                    isChecked = newValue;
+                    _showValidationError = false;
+                  });
+                },
+              ),
+              kSpaceBetweenSections,
+              PaymentType(
+                asset: "assets/images/payment_icon/google_pay_logo.jpg",
+                name: "Google Pay",
+                groupValue: isChecked,
+                value: "Google Pay",
+                onChanged: (String newValue) {
+                  setState(() {
+                    isChecked = newValue;
+                    _showValidationError = false;
+                  });
+                },
+              ),
+              kSpaceBetweenSections,
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isPayEnabled ? kPinkColor : Colors.grey,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: _isPayEnabled ? _handlePayNow : _handlePayNow,
+                  child: const Text(
+                    'Pay Now',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        // bottomNavigationBar removed to hide the tab bar on checkout page
       ),
+      // bottomNavigationBar removed to hide the tab bar on checkout page
     );
   }
 }
