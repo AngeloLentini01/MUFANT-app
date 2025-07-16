@@ -164,7 +164,7 @@ class BadgeService extends ChangeNotifier {
       if (badgesJson != null) {
         final List<dynamic> badgesList = json.decode(badgesJson);
         _earnedBadges = [];
-        
+
         for (final badgeData in badgesList) {
           try {
             // Try new format first (with badgeType)
@@ -174,31 +174,41 @@ class BadgeService extends ChangeNotifier {
               // Handle old format (with title) - migrate to new format
               final title = badgeData['title'] as String;
               BadgeType? badgeType;
-              
-              if (title.contains('Space Pioneer') || title.contains('Pioniere Spaziale')) {
+
+              if (title.contains('Space Pioneer') ||
+                  title.contains('Pioniere Spaziale')) {
                 badgeType = BadgeType.spacePioneer;
-              } else if (title.contains('Galactic Speaker') || title.contains('Oratore Galattico')) {
+              } else if (title.contains('Galactic Speaker') ||
+                  title.contains('Oratore Galattico')) {
                 badgeType = BadgeType.galacticSpeaker;
-              } else if (title.contains('Time Voyager') || title.contains('Viaggiatore del Tempo')) {
+              } else if (title.contains('Time Voyager') ||
+                  title.contains('Viaggiatore del Tempo')) {
                 badgeType = BadgeType.timeVoyager;
-              } else if (title.contains('Identity Shifter') || title.contains('Mutaforma Identitario')) {
+              } else if (title.contains('Identity Shifter') ||
+                  title.contains('Mutaforma Identitario')) {
                 badgeType = BadgeType.identityShifter;
               }
-              
+
               if (badgeType != null) {
-                final badgeTemplate = BadgeDataProvider.getBadgeByType(badgeType);
+                final badgeTemplate = BadgeDataProvider.getBadgeByType(
+                  badgeType,
+                );
                 if (badgeTemplate != null) {
-                  _earnedBadges.add(BadgeData(
-                    color: badgeTemplate.color,
-                    icon: badgeTemplate.icon,
-                    imagePath: badgeTemplate.imagePath,
-                    title: badgeTemplate.title,
-                    description: badgeTemplate.description,
-                    achievedDate: badgeData['achievedDate'] != null
-                        ? DateTime.fromMillisecondsSinceEpoch(badgeData['achievedDate'])
-                        : null,
-                    isEarned: badgeData['isEarned'] ?? false,
-                  ));
+                  _earnedBadges.add(
+                    BadgeData(
+                      color: badgeTemplate.color,
+                      icon: badgeTemplate.icon,
+                      imagePath: badgeTemplate.imagePath,
+                      title: badgeTemplate.title,
+                      description: badgeTemplate.description,
+                      achievedDate: badgeData['achievedDate'] != null
+                          ? DateTime.fromMillisecondsSinceEpoch(
+                              badgeData['achievedDate'],
+                            )
+                          : null,
+                      isEarned: badgeData['isEarned'] ?? false,
+                    ),
+                  );
                 }
               }
             }
@@ -206,7 +216,7 @@ class BadgeService extends ChangeNotifier {
             debugPrint('❌ Error loading individual badge: $e');
           }
         }
-        
+
         // Save in new format to complete migration
         await _saveEarnedBadges();
       }
@@ -232,7 +242,9 @@ class BadgeService extends ChangeNotifier {
   /// Convert BadgeData to JSON
   Map<String, dynamic> _toJson(BadgeData badge) {
     return {
-      'badgeType': _getBadgeType(badge).toString(), // Store the badge type as identifier
+      'badgeType': _getBadgeType(
+        badge,
+      ).toString(), // Store the badge type as identifier
       'achievedDate': badge.achievedDate?.millisecondsSinceEpoch,
       'isEarned': badge.isEarned,
     };
@@ -245,20 +257,21 @@ class BadgeService extends ChangeNotifier {
     final badgeType = BadgeType.values.firstWhere(
       (type) => type.toString() == badgeTypeString,
     );
-    
+
     // Get the current badge template with current language
     final badgeTemplate = BadgeDataProvider.getBadgeByType(badgeType);
-    
+
     if (badgeTemplate == null) {
       throw Exception('Badge template not found for type: $badgeType');
     }
-    
+
     return BadgeData(
       color: badgeTemplate.color,
       icon: badgeTemplate.icon,
       imagePath: badgeTemplate.imagePath,
       title: badgeTemplate.title, // This will be the current language
-      description: badgeTemplate.description, // This will be the current language
+      description:
+          badgeTemplate.description, // This will be the current language
       achievedDate: json['achievedDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['achievedDate'])
           : null,
@@ -275,29 +288,28 @@ class BadgeService extends ChangeNotifier {
         return type;
       }
     }
-    
+
     // Fallback: Check for title patterns (for backward compatibility during migration)
-    if (badge.title.contains('Space Pioneer') || 
+    if (badge.title.contains('Space Pioneer') ||
         badge.title.contains('Pioniere Spaziale')) {
       return BadgeType.spacePioneer;
     }
-    
+
     if (badge.title.contains('Galactic Speaker') ||
         badge.title.contains('Oratore Galattico')) {
       return BadgeType.galacticSpeaker;
     }
-    
+
     if (badge.title.contains('Time Voyager') ||
         badge.title.contains('Viaggiatore del Tempo')) {
       return BadgeType.timeVoyager;
     }
-    
+
     if (badge.title.contains('Identity Shifter') ||
         badge.title.contains('Mutaforma Identitario')) {
       return BadgeType.identityShifter;
     }
-    
+
     throw Exception('Unknown badge type: ${badge.title}');
   }
-
 }

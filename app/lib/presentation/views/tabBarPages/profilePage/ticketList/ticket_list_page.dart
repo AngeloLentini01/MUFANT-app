@@ -387,7 +387,9 @@ class TicketListPageState extends State<TicketListPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'tickets_in_total'.tr(namedArgs: {'count': _tickets.length.toString()}),
+                      'tickets_in_total'.tr(
+                        namedArgs: {'count': _tickets.length.toString()},
+                      ),
                       style: const TextStyle(
                         color: kWhiteColor,
                         fontSize: 16,
@@ -396,7 +398,14 @@ class TicketListPageState extends State<TicketListPage> {
                     ),
                     const Spacer(),
                     Text(
-                      'active_tickets'.tr(namedArgs: {'count': _tickets.where((t) => !t.isExpired).length.toString()}),
+                      'active_tickets'.tr(
+                        namedArgs: {
+                          'count': _tickets
+                              .where((t) => !t.isExpired)
+                              .length
+                              .toString(),
+                        },
+                      ),
                       style: TextStyle(
                         color: kWhiteColor.withValues(alpha: 0.7),
                         fontSize: 14,
@@ -486,7 +495,9 @@ class TicketListPageState extends State<TicketListPage> {
             Container(
               margin: const EdgeInsets.only(bottom: 8, left: 4),
               child: Text(
-                'purchased_on'.tr(namedArgs: {'date': _formatPurchaseDate(ticket.purchaseDate)}),
+                'purchased_on'.tr(
+                  namedArgs: {'date': _formatPurchaseDate(ticket.purchaseDate)},
+                ),
                 style: TextStyle(
                   color: kWhiteColor.withValues(alpha: 0.6),
                   fontSize: 12,
@@ -555,7 +566,9 @@ class TicketListPageState extends State<TicketListPage> {
     } else if (difference == 1) {
       return 'purchased_yesterday'.tr();
     } else if (difference < 7) {
-      return 'purchased_days_ago'.tr(namedArgs: {'days': difference.toString()});
+      return 'purchased_days_ago'.tr(
+        namedArgs: {'days': difference.toString()},
+      );
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

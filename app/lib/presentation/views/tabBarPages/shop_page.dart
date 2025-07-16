@@ -385,7 +385,9 @@ class _ShopPageState extends State<ShopPage> {
             ],
           ),
           content: Text(
-            "max_tickets_error".tr(namedArgs: {'maxTickets': maxAllowedTickets.toString()}),
+            "max_tickets_error".tr(
+              namedArgs: {'maxTickets': maxAllowedTickets.toString()},
+            ),
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           actions: [

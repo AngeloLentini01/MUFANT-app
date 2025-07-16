@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class CommunityChatSectionWidget extends StatelessWidget {
-  const CommunityChatSectionWidget({
-    super.key,
-  });
+  const CommunityChatSectionWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +19,9 @@ class CommunityChatSectionWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'connect_with_users'.tr(),
-            style: kSectionTitleTextStyle,
-          ),
+          Text('connect_with_users'.tr(), style: kSectionTitleTextStyle),
           kSpaceBetweenCommunityTitleAndParagraph,
-          Text(
-            'community_description'.tr(),
-            style: kParagraphTextstyle,
-          ),
+          Text('community_description'.tr(), style: kParagraphTextstyle),
           kSpaceBetweenCommunityCTAAndButton,
           CommunityChatsButton(
             label: 'join_community_discussions'.tr(),

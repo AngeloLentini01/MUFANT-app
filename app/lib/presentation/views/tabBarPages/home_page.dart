@@ -173,7 +173,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   // ...existing code...
 
-  String get homePageMessage => 'greeting_hello'.tr(namedArgs: {'name': _username});
+  String get homePageMessage =>
+      'greeting_hello'.tr(namedArgs: {'name': _username});
 
   // Public method to refresh user session
   void refreshUserSession() {

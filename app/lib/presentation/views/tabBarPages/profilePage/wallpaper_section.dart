@@ -21,10 +21,7 @@ class WallpaperSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'my_wallpapers'.tr(),
-          style: kSectionTitleTextStyle,
-        ),
+        Text('my_wallpapers'.tr(), style: kSectionTitleTextStyle),
         const SizedBox(height: 16),
         WallpaperCarousel(
           wallpapers: wallpapers,

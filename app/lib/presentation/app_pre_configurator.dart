@@ -14,12 +14,12 @@ class AppPreConfigurator extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // Enable proper navigation history
       navigatorKey: GlobalKey<NavigatorState>(),
-      
+
       // Easy Localization configuration
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      
+
       theme: ThemeData(
         textTheme: GoogleFonts.exoTextTheme(ThemeData.dark().textTheme),
         scaffoldBackgroundColor: kBlackColor,

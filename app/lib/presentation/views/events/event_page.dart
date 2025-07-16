@@ -136,7 +136,10 @@ class _EventPageState extends State<EventPage> {
           ),
         ),
         body: Center(
-          child: Text('event_not_found_message'.tr(), style: TextStyle(color: Colors.white)),
+          child: Text(
+            'event_not_found_message'.tr(),
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -287,7 +290,9 @@ class _EventPageState extends State<EventPage> {
                 const SizedBox(height: 10),
                 Text(
                   eventData!['price'] != null
-                      ? 'mufant_ticket_info'.tr(namedArgs: {'price': eventData!['price'].toString()})
+                      ? 'mufant_ticket_info'.tr(
+                          namedArgs: {'price': eventData!['price'].toString()},
+                        )
                       : '',
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   textAlign: TextAlign.center,

@@ -135,7 +135,11 @@ class BadgeDetailModal extends StatelessWidget {
                   border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Text(
-                  'achieved_on'.tr(namedArgs: {'date': DateFormat('MMM dd, yyyy').format(achievedDate!)}),
+                  'achieved_on'.tr(
+                    namedArgs: {
+                      'date': DateFormat('MMM dd, yyyy').format(achievedDate!),
+                    },
+                  ),
                   style: TextStyle(
                     color: color,
                     fontSize: 14,
@@ -207,7 +211,10 @@ class BadgeDetailModal extends StatelessWidget {
                 ),
                 child: Text(
                   'close'.tr(),
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),

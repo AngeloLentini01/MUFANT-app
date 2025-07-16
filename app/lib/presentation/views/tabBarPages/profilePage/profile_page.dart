@@ -159,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: lightGreyColor,
                     fontSize: 16,
                     height: 1.5,
-                    decoration: TextDecoration.none
+                    decoration: TextDecoration.none,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -193,7 +193,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Text(
                     'log_in'.tr(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -226,7 +229,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   child: Text(
                     'sign_up'.tr(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

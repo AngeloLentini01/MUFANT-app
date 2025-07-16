@@ -140,7 +140,12 @@ class _BadgesSectionState extends State<BadgesSection> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'badge_count'.tr(namedArgs: {'earned': earnedCount.toString(), 'total': totalCount.toString()}),
+                'badge_count'.tr(
+                  namedArgs: {
+                    'earned': earnedCount.toString(),
+                    'total': totalCount.toString(),
+                  },
+                ),
                 style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 12,

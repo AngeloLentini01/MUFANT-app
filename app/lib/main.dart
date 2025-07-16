@@ -92,7 +92,7 @@ Future<Locale?> _getSavedLocale() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Easy Localization
   await EasyLocalization.ensureInitialized();
 

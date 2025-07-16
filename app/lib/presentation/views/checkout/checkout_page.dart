@@ -266,8 +266,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           children: [
                             Expanded(
                               child: TextField(
-                                controller: _dueDateController,                                  decoration: InputDecoration(
-                                    labelText: "due_date".tr(),
+                                controller: _dueDateController,
+                                decoration: InputDecoration(
+                                  labelText: "due_date".tr(),
                                   hintText: "MM/YY",
                                   border: OutlineInputBorder(),
                                   errorText:

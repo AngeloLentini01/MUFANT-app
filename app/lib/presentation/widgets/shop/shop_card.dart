@@ -123,7 +123,10 @@ class _ShopCardState extends State<ShopCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('cancel'.tr(), style: const TextStyle(color: Colors.grey)),
+              child: Text(
+                'cancel'.tr(),
+                style: const TextStyle(color: Colors.grey),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -132,7 +135,10 @@ class _ShopCardState extends State<ShopCard> {
                   Navigator.of(context).pop(quantity);
                 }
               },
-              child: Text('ok'.tr(), style: const TextStyle(color: Colors.white)),
+              child: Text(
+                'ok'.tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

@@ -35,7 +35,7 @@ class _SettingsPageState extends State<SettingsPage> {
       _currentLocale = locale;
     });
     await context.setLocale(locale);
-    
+
     // Save locale to SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('locale', locale.languageCode);
@@ -174,8 +174,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       _buildSettingsTile(
                         icon: Icons.language_outlined,
                         title: 'language'.tr(),
-                        subtitle: _currentLocale.languageCode == 'en' 
-                            ? 'english'.tr() 
+                        subtitle: _currentLocale.languageCode == 'en'
+                            ? 'english'.tr()
                             : 'italian'.tr(),
                         trailing: const Icon(
                           Icons.arrow_forward_ios,

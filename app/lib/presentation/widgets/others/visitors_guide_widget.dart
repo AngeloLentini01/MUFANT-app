@@ -14,10 +14,7 @@ class VisitorsGuideWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'visitors_guide'.tr(),
-          style: kSectionTitleTextStyle,
-        ),
+        Text('visitors_guide'.tr(), style: kSectionTitleTextStyle),
         kSpaceBetweenVisitorsGuideTitleAndTimeTable,
         Row(
           children: [
@@ -72,9 +69,7 @@ class VisitorsGuideWidget extends StatelessWidget {
                     flex: 2,
                     child: Text(
                       'thu_sun'.tr(),
-                      style: const TextStyle(
-                        color: kWhiteColor,
-                      ),
+                      style: const TextStyle(color: kWhiteColor),
                     ),
                   ),
                   Expanded(
