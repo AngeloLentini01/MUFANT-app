@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:ticket_material/ticket_material.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
 import 'package:app/data/services/ticket_service.dart';
+import 'package:app/model/items/ticket/ticket_display_data.dart';
 import 'package:barcode/barcode.dart';
+import 'package:app/utils/app_logger.dart';
+import 'package:logging/logging.dart';
 
 /// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
@@ -417,15 +420,51 @@ class MyTicketWidget extends StatelessWidget {
   }
 }
 
-class TicketsSection extends StatelessWidget {
+class TicketsSection extends StatefulWidget {
   const TicketsSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final ticketService = TicketService();
-    // Always reload tickets on build
-    final latestTicket = ticketService.getLatestTicket();
+  State<TicketsSection> createState() => _TicketsSectionState();
+}
 
+class _TicketsSectionState extends State<TicketsSection> {
+  final TicketService _ticketService = TicketService();
+  static final Logger _logger = AppLogger.getLogger('TicketsSection');
+  TicketDisplayData? _latestTicket;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLatestTicket();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh tickets when dependencies change (e.g., when returning to this page)
+    _loadLatestTicket();
+  }
+
+  Future<void> _loadLatestTicket() async {
+    AppLogger.info(_logger, 'Loading latest ticket...');
+    await _ticketService.ready;
+    if (mounted) {
+      final latestTicket = _ticketService.getLatestTicket();
+      final allTickets = _ticketService.getAllTickets();
+      AppLogger.info(
+        _logger,
+        'Found ${allTickets.length} total tickets, latest ticket: ${latestTicket?.eventTitle ?? "null"}',
+      );
+      setState(() {
+        _latestTicket = latestTicket;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -462,12 +501,22 @@ class TicketsSection extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Show latest ticket or empty state
-        if (latestTicket != null) ...[
+        if (_isLoading) ...[
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+            ),
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+        ] else if (_latestTicket != null) ...[
           MyTicketWidget(
-            eventDate: latestTicket.eventDate,
-            eventTime: latestTicket.eventTime,
-            eventTitle: latestTicket.eventTitle,
-            venueAddress: latestTicket.venueAddress,
+            eventDate: _latestTicket!.eventDate,
+            eventTime: _latestTicket!.eventTime,
+            eventTitle: _latestTicket!.eventTitle,
+            venueAddress: _latestTicket!.venueAddress,
           ),
 
           const SizedBox(height: 12),
@@ -477,10 +526,10 @@ class TicketsSection extends StatelessWidget {
               onPressed: () {
                 // Show the same ticket details modal as the ticket tap
                 MyTicketWidget(
-                  eventDate: latestTicket.eventDate,
-                  eventTime: latestTicket.eventTime,
-                  eventTitle: latestTicket.eventTitle,
-                  venueAddress: latestTicket.venueAddress,
+                  eventDate: _latestTicket!.eventDate,
+                  eventTime: _latestTicket!.eventTime,
+                  eventTitle: _latestTicket!.eventTitle,
+                  venueAddress: _latestTicket!.venueAddress,
                 )._showTicketDetails(context);
               },
               child: const Text(
@@ -499,14 +548,17 @@ class TicketsSection extends StatelessWidget {
               border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Center(
-              child: Text(
-                'Tickets will show here when you buy them',
-                style: TextStyle(
-                  color: Colors.grey.withValues(alpha: 0.7),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Tickets will show here when you buy them',
+                  style: TextStyle(
+                    color: Colors.grey.withValues(alpha: 0.7),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
           ),

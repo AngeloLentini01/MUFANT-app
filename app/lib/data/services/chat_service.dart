@@ -108,7 +108,7 @@ class ChatService {
     return UserModel(
       id: Ulid(),
       //todo: check if this is changing name in the homepage greeting
-      username: name.toLowerCase().replaceAll(' ', '_'),
+      username: name.replaceAll(' ', '_'),
       email: email,
       passwordHash: Uint8List.fromList([]), // Empty for demo
       cart: _createEmptyCart(),
