@@ -225,8 +225,4 @@ class BadgeService extends ChangeNotifier {
     throw Exception('Unknown badge type: ${badge.title}');
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
