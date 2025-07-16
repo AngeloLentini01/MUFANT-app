@@ -3,6 +3,18 @@ import 'dart:io';
 
 /// Singleton class to extract and index all text strings in the app.
 class AppTextIndexer {
+  /// Clear the index (for re-indexing app data only)
+  void clear() {
+    _textMap.clear();
+  }
+
+  /// Add a string to the index programmatically (e.g., from DB or API).
+  void addText(String text, {String source = 'runtime'}) {
+    if (text.trim().isNotEmpty) {
+      _textMap[text] = source;
+    }
+  }
+
   static final AppTextIndexer _instance = AppTextIndexer._internal();
   factory AppTextIndexer() => _instance;
   AppTextIndexer._internal();

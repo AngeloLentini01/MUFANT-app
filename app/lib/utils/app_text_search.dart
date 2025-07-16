@@ -11,8 +11,15 @@ class AppTextSearch {
   }) {
     final indexer = AppTextIndexer();
     final results = <Map<String, dynamic>>[];
+    final lowerQuery = query.toLowerCase();
     for (final entry in indexer.textMap.entries) {
-      final score = ratio(entry.key, query);
+      final keyLower = entry.key.toLowerCase();
+      int score = ratio(keyLower, lowerQuery);
+      // If the query is a substring (infix) of the text, boost the score or always include
+      if (keyLower.contains(lowerQuery)) {
+        // Give a perfect score for exact substring, or 90 for infix
+        score = (keyLower == lowerQuery) ? 100 : 90;
+      }
       if (score >= threshold) {
         results.add({'text': entry.key, 'score': score, 'file': entry.value});
       }
