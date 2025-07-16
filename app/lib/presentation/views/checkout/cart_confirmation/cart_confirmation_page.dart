@@ -96,25 +96,25 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
           });
         }
       },
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: kBlackColor,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onPressed: () => Navigator.pop(context, {
-                'cartItems': cardGroup,
-                'additionOrder': localAdditionOrder,
-              }),
-            ),
-            centerTitle: true,
-            title: Image.asset(
-              'assets/images/logo.png',
-              height: 40,
-              color: Colors.white,
-            ),
+      child: Scaffold(
+        backgroundColor: kBlackColor,
+        appBar: AppBar(
+          backgroundColor: kBlackColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () => Navigator.pop(context, {
+              'cartItems': cardGroup,
+              'additionOrder': localAdditionOrder,
+            }),
           ),
+          centerTitle: true,
+          title: Image.asset(
+            'assets/images/logo.png',
+            height: 40,
+            color: Colors.white,
+          ),
+        ),
           body: cardGroup.isEmpty
               ? Stack(
                   children: [
@@ -242,7 +242,6 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                 ),
           // No tab bar in cart confirmation page
         ),
-      ),
     );
   }
 }
