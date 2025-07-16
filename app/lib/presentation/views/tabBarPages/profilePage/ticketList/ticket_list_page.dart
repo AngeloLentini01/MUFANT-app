@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/views/tabBarPages/profilePage/tickets_section.dart';
 import 'package:app/model/items/ticket/ticket_display_data.dart';
 import 'package:app/data/services/ticket_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Extended ticket widget with expired ticket support and tap handling
 class ExpiredTicketWidget extends StatelessWidget {
@@ -119,9 +120,9 @@ class TicketListPageState extends State<TicketListPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Ticket Details',
-                      style: TextStyle(
+                    Text(
+                      'ticket_details'.tr(),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: kBlackColor,
@@ -271,9 +272,9 @@ class TicketListPageState extends State<TicketListPage> {
                         color: Colors.red.withValues(alpha: 0.6),
                       ),
                     ),
-                    child: const Text(
-                      'EXPIRED EVENT',
-                      style: TextStyle(
+                    child: Text(
+                      'expired_event'.tr(),
+                      style: const TextStyle(
                         color: Colors.red,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -345,9 +346,9 @@ class TicketListPageState extends State<TicketListPage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'My Tickets',
-                      style: TextStyle(
+                    Text(
+                      'my_tickets'.tr(),
+                      style: const TextStyle(
                         color: kWhiteColor,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -386,7 +387,7 @@ class TicketListPageState extends State<TicketListPage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '${_tickets.length} tickets in total',
+                      'tickets_in_total'.tr(namedArgs: {'count': _tickets.length.toString()}),
                       style: const TextStyle(
                         color: kWhiteColor,
                         fontSize: 16,
@@ -395,7 +396,7 @@ class TicketListPageState extends State<TicketListPage> {
                     ),
                     const Spacer(),
                     Text(
-                      '${_tickets.where((t) => !t.isExpired).length} active',
+                      'active_tickets'.tr(namedArgs: {'count': _tickets.where((t) => !t.isExpired).length.toString()}),
                       style: TextStyle(
                         color: kWhiteColor.withValues(alpha: 0.7),
                         fontSize: 14,
@@ -454,7 +455,7 @@ class TicketListPageState extends State<TicketListPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Expired Tickets',
+              'expired_tickets'.tr(),
               style: TextStyle(
                 color: kWhiteColor.withValues(alpha: 0.7),
                 fontSize: 14,
@@ -485,7 +486,7 @@ class TicketListPageState extends State<TicketListPage> {
             Container(
               margin: const EdgeInsets.only(bottom: 8, left: 4),
               child: Text(
-                'Purchased ${_formatPurchaseDate(ticket.purchaseDate)}',
+                'purchased_on'.tr(namedArgs: {'date': _formatPurchaseDate(ticket.purchaseDate)}),
                 style: TextStyle(
                   color: kWhiteColor.withValues(alpha: 0.6),
                   fontSize: 12,
@@ -516,9 +517,9 @@ class TicketListPageState extends State<TicketListPage> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
               ),
-              child: const Text(
-                'EXPIRED',
-                style: TextStyle(
+              child: Text(
+                'expired'.tr(),
+                style: const TextStyle(
                   color: Colors.red,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
@@ -534,7 +535,7 @@ class TicketListPageState extends State<TicketListPage> {
   Widget _buildEmptyState() {
     return Center(
       child: Text(
-        'Tickets will show here when you buy them',
+        'tickets_empty_state'.tr(),
         style: TextStyle(
           color: kWhiteColor.withValues(alpha: 0.7),
           fontSize: 20,
@@ -550,11 +551,11 @@ class TicketListPageState extends State<TicketListPage> {
     final difference = now.difference(date).inDays;
 
     if (difference == 0) {
-      return 'today';
+      return 'purchased_today'.tr();
     } else if (difference == 1) {
-      return 'yesterday';
+      return 'purchased_yesterday'.tr();
     } else if (difference < 7) {
-      return '$difference days ago';
+      return 'purchased_days_ago'.tr(namedArgs: {'days': difference.toString()});
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

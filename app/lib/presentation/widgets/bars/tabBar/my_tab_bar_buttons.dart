@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-const tabBarButtons = [
+List<BottomNavigationBarItem> get tabBarButtons => [
   BottomNavigationBarItem(
-    icon: Icon(Icons.home_outlined),
-    activeIcon: Icon(Icons.home),
-    label: 'Home',
+    icon: const Icon(Icons.home_outlined),
+    activeIcon: const Icon(Icons.home),
+    label: 'home'.tr(),
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.shopping_cart_outlined),
-    activeIcon: Icon(Icons.shopping_cart),
-    label: 'Shop',
+    icon: const Icon(Icons.shopping_cart_outlined),
+    activeIcon: const Icon(Icons.shopping_cart),
+    label: 'shop'.tr(),
   ),
   BottomNavigationBarItem(
-    icon: Icon(Icons.person_outline),
-    activeIcon: Icon(Icons.person),
-    label: 'Profile',
+    icon: const Icon(Icons.person_outline),
+    activeIcon: const Icon(Icons.person),
+    label: 'profile'.tr(),
   ),
 ];

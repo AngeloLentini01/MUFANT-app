@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class NotificationItem {
   final String title;
@@ -29,20 +30,18 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   final List<NotificationItem> _notifications = [
     NotificationItem(
-      title: '❓ Quiz unlocked: How well do you know sci-fi tech?',
-      body: 'Answer all questions to win exclusive museum merch.',
+      title: 'quiz_unlocked'.tr(),
+      body: 'quiz_description'.tr(),
       date: DateTime.now().subtract(Duration(days: 1)),
     ),
     NotificationItem(
-      title: '🛰️ Your visit starts in 30 minutes!',
-      body:
-          'Prepare to enter a universe of future technology and cosmic wonder.',
+      title: 'visit_starts'.tr(),
+      body: 'visit_description'.tr(),
       date: DateTime.now().subtract(Duration(hours: 2)),
     ),
     NotificationItem(
-      title: '🚀 New Exhibit Unlocked!',
-      body:
-          'Discover the secrets of Mars colonization in our latest interactive zone.',
+      title: 'new_exhibit'.tr(),
+      body: 'exhibit_description'.tr(),
       date: DateTime.now(),
     ),
   ];
@@ -52,11 +51,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
     if (date.day == now.day &&
         date.month == now.month &&
         date.year == now.year) {
-      return 'Today';
+      return 'today'.tr();
     } else if (date.day == now.subtract(Duration(days: 1)).day &&
         date.month == now.month &&
         date.year == now.year) {
-      return 'Yesterday';
+      return 'yesterday'.tr();
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -84,9 +83,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(color: Colors.white), // Titolo bianco
+        title: Text(
+          'notifications'.tr(),
+          style: const TextStyle(color: Colors.white), // Titolo bianco
         ),
         actions: [
           Padding(

@@ -8,6 +8,7 @@ import 'package:app/presentation/views/checkout/checkout_page.dart';
 import 'package:app/model/cart/cart_model.dart';
 import 'package:app/model/cart/cart_item_model.dart';
 import 'package:app/model/museum/activity/museum_activity_model.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CartConfirmationPage extends StatefulWidget {
   final Map<String, int> cartItems;
@@ -162,7 +163,7 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
                           },
                           child: Center(
                             child: Text(
-                              "Browse Tickets",
+                              "browse_tickets".tr(),
                               style: TextStyle(fontSize: 16, color: kPinkColor),
                             ),
                           ),

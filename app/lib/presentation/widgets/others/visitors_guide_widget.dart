@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/styles/spacing/visitors_guide.dart';
 import 'package:app/presentation/styles/typography/section.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class VisitorsGuideWidget extends StatelessWidget {
   const VisitorsGuideWidget({super.key, required this.textColor});
@@ -14,7 +15,7 @@ class VisitorsGuideWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Visitor\'s Guide',
+          'visitors_guide'.tr(),
           style: kSectionTitleTextStyle,
         ),
         kSpaceBetweenVisitorsGuideTitleAndTimeTable,
@@ -23,8 +24,8 @@ class VisitorsGuideWidget extends StatelessWidget {
             Icon(Icons.access_time, color: textColor),
             const SizedBox(width: 8),
             Text(
-              'Opening hours',
-              style: TextStyle(
+              'opening_hours'.tr(),
+              style: const TextStyle(
                 color: kWhiteColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -44,8 +45,8 @@ class VisitorsGuideWidget extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Mon - Wed',
-                      style: TextStyle(
+                      'mon_wed'.tr(),
+                      style: const TextStyle(
                         color: kWhiteColor,
                         decoration: TextDecoration.none,
                       ),
@@ -54,8 +55,8 @@ class VisitorsGuideWidget extends StatelessWidget {
                   Expanded(
                     flex: 3,
                     child: Text(
-                      'Closed',
-                      style: TextStyle(
+                      'closed'.tr(),
+                      style: const TextStyle(
                         color: Colors.red,
                         decoration: TextDecoration.none,
                         fontWeight: FontWeight.bold,
@@ -70,8 +71,8 @@ class VisitorsGuideWidget extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'Thu - Sun',
-                      style: TextStyle(
+                      'thu_sun'.tr(),
+                      style: const TextStyle(
                         color: kWhiteColor,
                       ),
                     ),
@@ -97,8 +98,8 @@ class VisitorsGuideWidget extends StatelessWidget {
             Icon(Icons.location_on, color: textColor),
             const SizedBox(width: 8),
             Text(
-              'Where to reach us',
-              style: TextStyle(
+              'where_to_reach_us'.tr(),
+              style: const TextStyle(
                 color: kWhiteColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,

@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/spacing/community.dart';
 import 'package:app/presentation/styles/typography/section.dart';
 import 'package:app/presentation/widgets/community_chats_button.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CommunityChatSectionWidget extends StatelessWidget {
   const CommunityChatSectionWidget({
@@ -21,17 +22,17 @@ class CommunityChatSectionWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Connect with Other Users',
+            'connect_with_users'.tr(),
             style: kSectionTitleTextStyle,
           ),
           kSpaceBetweenCommunityTitleAndParagraph,
           Text(
-            'Join our community discussions and share your museum experience!',
+            'community_description'.tr(),
             style: kParagraphTextstyle,
           ),
           kSpaceBetweenCommunityCTAAndButton,
-          const CommunityChatsButton(
-            label: 'Join Community Discussions',
+          CommunityChatsButton(
+            label: 'join_community_discussions'.tr(),
             showLabel: true,
           ),
         ],

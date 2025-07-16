@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class EventPage extends StatefulWidget {
   final String? eventTitle;
@@ -93,8 +94,8 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
           centerTitle: true,
-          title: const Text(
-            'Loading...',
+          title: Text(
+            'loading'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -124,8 +125,8 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
           centerTitle: true,
-          title: const Text(
-            'Event Not Found',
+          title: Text(
+            'event_not_found'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -134,8 +135,8 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
         ),
-        body: const Center(
-          child: Text('Event not found', style: TextStyle(color: Colors.white)),
+        body: Center(
+          child: Text('event_not_found_message'.tr(), style: TextStyle(color: Colors.white)),
         ),
       );
     }
@@ -248,8 +249,8 @@ class _EventPageState extends State<EventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'SCHEDULE',
+                      Text(
+                        'schedule'.tr(),
                         style: TextStyle(
                           color: Color(0xFFFF7CA3),
                           fontWeight: FontWeight.bold,
@@ -259,7 +260,7 @@ class _EventPageState extends State<EventPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        eventData!['notes'] ?? 'Schedule TBD',
+                        eventData!['notes'] ?? 'schedule_tbd'.tr(),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -274,8 +275,8 @@ class _EventPageState extends State<EventPage> {
                 ),
                 const SizedBox(height: 28),
                 // Tickets & Info
-                const Text(
-                  'TICKETS & INFO',
+                Text(
+                  'tickets_info'.tr(),
                   style: TextStyle(
                     color: Color(0xFFFF7CA3),
                     fontWeight: FontWeight.bold,
@@ -286,14 +287,14 @@ class _EventPageState extends State<EventPage> {
                 const SizedBox(height: 10),
                 Text(
                   eventData!['price'] != null
-                      ? 'MUFANT ticket\nStudents: €${eventData!['price']} (with ID)\nMuseum Pass not valid'
+                      ? 'mufant_ticket_info'.tr(namedArgs: {'price': eventData!['price'].toString()})
                       : '',
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Info: +39 347 5405096\n+39 349 8171960\ninfo@mufant.it',
+                Text(
+                  'contact_info'.tr(),
                   style: TextStyle(color: Colors.white70, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),

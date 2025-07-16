@@ -1,5 +1,6 @@
 import 'package:app/presentation/styles/all.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:app/presentation/views/checkout/payment_processing_page.dart';
 import 'package:app/model/items/ticket/ticket_display_data.dart';
 import 'package:app/model/items/ticket/ticket_model.dart';
@@ -116,9 +117,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final cvvReg = RegExp(r'^[0-9]{3,4}\$');
     _cardNumberError = cardNumberReg.hasMatch(cardNumber)
         ? null
-        : 'Card number must be 16 digits';
-    _dueDateError = dueDateReg.hasMatch(dueDate) ? null : 'Format MM/YY';
-    _cvvError = cvvReg.hasMatch(cvv) ? null : 'CVV must be 3 or 4 digits';
+        : 'card_number_error'.tr();
+    _dueDateError = dueDateReg.hasMatch(dueDate) ? null : 'due_date_error'.tr();
+    _cvvError = cvvReg.hasMatch(cvv) ? null : "cvv_error".tr();
     return _cardNumberError == null &&
         _dueDateError == null &&
         _cvvError == null;
@@ -187,7 +188,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
-        title: Text("Shop", style: TextStyle(color: kWhiteColor)),
+        title: Text("shop".tr(), style: TextStyle(color: kWhiteColor)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -196,13 +197,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Choose your payment method",
+                "payment_title".tr(),
                 style: TextStyle(color: kPinkColor, fontSize: 28, height: 1.2),
               ),
               kSpaceBetweenSections,
               PaymentType(
                 asset: "assets/images/payment_icon/paypal_logo.png",
-                name: "Paypal",
+                name: "paypal".tr(),
                 groupValue: isChecked,
                 value: "Paypal",
                 onChanged: (String newValue) {
@@ -215,7 +216,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               kSpaceBetweenSections,
               PaymentType(
                 asset: "assets/images/payment_icon/mastercard_logo.png",
-                name: "Master Card",
+                name: "master_card".tr(),
                 groupValue: isChecked,
                 value: "Master Card",
                 onChanged: (String newValue) {
@@ -240,7 +241,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         TextField(
                           controller: _cardNumberController,
                           decoration: InputDecoration(
-                            labelText: "Card Number",
+                            labelText: "card_number".tr(),
                             border: OutlineInputBorder(),
                             errorText:
                                 _showValidationError && _cardNumberError != null
@@ -265,9 +266,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           children: [
                             Expanded(
                               child: TextField(
-                                controller: _dueDateController,
-                                decoration: InputDecoration(
-                                  labelText: "Due date",
+                                controller: _dueDateController,                                  decoration: InputDecoration(
+                                    labelText: "due_date".tr(),
                                   hintText: "MM/YY",
                                   border: OutlineInputBorder(),
                                   errorText:
@@ -287,7 +287,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               child: TextField(
                                 controller: _cvvController,
                                 decoration: InputDecoration(
-                                  labelText: "CVV",
+                                  labelText: "cvv".tr(),
                                   border: OutlineInputBorder(),
                                   errorText:
                                       _showValidationError && _cvvError != null
@@ -364,9 +364,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                   ),
                   onPressed: _isPayEnabled ? _handlePayNow : _handlePayNow,
-                  child: const Text(
-                    'Pay Now',
-                    style: TextStyle(
+                  child: Text(
+                    "pay_now".tr(),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/spacing/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:app/presentation/widgets/animated_fade_in_column.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/presentation/styles/all.dart';
@@ -17,7 +18,7 @@ import 'package:app/main.dart' as main_app;
 import 'package:app/utils/app_text_indexer.dart';
 import 'package:app/utils/app_text_search.dart';
 
-final homepageGreeting = 'Hello there'; // Replace with actual greeting logic
+final homepageGreeting = 'greeting_hello'; // Replace with actual greeting logic
 
 final _logger = Logger('MufantApp');
 
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             return AlertDialog(
               backgroundColor: Colors.grey[900],
               title: Text(
-                'What are you looking for?',
+                'search_title'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -172,7 +173,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   // ...existing code...
 
-  String get homePageMessage => '$homepageGreeting, $_username!';
+  String get homePageMessage => 'greeting_hello'.tr(namedArgs: {'name': _username});
 
   // Public method to refresh user session
   void refreshUserSession() {
@@ -390,16 +391,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         ? AnimatedFadeInColumn(
                             children: [
                               CustomListWidget(
-                                title: "Our Events",
+                                title: "our_events".tr(),
                                 textColor: kPinkColor,
                                 onItemTap: _navigateToEventDetails,
                                 activities: _events.isNotEmpty
                                     ? _events
                                     : [
                                         DetailsModel(
-                                          name: 'Loading Events...',
+                                          name: "loading_events".tr(),
                                           description:
-                                              'Please wait while we load events',
+                                              "loading_events_description".tr(),
                                           imageUrlOrPath:
                                               'assets/images/logo.png',
                                         ),
@@ -407,16 +408,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                               ),
                               kSpaceBetweenSections,
                               CustomListWidget(
-                                title: "Discover the Rooms",
+                                title: "discover_rooms".tr(),
                                 textColor: kPinkColor,
                                 onItemTap: _navigateToRoomDetails,
                                 activities: _rooms.isNotEmpty
                                     ? _rooms
                                     : [
                                         DetailsModel(
-                                          name: 'Loading Rooms...',
+                                          name: "loading_rooms".tr(),
                                           description:
-                                              'Please wait while we load rooms',
+                                              "loading_rooms_description".tr(),
                                           imageUrlOrPath:
                                               'assets/images/logo.png',
                                         ),

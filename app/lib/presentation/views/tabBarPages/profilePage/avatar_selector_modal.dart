@@ -1,5 +1,6 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AvatarSelectorModal extends StatefulWidget {
   const AvatarSelectorModal({
@@ -145,7 +146,7 @@ class _AvatarSelectorModalState extends State<AvatarSelectorModal> {
             // Title at the top center
             Center(
               child: Text(
-                'CHOOSE YOUR AVATAR!',
+                'choose_avatar'.tr(),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: kWhiteColor,
                   fontWeight: FontWeight.bold,
@@ -178,7 +179,7 @@ class _AvatarSelectorModalState extends State<AvatarSelectorModal> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
-                'Cancel',
+                'cancel'.tr(),
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             ),

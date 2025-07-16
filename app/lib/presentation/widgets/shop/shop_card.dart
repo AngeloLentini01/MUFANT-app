@@ -3,6 +3,7 @@ import 'package:app/presentation/views/tabBarPages/shop_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 
 class ShopCard extends StatefulWidget {
   final ShopItem item;
@@ -93,18 +94,18 @@ class _ShopCardState extends State<ShopCard> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.grey[850],
-          title: const Text(
-            'Edit Quantity',
-            style: TextStyle(color: Colors.white),
+          title: Text(
+            'edit_quantity'.tr(),
+            style: const TextStyle(color: Colors.white),
           ),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
             autofocus: true,
             style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              hintText: 'Enter quantity',
-              hintStyle: TextStyle(color: Colors.grey),
+            decoration: InputDecoration(
+              hintText: 'enter_quantity'.tr(),
+              hintStyle: const TextStyle(color: Colors.grey),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white),
               ),
@@ -122,7 +123,7 @@ class _ShopCardState extends State<ShopCard> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text('cancel'.tr(), style: const TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
@@ -131,7 +132,7 @@ class _ShopCardState extends State<ShopCard> {
                   Navigator.of(context).pop(quantity);
                 }
               },
-              child: const Text('OK', style: TextStyle(color: Colors.white)),
+              child: Text('ok'.tr(), style: const TextStyle(color: Colors.white)),
             ),
           ],
         );
