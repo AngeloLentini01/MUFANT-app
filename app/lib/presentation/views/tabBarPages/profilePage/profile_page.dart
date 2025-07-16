@@ -147,6 +147,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: kWhiteColor,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -157,6 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: lightGreyColor,
                     fontSize: 16,
                     height: 1.5,
+                    decoration: TextDecoration.none
                   ),
                   textAlign: TextAlign.center,
                 ),

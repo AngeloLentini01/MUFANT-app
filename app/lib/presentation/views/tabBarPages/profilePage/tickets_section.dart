@@ -7,22 +7,24 @@ import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket
 import 'package:app/data/services/ticket_service.dart';
 import 'package:barcode/barcode.dart';
 
-
-
 /// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
   final String data;
-  
+
   const BarcodePainter({this.data = "MUFANT-TICKET-123456789"});
 
   @override
   void paint(Canvas canvas, Size size) {
     final bc = Barcode.code128();
-    
+
     try {
       // Generate barcode elements
-      final barcodeElements = bc.make(data, width: size.width, height: size.height);
-      
+      final barcodeElements = bc.make(
+        data,
+        width: size.width,
+        height: size.height,
+      );
+
       final paint = Paint()
         ..color = Colors.black
         ..style = PaintingStyle.fill;
@@ -31,7 +33,12 @@ class BarcodePainter extends CustomPainter {
       for (final element in barcodeElements) {
         if (element is BarcodeBar && element.black) {
           canvas.drawRect(
-            Rect.fromLTWH(element.left, element.top, element.width, element.height),
+            Rect.fromLTWH(
+              element.left,
+              element.top,
+              element.width,
+              element.height,
+            ),
             paint,
           );
         }
@@ -41,7 +48,7 @@ class BarcodePainter extends CustomPainter {
       _drawFallbackPattern(canvas, size);
     }
   }
-  
+
   void _drawFallbackPattern(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = Colors.black
@@ -50,7 +57,7 @@ class BarcodePainter extends CustomPainter {
     // Simple barcode-like pattern as fallback
     final barCount = 20;
     final barWidth = size.width / (barCount * 2);
-    
+
     for (int i = 0; i < barCount; i++) {
       if (i % 2 == 0) {
         canvas.drawRect(
@@ -70,22 +77,15 @@ class BarcodeWidget extends StatelessWidget {
   final String data;
   final double? width;
   final double? height;
-  
-  const BarcodeWidget({
-    super.key,
-    required this.data,
-    this.width,
-    this.height,
-  });
+
+  const BarcodeWidget({super.key, required this.data, this.width, this.height});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
       height: height ?? 40,
-      child: CustomPaint(
-        painter: BarcodePainter(data: data),
-      ),
+      child: CustomPaint(painter: BarcodePainter(data: data)),
     );
   }
 }
@@ -288,7 +288,8 @@ class MyTicketWidget extends StatelessWidget {
                               horizontal: 48,
                             ), // 48px dai bordi
                             child: BarcodeWidget(
-                              data: "MUFANT-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+                              data:
+                                  "MUFANT-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
                               width: double.infinity,
                               height: 40,
                             ),
@@ -395,12 +396,19 @@ class MyTicketWidget extends StatelessWidget {
           // Calcola dimensioni più generose ma sicure
           final availableWidth = constraints.maxWidth - 2; // Margine minimo
           final availableHeight = constraints.maxHeight - 2;
-          
+
           return Center(
             child: VerticalBarcodeWidget(
-              data: "MUFANT-SIDE-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
-              width: (availableWidth * 0.85).clamp(45.0, 70.0), // Aumentato: 45-70px
-              height: (availableHeight * 0.85).clamp(110.0, 140.0), // Aumentato: 110-140px
+              data:
+                  "MUFANT-SIDE-${eventTitle.replaceAll(' ', '').toUpperCase()}-${DateTime.now().millisecondsSinceEpoch}",
+              width: (availableWidth * 0.85).clamp(
+                45.0,
+                70.0,
+              ), // Aumentato: 45-70px
+              height: (availableHeight * 0.85).clamp(
+                110.0,
+                140.0,
+              ), // Aumentato: 110-140px
             ),
           );
         },
@@ -415,6 +423,7 @@ class TicketsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ticketService = TicketService();
+    // Always reload tickets on build
     final latestTicket = ticketService.getLatestTicket();
 
     return Column(
@@ -490,24 +499,14 @@ class TicketsSection extends StatelessWidget {
               border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.confirmation_number_outlined,
-                    size: 40,
-                    color: Colors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'No tickets yet',
-                    style: TextStyle(
-                      color: Colors.grey.withValues(alpha: 0.7),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Tickets will show here when you buy them',
+                style: TextStyle(
+                  color: Colors.grey.withValues(alpha: 0.7),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
@@ -522,7 +521,7 @@ class VerticalBarcodeWidget extends StatelessWidget {
   final String data;
   final double? width;
   final double? height;
-  
+
   const VerticalBarcodeWidget({
     super.key,
     required this.data,
@@ -534,7 +533,7 @@ class VerticalBarcodeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final containerWidth = width ?? 60; // Aumentato da 40 a 60
     final containerHeight = height ?? 300; // Aumentato da 100 a 120
-    
+
     return ClipRect(
       child: SizedBox(
         width: containerWidth,

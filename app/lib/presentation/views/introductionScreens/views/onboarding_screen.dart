@@ -1,6 +1,7 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/views/introductionScreens/models/onboarding_page_data.dart';
 import 'package:app/presentation/app_main.dart';
+import 'package:app/main.dart';
 import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/utils/app_logger.dart';
@@ -276,7 +277,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 // Navigate to main app as guest user
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const AppMain()),
+                  MaterialPageRoute(
+                    builder: (context) => AppMain(key: appMainKey),
+                  ),
                 );
               },
               style: OutlinedButton.styleFrom(
@@ -318,7 +321,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void _onFinish(BuildContext context) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const AppMain()),
+      MaterialPageRoute(builder: (context) => AppMain(key: appMainKey)),
     );
   }
 }

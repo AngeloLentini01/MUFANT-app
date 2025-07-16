@@ -1,3 +1,4 @@
+import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/app_pre_configurator.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/dbManagers/database_helper.dart';
@@ -7,11 +8,13 @@ import 'package:app/data/services/badge_service.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
 import 'dart:async';
+
+// Global key for accessing MainAppState
+final GlobalKey<MainAppState> appMainKey = GlobalKey<MainAppState>();
 
 typedef MySystem = SystemChrome;
 final Logger _logger = AppLogger.getLogger('Main');
@@ -89,7 +92,9 @@ void main() async {
   _initializeDatabaseAsync();
 
   // Start the app immediately without waiting for database
-  runApp(const AppPreConfigurator());
+  runApp(
+    const AppPreConfigurator(),
+  ); // AppMain is created in AppPreConfigurator
 }
 
 void _initializeDatabaseAsync() async {

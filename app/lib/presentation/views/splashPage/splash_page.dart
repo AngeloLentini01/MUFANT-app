@@ -1,5 +1,6 @@
 import 'package:app/presentation/views/introductionScreens/views/onboarding_screen.dart';
 import 'package:app/presentation/app_main.dart';
+import 'package:app/main.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,10 @@ class SplashScreenState extends State<SplashScreen>
       if (!mounted) return;
 
       if (isLoggedIn) {
-        // User is logged in, go directly to main app
+        // User is logged in, go directly to main app with global key
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const AppMain()),
+          MaterialPageRoute(builder: (context) => AppMain(key: appMainKey)),
         );
       } else {
         // User is not logged in, show onboarding screen

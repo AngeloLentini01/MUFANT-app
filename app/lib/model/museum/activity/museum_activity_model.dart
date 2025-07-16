@@ -12,6 +12,30 @@ import 'type_of_museum_activity_model.dart';
 /// @property type The category of museum activity
 /// @property activeTimePeriod Time period during which this activity is available
 class MuseumActivityModel {
+  Map<String, dynamic> toJson() => {
+    'id': id.toString(),
+    'location': location,
+    'details': details.toJson(),
+    'type': type.toJson(),
+    'activeTimePeriod': {
+      'start': activeTimePeriod.start.toIso8601String(),
+      'end': activeTimePeriod.end.toIso8601String(),
+    },
+  };
+
+  factory MuseumActivityModel.fromJson(Map<String, dynamic> json) =>
+      MuseumActivityModel(
+        id: Ulid.parse(json['id'] as String),
+        location: json['location'] as String,
+        details: DetailsModel.fromJson(json['details'] as Map<String, dynamic>),
+        type: TypeOfMuseumActivityModel.fromJson(
+          json['type'] as Map<String, dynamic>,
+        ),
+        activeTimePeriod: DateTimeRange(
+          start: DateTime.parse(json['activeTimePeriod']['start'] as String),
+          end: DateTime.parse(json['activeTimePeriod']['end'] as String),
+        ),
+      );
   final Ulid id;
   final String location;
   final DetailsModel details;

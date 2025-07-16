@@ -1,9 +1,20 @@
 import 'package:app/presentation/styles/all.dart';
-import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:app/presentation/views/checkout/payment_processing_page.dart';
+import 'package:app/model/items/ticket/ticket_display_data.dart';
+import 'package:app/model/items/ticket/ticket_model.dart';
+import 'package:app/model/museum/activity/museum_activity_model.dart';
+import 'package:app/data/services/ticket_service.dart';
+import 'package:app/model/cart/cart_model.dart';
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({super.key});
+  final CartModel cart;
+  final List<MuseumActivityModel> availableActivities;
+  const CheckoutPage({
+    super.key,
+    required this.cart,
+    required this.availableActivities,
+  });
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -79,8 +90,91 @@ class PaymentType extends StatelessWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  String isChecked = " ";
-  int test = 0;
+  String isChecked = "";
+  final _cardNumberController = TextEditingController();
+  final _dueDateController = TextEditingController();
+  final _cvvController = TextEditingController();
+  String? _cardNumberError;
+  String? _dueDateError;
+  String? _cvvError;
+  bool _showValidationError = false;
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _dueDateController.dispose();
+    _cvvController.dispose();
+    super.dispose();
+  }
+
+  bool get _isMasterCardValid {
+    final cardNumber = _cardNumberController.text.trim();
+    final dueDate = _dueDateController.text.trim();
+    final cvv = _cvvController.text.trim();
+    final cardNumberReg = RegExp(r'^[0-9]{16}\$');
+    final dueDateReg = RegExp(r'^(0[1-9]|1[0-2])\/(\d{2})$');
+    final cvvReg = RegExp(r'^[0-9]{3,4}\$');
+    _cardNumberError = cardNumberReg.hasMatch(cardNumber)
+        ? null
+        : 'Card number must be 16 digits';
+    _dueDateError = dueDateReg.hasMatch(dueDate) ? null : 'Format MM/YY';
+    _cvvError = cvvReg.hasMatch(cvv) ? null : 'CVV must be 3 or 4 digits';
+    return _cardNumberError == null &&
+        _dueDateError == null &&
+        _cvvError == null;
+  }
+
+  bool get _isPayEnabled {
+    if (isChecked.isEmpty) return false;
+    if (isChecked == 'Master Card') {
+      return _isMasterCardValid;
+    }
+    return true;
+  }
+
+  Future<void> _handlePayNow() async {
+    if (!_isPayEnabled) {
+      setState(() {
+        _showValidationError = true;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Cannot proceed'),
+          content: const Text(
+            'Please select a payment method and fill all required fields correctly.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Add all tickets from the cart to the user's tickets
+    final now = DateTime.now();
+    for (final cartItem in widget.cart.cartItems) {
+      if (cartItem is TicketModel) {
+        final ticket = TicketDisplayData(
+          ticketModel: cartItem,
+          purchaseDate: now,
+          isExpired: false,
+        );
+        await TicketService().addTicket(ticket);
+      }
+    }
+
+    // Optionally clear the cart here (if you have a cart service, call its clear method)
+    // Example: CartService().clear();
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const PaymentProcessingPage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +206,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   onChanged: (String newValue) {
                     setState(() {
                       isChecked = newValue;
+                      _showValidationError = false;
                     });
                   },
                 ),
@@ -124,6 +219,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   onChanged: (String newValue) {
                     setState(() {
                       isChecked = newValue;
+                      _showValidationError = false;
                     });
                   },
                 ),
@@ -140,38 +236,92 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       child: Column(
                         children: [
                           TextField(
+                            controller: _cardNumberController,
                             decoration: InputDecoration(
                               labelText: "Card Number",
                               border: OutlineInputBorder(),
+                              errorText:
+                                  _showValidationError &&
+                                      _cardNumberError != null
+                                  ? _cardNumberError
+                                  : null,
                             ),
                             keyboardType: TextInputType.number,
+                            onChanged: (_) {
+                              if (_showValidationError) setState(() {});
+                            },
                           ),
+                          if (_showValidationError && _cardNumberError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Text(
+                                _cardNumberError!,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
                           cardOtherDistance,
                           Row(
                             children: [
                               Expanded(
                                 child: TextField(
+                                  controller: _dueDateController,
                                   decoration: InputDecoration(
                                     labelText: "Due date",
                                     hintText: "MM/YY",
                                     border: OutlineInputBorder(),
+                                    errorText:
+                                        _showValidationError &&
+                                            _dueDateError != null
+                                        ? _dueDateError
+                                        : null,
                                   ),
                                   keyboardType: TextInputType.datetime,
+                                  onChanged: (_) {
+                                    if (_showValidationError) setState(() {});
+                                  },
                                 ),
                               ),
                               dateCvvDistance,
                               Expanded(
                                 child: TextField(
+                                  controller: _cvvController,
                                   decoration: InputDecoration(
                                     labelText: "CVV",
                                     border: OutlineInputBorder(),
+                                    errorText:
+                                        _showValidationError &&
+                                            _cvvError != null
+                                        ? _cvvError
+                                        : null,
                                   ),
                                   keyboardType: TextInputType.number,
                                   obscureText: true,
+                                  onChanged: (_) {
+                                    if (_showValidationError) setState(() {});
+                                  },
                                 ),
                               ),
                             ],
                           ),
+                          if (_showValidationError &&
+                              (_dueDateError != null || _cvvError != null))
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4.0),
+                              child: Column(
+                                children: [
+                                  if (_dueDateError != null)
+                                    Text(
+                                      _dueDateError!,
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                  if (_cvvError != null)
+                                    Text(
+                                      _cvvError!,
+                                      style: const TextStyle(color: Colors.red),
+                                    ),
+                                ],
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -181,10 +331,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   asset: "assets/images/payment_icon/apple_pay_logo.png",
                   name: "Apple Pay",
                   groupValue: isChecked,
-                  value: "apple Pay",
+                  value: "Apple Pay",
                   onChanged: (String newValue) {
                     setState(() {
                       isChecked = newValue;
+                      _showValidationError = false;
                     });
                   },
                 ),
@@ -193,18 +344,41 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   asset: "assets/images/payment_icon/google_pay_logo.jpg",
                   name: "Google Pay",
                   groupValue: isChecked,
-                  value: "Google Play",
+                  value: "Google Pay",
                   onChanged: (String newValue) {
                     setState(() {
                       isChecked = newValue;
+                      _showValidationError = false;
                     });
                   },
+                ),
+                kSpaceBetweenSections,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _isPayEnabled ? kPinkColor : Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: _isPayEnabled ? _handlePayNow : _handlePayNow,
+                    child: const Text(
+                      'Pay Now',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+        // bottomNavigationBar removed to hide the tab bar on checkout page
       ),
     );
   }
