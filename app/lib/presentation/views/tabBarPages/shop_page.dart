@@ -441,7 +441,7 @@ class _ShopPageState extends State<ShopPage> {
         'After removal: cartItems=$cartItems, additionOrder=$additionOrder',
       );
       _logger.info(
-        'Removed exceeding tickets (lastly added), new total: $totalItems',
+        'Removed exceeding tickets (most recently added), new total: $totalItems',
       );
     });
   }
