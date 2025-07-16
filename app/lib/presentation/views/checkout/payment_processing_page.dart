@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/all.dart';
 import 'package:app/presentation/views/checkout/payment_success_page.dart';
+import 'package:app/main.dart';
 
 class PaymentProcessingPage extends StatefulWidget {
   const PaymentProcessingPage({super.key});
@@ -14,6 +15,24 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
   int secondsLeft = 5;
   Timer? _timer;
 
+  void _goToHomeTabAfterPop() {
+    // Find the nearest AppMain ancestor and set its tab to Home
+    // This assumes AppMain is the root and will rebuild on setState
+    // Use addPostFrameCallback to ensure navigation is done
+    // First pop to root (AppMain), then switch tab
+    if (!mounted) return;
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = appMainKey.currentState;
+      if (state != null) {
+        state.setState(() {
+          state.currentIndex = 0;
+          state.homePageKey = UniqueKey();
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -21,7 +40,10 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
       if (secondsLeft == 1) {
         timer.cancel();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const PaymentSuccessPage()),
+          MaterialPageRoute(
+            builder: (context) =>
+                PaymentSuccessPage(onGoHome: _goToHomeTabAfterPop),
+          ),
         );
       } else {
         setState(() {
@@ -78,7 +100,8 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
                     _timer?.cancel();
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const PaymentSuccessPage(),
+                        builder: (context) =>
+                            PaymentSuccessPage(onGoHome: _goToHomeTabAfterPop),
                       ),
                     );
                   },
@@ -95,6 +118,7 @@ class _PaymentProcessingPageState extends State<PaymentProcessingPage> {
             ],
           ),
         ),
+        // No bottomNavigationBar here: tab bar is hidden on this page
       ),
     );
   }

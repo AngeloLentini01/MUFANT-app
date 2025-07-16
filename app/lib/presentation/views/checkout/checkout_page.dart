@@ -1,5 +1,4 @@
 import 'package:app/presentation/styles/all.dart';
-import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:app/presentation/views/checkout/payment_processing_page.dart';
 
@@ -351,7 +350,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
             ),
           ),
         ),
-        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+        // bottomNavigationBar removed to hide the tab bar on checkout page
       ),
     );
   }

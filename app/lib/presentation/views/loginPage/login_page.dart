@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:app/presentation/app_main.dart';
+import 'package:app/main.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
@@ -55,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
           if (widget.shouldNavigateToMain) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const AppMain()),
+              MaterialPageRoute(builder: (context) => AppMain(key: appMainKey)),
             );
           } else {
             // Return to previous screen with success result

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/all.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
-  const PaymentSuccessPage({super.key});
+  final VoidCallback? onGoHome;
+  const PaymentSuccessPage({super.key, this.onGoHome});
 
   @override
   Widget build(BuildContext context) {
@@ -73,14 +74,16 @@ class PaymentSuccessPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      // Pop all routes until AppMain, then switch to home tab
                       Navigator.of(context).popUntil((route) => route.isFirst);
-                      // Use a post-frame callback to switch tab if needed
-                      // (Assumes AppMain is at root and exposes a static method or similar for tab switch)
-                      // If not, user will land on home tab by default
+                      // Use a post-frame callback to notify parent to switch tab
+                      if (onGoHome != null) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          onGoHome!();
+                        });
+                      }
                     },
                     child: const Text(
-                      'Go to Homepage',
+                      'Go to the Shop page',
                       style: TextStyle(
                         color: kPinkColor,
                         fontSize: 18,
