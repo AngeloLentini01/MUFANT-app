@@ -184,7 +184,9 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
                                         ? kTabBarSelectedButtonTextStyle
                                         : kTabBarUnselectedButtonTextStyle)
                                     .copyWith(
-                                      color: kWhiteColor.withValues(alpha: 0.7),
+                                      color: isSelected
+                                          ? Colors.white
+                                          : kWhiteColor.withValues(alpha: 0.7),
                                       fontWeight: isSelected
                                           ? FontWeight.bold
                                           : FontWeight.normal,

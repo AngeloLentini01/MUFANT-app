@@ -173,7 +173,6 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-
   // Removed PageController
   static final Logger _logger = Logger('ShopPage');
   static const int maxAllowedTickets = 1000;
@@ -568,14 +567,39 @@ class _ShopPageState extends State<ShopPage> {
         showDialog(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            title: const Text('Login Required'),
+            backgroundColor: Colors.grey[900],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.lock, color: kPinkColor, size: 24),
+                const SizedBox(width: 12),
+                const Text(
+                  'Login Required',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
             content: const Text(
               'User has to be logged in before purchasing tickets',
+              style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Got it!'),
+                child: const Text(
+                  'Got it!',
+                  style: TextStyle(
+                    color: kPinkColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),

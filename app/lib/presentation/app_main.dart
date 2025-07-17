@@ -76,7 +76,7 @@ class MainAppState extends State<AppMain> with TickerProviderStateMixin {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        physics: const BouncingScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           setState(() {
             currentIndex = index;
