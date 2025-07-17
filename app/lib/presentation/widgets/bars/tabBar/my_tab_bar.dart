@@ -20,15 +20,20 @@ class MyTabBar extends StatelessWidget {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed, // Add this line
       backgroundColor: backgroundColor,
-      selectedItemColor: kWhiteColor,
-      unselectedItemColor: kWhiteColor.withValues(alpha: 0.7),
+      selectedItemColor: kPinkColor,
+      unselectedItemColor: kWhiteColor.withOpacity(0.7),
       showSelectedLabels: true,
       showUnselectedLabels: true,
-      selectedLabelStyle: kTabBarSelectedButtonTextStyle,
-      unselectedLabelStyle: kTabBarUnselectedButtonTextStyle,
+      selectedLabelStyle: kTabBarSelectedButtonTextStyle.copyWith(
+        color: kPinkColor,
+        fontWeight: FontWeight.bold,
+      ),
+      unselectedLabelStyle: kTabBarUnselectedButtonTextStyle.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
       currentIndex: currentIndex,
       onTap: onTap,
-      items: tabBarButtons,
+      items: tabBarButtons(currentIndex),
     );
   }
 }
