@@ -73,16 +73,23 @@ class BadWordsFilterService {
     if (text.trim().isEmpty) return false;
     final normalizedText = _normalize(text);
     final words = normalizedText.split(RegExp(r'[^a-zA-Z0-9]+'));
+
     for (final badWord in badWords) {
       final normBad = _normalize(badWord);
+
       // Check for exact, substring match
-      if (normalizedText.contains(normBad)) return true;
-      // Only do fuzzy matching for words longer than 3
+      if (normalizedText.contains(normBad)) {
+        return true;
+      }
+
+      // Only do fuzzy matching for words longer than 6 characters (increased from 4)
       for (final word in words) {
-        if (word.isEmpty || word.length < 4) continue;
-        if (normBad.length < 4) continue;
+        if (word.isEmpty || word.length < 6) continue;
+        if (normBad.length < 6) continue;
+
         final distance = _levenshtein(word, normBad);
-        final maxDistance = min(2, (word.length / 3).floor());
+        // More conservative distance calculation - only allow 1 character difference for longer words
+        final maxDistance = word.length > 8 ? 1 : (word.length / 5).floor();
         if (distance <= maxDistance) return true;
       }
     }
@@ -97,15 +104,19 @@ class BadWordsFilterService {
     final foundBadWords = <String>[];
     for (final badWord in badWords) {
       final normBad = _normalize(badWord);
+
       if (normalizedText.contains(normBad)) {
         foundBadWords.add(badWord);
         continue;
       }
+
       for (final word in words) {
-        if (word.isEmpty || word.length < 4) continue;
-        if (normBad.length < 4) continue;
+        if (word.isEmpty || word.length < 6) continue;
+        if (normBad.length < 6) continue;
+
         final distance = _levenshtein(word, normBad);
-        final maxDistance = min(2, (word.length / 3).floor());
+        // More conservative distance calculation - only allow 1 character difference for longer words
+        final maxDistance = word.length > 8 ? 1 : (word.length / 5).floor();
         if (distance <= maxDistance) {
           foundBadWords.add(badWord);
           break;
