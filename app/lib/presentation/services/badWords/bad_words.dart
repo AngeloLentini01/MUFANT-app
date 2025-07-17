@@ -451,7 +451,6 @@ final List<String> badWords = [
   'enemy',
   'erect',
   'erection',
-  'ero',
   'escort',
   'evl',
   'excrement',
