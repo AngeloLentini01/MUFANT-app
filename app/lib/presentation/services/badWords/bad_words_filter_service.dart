@@ -8,6 +8,52 @@ class BadWordsFilterService {
   factory BadWordsFilterService() => _instance;
   BadWordsFilterService._internal();
 
+  // Simple whitelist for common legitimate words
+  static final Set<String> _whitelist = {
+    'password',
+    'passwords',
+    'passport',
+    'passage',
+    'passenger',
+    'passion',
+    'passionate',
+    'assistant',
+    'assignment',
+    'associate',
+    'association',
+    'assume',
+    'assumption',
+    'class',
+    'classic',
+    'classical',
+    'classification',
+    'classified',
+    'grass',
+    'glass',
+    'mass',
+    'bass',
+    'brass',
+    'assess',
+    'butter',
+    'button',
+    'butterfly',
+    'buttercup',
+    'hell',
+    'hello',
+    'help',
+    'helpful',
+    'helpless',
+    'damn',
+    'damage',
+    'damaged',
+    'damaging',
+    'shit',
+    'shift',
+    'ship',
+    'shirt',
+    'shirtless',
+  };
+
   // Comprehensive list of bad words in multiple languages
 
   // Leet/typo normalization map
@@ -79,6 +125,20 @@ class BadWordsFilterService {
 
       // Check for exact, substring match
       if (normalizedText.contains(normBad)) {
+        // Check if the matched word is in the whitelist
+        if (_whitelist.contains(normBad)) continue;
+
+        // Check if the bad word is part of a whitelisted word
+        bool isPartOfWhitelistedWord = false;
+        for (final whitelistedWord in _whitelist) {
+          if (whitelistedWord.contains(normBad)) {
+            isPartOfWhitelistedWord = true;
+            break;
+          }
+        }
+        if (isPartOfWhitelistedWord) continue;
+
+        print('DEBUG: Flagged word $normBad in text$normalizedText');
         return true;
       }
 
@@ -87,10 +147,18 @@ class BadWordsFilterService {
         if (word.isEmpty || word.length < 6) continue;
         if (normBad.length < 6) continue;
 
+        // Skip if word is in whitelist
+        if (_whitelist.contains(word)) continue;
+
         final distance = _levenshtein(word, normBad);
         // More conservative distance calculation - only allow 1 character difference for longer words
         final maxDistance = word.length > 8 ? 1 : (word.length / 5).floor();
-        if (distance <= maxDistance) return true;
+        if (distance <= maxDistance) {
+          print(
+            'DEBUG: Fuzzy matched word "$word" to bad word "$normBad" with distance $distance',
+          );
+          return true;
+        }
       }
     }
     return false;
@@ -106,6 +174,19 @@ class BadWordsFilterService {
       final normBad = _normalize(badWord);
 
       if (normalizedText.contains(normBad)) {
+        // Check if the matched word is in the whitelist
+        if (_whitelist.contains(normBad)) continue;
+
+        // Check if the bad word is part of a whitelisted word
+        bool isPartOfWhitelistedWord = false;
+        for (final whitelistedWord in _whitelist) {
+          if (whitelistedWord.contains(normBad)) {
+            isPartOfWhitelistedWord = true;
+            break;
+          }
+        }
+        if (isPartOfWhitelistedWord) continue;
+
         foundBadWords.add(badWord);
         continue;
       }
@@ -113,6 +194,9 @@ class BadWordsFilterService {
       for (final word in words) {
         if (word.isEmpty || word.length < 6) continue;
         if (normBad.length < 6) continue;
+
+        // Skip if word is in whitelist
+        if (_whitelist.contains(word)) continue;
 
         final distance = _levenshtein(word, normBad);
         // More conservative distance calculation - only allow 1 character difference for longer words
