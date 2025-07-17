@@ -10,6 +10,7 @@ import 'package:app/presentation/views/loginPage/login_page.dart';
 import 'package:app/presentation/views/loginPage/registration_page.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:flutter/material.dart' hide Badge;
+import 'package:easy_localization/easy_localization.dart';
 
 // Color constants
 const pinkColor = kPinkColor;
@@ -62,6 +63,12 @@ class _ProfilePageState extends State<ProfilePage> {
             List<String> nameParts = user.username.split('_');
             if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
               firstName = nameParts[0];
+              // Properly capitalize the first name
+              if (firstName.isNotEmpty) {
+                firstName =
+                    firstName[0].toUpperCase() +
+                    firstName.substring(1).toLowerCase();
+              }
             }
           }
         }
@@ -101,8 +108,8 @@ class _ProfilePageState extends State<ProfilePage> {
           _userFirstName = ''; // Clear the first name
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully logged out'),
+          SnackBar(
+            content: Text('successfully_logged_out'.tr()),
             backgroundColor: pinkColor,
           ),
         );
@@ -110,8 +117,8 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error logging out'),
+          SnackBar(
+            content: Text('error_logging_out'.tr()),
             backgroundColor: greyColor,
           ),
         );
@@ -141,9 +148,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   color: pinkColor.withValues(alpha: 0.7),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Welcome to Your Profile',
-                  style: TextStyle(
+                Text(
+                  'profile_welcome'.tr(),
+                  style: const TextStyle(
                     color: kWhiteColor,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -152,13 +159,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Please log in to access your profile, tickets, badges, and personalized content.',
-                  style: TextStyle(
+                Text(
+                  'profile_login_prompt'.tr(),
+                  style: const TextStyle(
                     color: lightGreyColor,
                     fontSize: 16,
                     height: 1.5,
-                    decoration: TextDecoration.none
+                    decoration: TextDecoration.none,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -190,9 +197,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: const Text(
-                    'Log In',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    'log_in'.tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -223,9 +233,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  child: Text(
+                    'sign_up'.tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

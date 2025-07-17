@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app/data/services/chat_service.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app/presentation/widgets/all.dart';
 
 import 'package:app/model/community/chat/all.dart';
 
@@ -402,7 +403,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(color: Colors.grey[600]!, width: 1),
                 ),
-                child: TextField(
+                child: FilteredTextField(
                   controller: _messageController,
                   decoration: InputDecoration(
                     hintText: 'Share your thoughts about the museum...',

@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:app/presentation/styles/all.dart';
 import 'package:app/main.dart' show appMainKey;
 import 'package:app/presentation/views/tabBarPages/profilePage/ticketList/ticket_list_page.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-class PaymentSuccessPage extends StatelessWidget {
+class PaymentSuccessPage extends StatefulWidget {
   final VoidCallback? onGoHome;
   const PaymentSuccessPage({super.key, this.onGoHome});
 
+  @override
+  State<PaymentSuccessPage> createState() => _PaymentSuccessPageState();
+}
+
+class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -21,9 +27,9 @@ class PaymentSuccessPage extends StatelessWidget {
               children: [
                 const Icon(Icons.celebration, size: 80, color: kPinkColor),
                 const SizedBox(height: 32),
-                const Text(
-                  "Congratulations! You'll visit MUFANT soon",
-                  style: TextStyle(
+                Text(
+                  "payment_success".tr(),
+                  style: const TextStyle(
                     color: kPinkColor,
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -42,18 +48,34 @@ class PaymentSuccessPage extends StatelessWidget {
                       ),
                     ),
                     onPressed: () async {
-                      // Pop to root (AppMain)
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      // Switch to profile tab
-                      await Future.delayed(const Duration(milliseconds: 100));
-                      appMainKey.currentState?.setTab(2);
-                      await Future.delayed(const Duration(milliseconds: 100));
-                      // Push TicketListPage
-                      Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder: (context) => const TicketListPage(),
-                        ),
-                      );
+                      try {
+                        // Pop to root (AppMain)
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        // Switch to profile tab
+                        await Future.delayed(const Duration(milliseconds: 100));
+                        appMainKey.currentState?.setTab(2);
+                        await Future.delayed(const Duration(milliseconds: 100));
+                        // Push TicketListPage
+                        if (mounted && context.mounted) {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (context) => const TicketListPage(),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // Handle any navigation errors gracefully
+                        if (mounted && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Navigation error: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
                     child: const Text(
                       'View My Tickets',
@@ -88,9 +110,9 @@ class PaymentSuccessPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                       // Use a post-frame callback to notify parent to switch tab
-                      if (onGoHome != null) {
+                      if (widget.onGoHome != null) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          onGoHome!();
+                          widget.onGoHome!();
                         });
                       }
                     },

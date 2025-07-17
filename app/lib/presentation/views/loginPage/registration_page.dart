@@ -4,6 +4,8 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:app/presentation/widgets/filtered_text_field.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -64,12 +66,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
           _showSuccessDialog();
         }
       } else {
-        _showErrorDialog(
-          'Registration failed. Username or email may already exist.',
-        );
+        _showErrorDialog('registration_failed_exists'.tr());
       }
     } catch (e) {
-      _showErrorDialog('Registration failed: $e');
+      _showErrorDialog('${'registration_failed'.tr()}: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -105,7 +105,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
               Text(
-                'Registration Error',
+                'registration_error'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -131,8 +131,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'OK',
+                  child: Text(
+                    'ok'.tr(),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -170,7 +170,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               Icon(Icons.check_circle_outline, color: kPinkColor, size: 48),
               const SizedBox(height: 16),
               Text(
-                'Registration Successful',
+                'registration_successful'.tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
@@ -179,7 +179,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Your account has been created successfully. You can now sign in.',
+                'account_created_successfully'.tr(),
                 style: TextStyle(color: Colors.white, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -209,8 +209,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
-                    'Sign In',
+                  child: Text(
+                    'sign_in'.tr(),
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -262,7 +262,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     children: [
                       const SizedBox(height: 32),
                       Text(
-                        'Welcome to',
+                        'welcome_to'.tr(),
                         style: GoogleFonts.montserrat(
                           color: Colors.white,
                           fontSize: 26,
@@ -280,7 +280,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       ),
                       const SizedBox(height: 18),
                       Text(
-                        'Let\'s create your\nnew account!',
+                        'create_new_account'.tr(),
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFFFF7CA3),
                           fontSize: 20,
@@ -298,21 +298,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: TextFormField(
+                              child: FilteredTextField(
                                 controller: _nameController,
                                 style: const TextStyle(color: Colors.white),
-                                decoration: const InputDecoration(
-                                  hintText: 'Name',
+                                decoration: InputDecoration(
+                                  hintText: 'name'.tr(),
                                   hintStyle: TextStyle(color: Colors.white54),
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 16,
                                   ),
+                                  prefixIcon: const Icon(
+                                    Icons.person,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter your name';
+                                    return 'name_required'.tr();
                                   }
                                   return null;
                                 },
@@ -326,21 +330,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: TextFormField(
+                              child: FilteredTextField(
                                 controller: _surnameController,
                                 style: const TextStyle(color: Colors.white),
-                                decoration: const InputDecoration(
-                                  hintText: 'Surname',
+                                decoration: InputDecoration(
+                                  hintText: 'surname'.tr(),
                                   hintStyle: TextStyle(color: Colors.white54),
                                   border: InputBorder.none,
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 16,
                                   ),
+                                  prefixIcon: const Icon(
+                                    Icons.person,
+                                    color: Colors.white70,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter your surname';
+                                    return 'surname_required'.tr();
                                   }
                                   return null;
                                 },
@@ -356,7 +364,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _emailController,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
@@ -371,7 +379,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your email';
+                              return 'email_required'.tr();
                             }
                             if (!value.contains('@')) {
                               return 'Please enter a valid email';
@@ -387,7 +395,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           style: const TextStyle(color: Colors.white),
@@ -418,7 +426,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a password';
+                              return 'password_required'.tr();
                             }
                             if (value.length < 6) {
                               return 'Password must be at least 6 characters';
@@ -434,7 +442,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _repeatPasswordController,
                           obscureText: _obscureRepeatPassword,
                           style: const TextStyle(color: Colors.white),
@@ -466,10 +474,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please repeat your password';
+                              return 'password_required'.tr();
                             }
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match';
+                              return 'passwords_dont_match'.tr();
                             }
                             return null;
                           },
@@ -554,7 +562,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "You already have an account? ",
+                            "already_have_account".tr(),
                             style: GoogleFonts.montserrat(
                               color: Colors.white70,
                               fontSize: 15,

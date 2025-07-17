@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class OnboardingPageData {
   final String imagePath;
   final String title;
@@ -18,25 +20,23 @@ class OnboardingDataProvider {
     OnboardingPageData(
       imagePath:
           'assets/images/IntroductionScreen/robot_introduction_screen_1.png',
-      title: 'Stay connected to geek communities and events',
-      description:
-          'Join fellow enthusiasts and never miss an exciting event in the geek universe.',
+      title: 'onboarding_page1_title'.tr(),
+      description: 'onboarding_page1_description'.tr(),
     ),
 
     // Page 2: Digital Ticketing
     OnboardingPageData(
       imagePath:
           'assets/images/IntroductionScreen/robot_introduction_screen_2.png',
-      title: 'Buy your ticket in a click',
-      description:
-          'Quick and secure digital ticketing for all your favorite events and experiences.',
+      title: 'onboarding_page2_title'.tr(),
+      description: 'onboarding_page2_description'.tr(),
     ),
 
     // Page 3: Call to Action
     OnboardingPageData(
       imagePath:
           'assets/images/IntroductionScreen/robot_introduction_screen_3.png',
-      title: 'The future is in your hands',
+      title: 'onboarding_page3_title'.tr(),
       description: '', // Empty description to save space for buttons
     ),
   ];

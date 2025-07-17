@@ -226,6 +226,11 @@ class DBUserManager {
     String username,
   ) async {
     try {
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        'Getting user by username: $username',
+      );
+      
       final db = await database;
 
       final result = await db.query(
@@ -234,8 +239,65 @@ class DBUserManager {
         whereArgs: [username],
       );
 
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        'User query result: ${result.toString()}',
+      );
+
       if (result.isNotEmpty) {
-        return result.first;
+        final user = result.first;
+        AppLogger.info(
+          AppLogger.getLogger('DBUserManager'),
+          'Found user: ${user.toString()}',
+        );
+        
+        // If user has details, fetch them
+        if (user['details_fk'] != null) {
+          AppLogger.info(
+            AppLogger.getLogger('DBUserManager'),
+            'Fetching details for user with details_fk: ${user['details_fk']}',
+          );
+          try {
+            final detailsResult = await db.query(
+              'Details',
+              where: 'id = ?',
+              whereArgs: [user['details_fk']],
+            );
+            
+            AppLogger.info(
+              AppLogger.getLogger('DBUserManager'),
+              'Details query result: ${detailsResult.toString()}',
+            );
+            
+            if (detailsResult.isNotEmpty) {
+              final details = detailsResult.first;
+              // Add details to user data
+              user['details'] = details;
+              AppLogger.info(
+                AppLogger.getLogger('DBUserManager'),
+                'Details fetched: ${details.toString()}',
+              );
+            } else {
+              AppLogger.warning(
+                AppLogger.getLogger('DBUserManager'),
+                'No details found for details_fk: ${user['details_fk']}',
+              );
+            }
+          } catch (e) {
+            AppLogger.warning(
+              AppLogger.getLogger('DBUserManager'),
+              'Error fetching details (possibly read-only): $e',
+            );
+            // Continue without details - will use fallback from username
+          }
+        } else {
+          AppLogger.info(
+            AppLogger.getLogger('DBUserManager'),
+            'User has no details_fk: ${user['username']}',
+          );
+        }
+        
+        return user;
       }
 
       return null;
@@ -394,6 +456,84 @@ class DBUserManager {
     } catch (e) {
       AppLogger.error(_logger, 'Error updating user details', e);
       return false;
+    }
+  }
+
+  // Update user details for existing users who don't have details stored
+  static Future<bool> updateUserDetailsFromUsername(String username) async {
+    try {
+
+      // Get user
+      final user = await getUserByUsername(username);
+      if (user == null) {
+        return false; // User not found
+      }
+
+      // If user already has details, no need to update
+      if (user['details_fk'] != null) {
+        return true;
+      }
+
+      // Extract first and last name from username
+      List<String> nameParts = username.split('_');
+      String? firstName;
+      String? lastName;
+
+      if (nameParts.length > 1) {
+        firstName = nameParts[0];
+        lastName = nameParts[1];
+      } else if (nameParts.length == 1) {
+        firstName = nameParts[0];
+      }
+
+      if (firstName != null) {
+        return await updateUserDetails(username, firstName, lastName);
+      }
+
+      return false;
+    } catch (e) {
+      AppLogger.error(_logger, 'Error updating user details from username', e);
+      return false;
+    }
+  }
+
+  // Debug method to inspect database contents
+  static Future<void> debugInspectDatabase() async {
+    try {
+      final db = await database;
+      
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        '=== DATABASE INSPECTION ===',
+      );
+      
+      // Check all users
+      final users = await db.query('User');
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        'All users: ${users.toString()}',
+      );
+      
+      // Check all details
+      final details = await db.query('Details');
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        'All details: ${details.toString()}',
+      );
+      
+      // Check all base entities
+      final baseEntities = await db.query('BaseEntity');
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        'All base entities: ${baseEntities.toString()}',
+      );
+      
+      AppLogger.info(
+        AppLogger.getLogger('DBUserManager'),
+        '=== END DATABASE INSPECTION ===',
+      );
+    } catch (e) {
+      AppLogger.error(_logger, 'Error inspecting database', e);
     }
   }
 

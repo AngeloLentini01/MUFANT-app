@@ -15,23 +15,54 @@ class AppMain extends StatefulWidget {
   State<AppMain> createState() => MainAppState();
 }
 
-class MainAppState extends State<AppMain> {
+class MainAppState extends State<AppMain> with TickerProviderStateMixin {
   int currentIndex = 0;
   Key homePageKey = UniqueKey(); // Force rebuild when needed
+  late final PageController _pageController;
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: currentIndex);
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void setTab(int index) {
+    if (index == currentIndex) return;
+
+    final distance = (index - currentIndex).abs();
+
     setState(() {
       currentIndex = index;
       if (index == 0) {
         homePageKey = UniqueKey();
       }
     });
+
+    // Animate with a scrolling-like effect
+    _animationController.reset();
+    _animationController.forward();
+
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300 + (distance * 50)),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   void _goToProfileTab() {
-    setState(() {
-      currentIndex = 2;
-    });
+    setTab(2);
   }
 
   @override
@@ -43,26 +74,26 @@ class MainAppState extends State<AppMain> {
     ];
 
     return Scaffold(
-      body: IndexedStack(index: currentIndex, children: tabBarPages),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (index) {
+          setState(() {
+            currentIndex = index;
+            if (index == 0) {
+              homePageKey = UniqueKey();
+            }
+          });
+        },
+        children: tabBarPages,
+      ),
       bottomNavigationBar: MyTabBar(
         backgroundColor: kBlackColor,
         currentIndex: currentIndex,
         onTap: (index) {
-          // Store the previous index
           int previousIndex = currentIndex;
-
           _logger.info('Tab switched from $previousIndex to $index');
-
-          setState(() {
-            currentIndex = index;
-
-            // Force rebuild HomePage when switching to it from Profile tab
-            // (in case user logged in)
-            if (index == 0 && previousIndex == 2) {
-              _logger.info('Rebuilding HomePage after returning from Profile');
-              homePageKey = UniqueKey();
-            }
-          });
+          setTab(index);
         },
       ),
     );

@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   ulid: ^2.0.0
   money2: ^6.0.2
   intl: ^0.20.2
@@ -57,6 +59,8 @@ dependencies:
   grouped_list: ^5.1.2
   badges: ^3.1.1
   flutter_staggered_animations: ^1.1.1
+  easy_localization: ^3.0.7+1
+  multi_lang_bad_words_filter: ^0.0.3
 
   # Add other dependencies as needed
 
@@ -102,6 +106,7 @@ flutter:
     - assets/images/IntroductionScreen/
     - assets/images/map/museum_map1.jpg
     - assets/images/map/museum_map2.jpg
+    - assets/translations/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

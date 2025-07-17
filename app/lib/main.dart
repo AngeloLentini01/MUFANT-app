@@ -1,5 +1,6 @@
 import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/app_pre_configurator.dart';
+import 'package:app/presentation/services/badWords/bad_words_filter_service.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/dbManagers/database_helper.dart';
 import 'package:app/data/dbManagers/data_migration_helper.dart';
@@ -10,6 +11,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logging/logging.dart';
 import 'dart:async';
 
@@ -74,8 +77,25 @@ Future<void> _resetDatabaseIfNeeded() async {
   }
 }
 
+// Function to get saved locale from SharedPreferences
+Future<Locale?> _getSavedLocale() async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final savedLanguageCode = prefs.getString('locale');
+    if (savedLanguageCode != null) {
+      return Locale(savedLanguageCode);
+    }
+  } catch (e) {
+    AppLogger.error(_logger, 'Error getting saved locale', e);
+  }
+  return null; // Will use fallback locale
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Easy Localization
+  await EasyLocalization.ensureInitialized();
 
   // Initialize logger
   AppLogger.init();
@@ -91,10 +111,19 @@ void main() async {
   // Initialize database asynchronously in background
   _initializeDatabaseAsync();
 
-  // Start the app immediately without waiting for database
+  // Get saved locale
+  final savedLocale = await _getSavedLocale();
+
+  // Start the app with Easy Localization wrapper
   runApp(
-    const AppPreConfigurator(),
-  ); // AppMain is created in AppPreConfigurator
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('it')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      startLocale: savedLocale,
+      child: const AppPreConfigurator(),
+    ),
+  );
 }
 
 void _initializeDatabaseAsync() async {
@@ -175,6 +204,18 @@ void _initializeDatabaseAsync() async {
         _logger,
         'Failed to initialize badge service',
         badgeError,
+      );
+    }
+
+    // Initialize bad words filter service
+    try {
+      await BadWordsFilterService().initialize();
+      AppLogger.info(_logger, 'Bad words filter service initialized');
+    } catch (filterError) {
+      AppLogger.error(
+        _logger,
+        'Failed to initialize bad words filter service',
+        filterError,
       );
     }
 

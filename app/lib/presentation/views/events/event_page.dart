@@ -3,24 +3,59 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:app/utils/app_logger.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'dart:async'; // Added for Timer
 
 class EventPage extends StatefulWidget {
   final String? eventTitle;
-  const EventPage({super.key, this.eventTitle});
+  final String? highlightText;
+  const EventPage({super.key, this.eventTitle, this.highlightText});
 
   @override
   State<EventPage> createState() => _EventPageState();
 }
 
-class _EventPageState extends State<EventPage> {
+class _EventPageState extends State<EventPage> with TickerProviderStateMixin {
   Map<String, dynamic>? eventData;
   bool isLoading = true;
   final Logger _logger = AppLogger.getLogger('EventPage');
+  AnimationController? _highlightController;
+  Animation<double>? _highlightAnimation;
 
   @override
   void initState() {
     super.initState();
     _loadEventData();
+    _setupHighlightAnimation();
+  }
+
+  void _setupHighlightAnimation() {
+    if (widget.highlightText != null && widget.highlightText!.isNotEmpty) {
+      _highlightController = AnimationController(
+        duration: const Duration(milliseconds: 1000), // 1 second per cycle
+        vsync: this,
+      );
+
+      _highlightAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _highlightController!, curve: Curves.easeInOut),
+      );
+
+      // Start the animation and repeat it for 2 seconds
+      _highlightController!.repeat(reverse: true);
+
+      // Stop after 2 seconds
+      Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          _highlightController!.stop();
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _highlightController?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadEventData() async {
@@ -76,6 +111,113 @@ class _EventPageState extends State<EventPage> {
     }
   }
 
+  Widget _buildHighlightedText(String text) {
+    if (widget.highlightText == null || widget.highlightText!.isEmpty) {
+      return Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFFFF7CA3),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          letterSpacing: 1.5,
+        ),
+      );
+    }
+
+    final highlightText = widget.highlightText!.toLowerCase();
+    final textLower = text.toLowerCase();
+    final index = textLower.indexOf(highlightText);
+
+    if (index == -1) {
+      return Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFFFF7CA3),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          letterSpacing: 1.5,
+        ),
+      );
+    }
+
+    // If no animation controller, return normal text
+    if (_highlightAnimation == null) {
+      return Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFFFF7CA3),
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          letterSpacing: 1.5,
+        ),
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _highlightAnimation!,
+      builder: (context, child) {
+        final animationValue = _highlightAnimation!.value;
+
+        // Create more prominent color transitions
+        final highlightColor = Color.lerp(
+          const Color(0xFFFF7CA3), // Normal color
+          Colors.white, // Highlighted color
+          animationValue,
+        )!;
+
+        // Make background more prominent
+        final backgroundColor = animationValue > 0.1
+            ? const Color(0xFFFF7CA3).withValues(alpha: animationValue * 0.9)
+            : null;
+
+        return RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: text.substring(0, index),
+                style: const TextStyle(
+                  color: Color(0xFFFF7CA3),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              TextSpan(
+                text: text.substring(index, index + highlightText.length),
+                style: TextStyle(
+                  color: highlightColor,
+                  backgroundColor: backgroundColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 1.5,
+                  // Add shadow for better visibility
+                  shadows: [
+                    Shadow(
+                      offset: const Offset(0, 1),
+                      blurRadius: 2,
+                      color: Colors.black.withValues(
+                        alpha: animationValue * 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextSpan(
+                text: text.substring(index + highlightText.length),
+                style: const TextStyle(
+                  color: Color(0xFFFF7CA3),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -93,8 +235,8 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
           centerTitle: true,
-          title: const Text(
-            'Loading...',
+          title: Text(
+            'loading'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -124,8 +266,8 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
           centerTitle: true,
-          title: const Text(
-            'Event Not Found',
+          title: Text(
+            'event_not_found'.tr(),
             style: TextStyle(
               color: Color(0xFFFF7CA3),
               fontWeight: FontWeight.bold,
@@ -134,8 +276,11 @@ class _EventPageState extends State<EventPage> {
             ),
           ),
         ),
-        body: const Center(
-          child: Text('Event not found', style: TextStyle(color: Colors.white)),
+        body: Center(
+          child: Text(
+            'event_not_found_message'.tr(),
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -150,15 +295,7 @@ class _EventPageState extends State<EventPage> {
           icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
         centerTitle: true,
-        title: Text(
-          eventData!['name'] ?? 'Event',
-          style: const TextStyle(
-            color: Color(0xFFFF7CA3),
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            letterSpacing: 1.5,
-          ),
-        ),
+        title: _buildHighlightedText(eventData!['name'] ?? 'Event'),
       ),
       body: Stack(
         children: [
@@ -248,8 +385,8 @@ class _EventPageState extends State<EventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'SCHEDULE',
+                      Text(
+                        'schedule'.tr(),
                         style: TextStyle(
                           color: Color(0xFFFF7CA3),
                           fontWeight: FontWeight.bold,
@@ -259,7 +396,7 @@ class _EventPageState extends State<EventPage> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        eventData!['notes'] ?? 'Schedule TBD',
+                        eventData!['notes'] ?? 'schedule_tbd'.tr(),
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
@@ -274,8 +411,8 @@ class _EventPageState extends State<EventPage> {
                 ),
                 const SizedBox(height: 28),
                 // Tickets & Info
-                const Text(
-                  'TICKETS & INFO',
+                Text(
+                  'tickets_info'.tr(),
                   style: TextStyle(
                     color: Color(0xFFFF7CA3),
                     fontWeight: FontWeight.bold,
@@ -286,14 +423,16 @@ class _EventPageState extends State<EventPage> {
                 const SizedBox(height: 10),
                 Text(
                   eventData!['price'] != null
-                      ? 'MUFANT ticket\nStudents: €${eventData!['price']} (with ID)\nMuseum Pass not valid'
+                      ? 'mufant_ticket_info'.tr(
+                          namedArgs: {'price': eventData!['price'].toString()},
+                        )
                       : '',
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Info: +39 347 5405096\n+39 349 8171960\ninfo@mufant.it',
+                Text(
+                  'contact_info'.tr(),
                   style: TextStyle(color: Colors.white70, fontSize: 15),
                   textAlign: TextAlign.center,
                 ),

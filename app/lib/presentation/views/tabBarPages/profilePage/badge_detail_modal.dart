@@ -1,6 +1,6 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BadgeDetailModal extends StatelessWidget {
   const BadgeDetailModal({
@@ -134,7 +134,11 @@ class BadgeDetailModal extends StatelessWidget {
                   border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Text(
-                  'Achieved on ${DateFormat('MMM dd, yyyy').format(achievedDate!)}',
+                  'achieved_on'.tr(
+                    namedArgs: {
+                      'date': DateFormat('MMM dd, yyyy').format(achievedDate!),
+                    },
+                  ),
                   style: TextStyle(
                     color: color,
                     fontSize: 14,
@@ -177,7 +181,7 @@ class BadgeDetailModal extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Complete the required action to unlock this badge!',
+                        'badge_unlock_hint'.tr(),
                         style: TextStyle(
                           color: Colors.orange[300],
                           fontSize: 12,
@@ -204,9 +208,12 @@ class BadgeDetailModal extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Close',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Text(
+                  'close'.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
