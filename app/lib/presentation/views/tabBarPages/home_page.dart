@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    TextField(
+                    FilteredTextField(
                       controller: controller,
                       autofocus: true,
                       style: TextStyle(color: Colors.white),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/presentation/widgets/all.dart';
 
 /// Abstract interface for searchable items
 abstract class SearchableItem {
@@ -219,7 +220,7 @@ class _SearchDialogState<T extends SearchableItem>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
+            FilteredTextField(
               controller: _controller,
               autofocus: true,
               style: const TextStyle(color: Colors.white),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/presentation/widgets/all.dart';
 
 class ShopCard extends StatefulWidget {
   final ShopItem item;
@@ -98,7 +99,7 @@ class _ShopCardState extends State<ShopCard> {
             'edit_quantity'.tr(),
             style: const TextStyle(color: Colors.white),
           ),
-          content: TextField(
+          content: FilteredTextField(
             controller: controller,
             keyboardType: TextInputType.number,
             autofocus: true,

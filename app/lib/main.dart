@@ -1,5 +1,6 @@
 import 'package:app/presentation/app_main.dart';
 import 'package:app/presentation/app_pre_configurator.dart';
+import 'package:app/presentation/services/badWords/bad_words_filter_service.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/dbManagers/database_helper.dart';
 import 'package:app/data/dbManagers/data_migration_helper.dart';
@@ -203,6 +204,18 @@ void _initializeDatabaseAsync() async {
         _logger,
         'Failed to initialize badge service',
         badgeError,
+      );
+    }
+
+    // Initialize bad words filter service
+    try {
+      await BadWordsFilterService().initialize();
+      AppLogger.info(_logger, 'Bad words filter service initialized');
+    } catch (filterError) {
+      AppLogger.error(
+        _logger,
+        'Failed to initialize bad words filter service',
+        filterError,
       );
     }
 
