@@ -8,6 +8,7 @@ import 'package:app/data/dbManagers/db_user_manager.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:logging/logging.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/presentation/widgets/filtered_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -216,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: kBlackColor,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _emailController,
                           style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
@@ -244,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: kBlackColor,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           style: const TextStyle(color: Colors.white),

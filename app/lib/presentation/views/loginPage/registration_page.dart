@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:logging/logging.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/presentation/widgets/filtered_text_field.dart';
 
 class RegistrationPage extends StatefulWidget {
   final bool shouldNavigateToMain;
@@ -297,7 +298,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: TextFormField(
+                              child: FilteredTextField(
                                 controller: _nameController,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
@@ -307,6 +308,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 16,
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.person,
+                                    color: Colors.white70,
                                   ),
                                 ),
                                 validator: (value) {
@@ -325,7 +330,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 color: Colors.white.withValues(alpha: 0.08),
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              child: TextFormField(
+                              child: FilteredTextField(
                                 controller: _surnameController,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: InputDecoration(
@@ -335,6 +340,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   contentPadding: EdgeInsets.symmetric(
                                     vertical: 18,
                                     horizontal: 16,
+                                  ),
+                                  prefixIcon: const Icon(
+                                    Icons.person,
+                                    color: Colors.white70,
                                   ),
                                 ),
                                 validator: (value) {
@@ -355,7 +364,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _emailController,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
@@ -370,7 +379,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Please enter your email';
+                              return 'email_required'.tr();
                             }
                             if (!value.contains('@')) {
                               return 'Please enter a valid email';
@@ -386,7 +395,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           style: const TextStyle(color: Colors.white),
@@ -417,7 +426,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a password';
+                              return 'password_required'.tr();
                             }
                             if (value.length < 6) {
                               return 'Password must be at least 6 characters';
@@ -433,7 +442,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: TextFormField(
+                        child: FilteredTextField(
                           controller: _repeatPasswordController,
                           obscureText: _obscureRepeatPassword,
                           style: const TextStyle(color: Colors.white),
@@ -465,10 +474,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please repeat your password';
+                              return 'password_required'.tr();
                             }
                             if (value != _passwordController.text) {
-                              return 'Passwords do not match';
+                              return 'passwords_dont_match'.tr();
                             }
                             return null;
                           },
