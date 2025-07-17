@@ -8,10 +8,10 @@ List<BottomNavigationBarItem> tabBarButtons(int selectedIndex) => [
         ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: kPinkColor.withOpacity(0.15),
+              color: kPinkColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: kPinkColor.withOpacity(0.5),
+                color: kPinkColor.withValues(alpha: 0.5),
                 width: 1.5,
               ),
             ),
@@ -25,10 +25,10 @@ List<BottomNavigationBarItem> tabBarButtons(int selectedIndex) => [
         ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: kPinkColor.withOpacity(0.15),
+              color: kPinkColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: kPinkColor.withOpacity(0.5),
+                color: kPinkColor.withValues(alpha: 0.5),
                 width: 1.5,
               ),
             ),
@@ -42,10 +42,10 @@ List<BottomNavigationBarItem> tabBarButtons(int selectedIndex) => [
         ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: kPinkColor.withOpacity(0.15),
+              color: kPinkColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: kPinkColor.withOpacity(0.5),
+                color: kPinkColor.withValues(alpha: 0.5),
                 width: 1.5,
               ),
             ),
