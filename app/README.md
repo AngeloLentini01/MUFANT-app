@@ -1,317 +1,101 @@
-# MUFANT App - Technical Documentation
+# MUFANT-app
 
-## 📱 Overview
+A cross-platform Flutter application for the MUFANT museum, providing interactive features, ticketing, community chat, and educational content for visitors. The app supports Android, iOS, web, Windows, macOS, and Linux platforms.
 
-MUFANT is a Flutter-based mobile application designed for museum visitors, providing digital ticketing, event management, community features, and interactive museum experiences. The app supports both English and Italian languages and offers a modern, dark-themed UI with smooth animations.
+## Features
 
-## 🏗️ Architecture
+- Museum activity booking and ticketing
+- Community chat and events
+- Educational content and audio guides
+- User profiles and avatars
+- Badge and achievement system
+- Multilingual support (English, Italian)
+- Modern UI with custom themes
 
-### Project Structure
-```
-app/
-├── lib/
-│   ├── data/                    # Data layer
-│   │   ├── dbManagers/         # Database managers
-│   │   ├── services/           # Business logic services
-│   │   └── mufant_museum.db   # SQLite database
-│   ├── model/                  # Data models
-│   │   ├── cart/              # Shopping cart models
-│   │   ├── community/         # Chat and community models
-│   │   ├── database/          # Database entity models
-│   │   ├── generic/           # Generic base models
-│   │   ├── items/             # Product and item models
-│   │   └── museum/            # Museum-specific models
-│   ├── presentation/          # UI layer
-│   │   ├── app_main.dart     # Main app widget
-│   │   ├── app_pre_configurator.dart
-│   │   ├── models/           # UI-specific models
-│   │   ├── services/         # UI services
-│   │   ├── styles/           # Styling and theming
-│   │   ├── theme/            # Theme configuration
-│   │   ├── views/            # Screen widgets
-│   │   └── widgets/          # Reusable UI components
-│   ├── utils/                # Utility functions
-│   └── main.dart             # App entry point
-├── assets/                   # Static assets
-├── test/                     # Test files
-└── scripts/                  # Build and migration scripts
+## Project Structure
+
+```text
+lib/
+  data/           # Database managers, services, and local DB
+  model/          # Data models (cart, community, museum, items, etc.)
+  presentation/   # UI, views, widgets, themes, and services
+  utils/          # Utilities and helpers
+assets/
+  icons/          # App and login icons
+  images/         # Avatars, badges, wallpapers, tickets, etc.
+  translations/   # Localization files (en.json, it.json)
+scripts/          # Database and migration scripts
 ```
 
-### Technology Stack
-- **Framework**: Flutter 30.81**Language**: Dart
-- **Database**: SQLite (sqflite)
-- **State Management**: Built-in Flutter state management
-- **Localization**: Easy Localization
-- **UI Components**: Material Design with custom theming
-- **Testing**: Flutter Test + Mockito
-
-## 🚀 Features
-
-### Core Features1*Digital Ticketing System**
-   - Museum ticket purchases
-   - Event ticket management
-   - Barcode generation and scanning
-   - Ticket validation and expiration
-
-2. **Event Management**
-   - Museum events listing
-   - Event details and descriptions
-   - Room and activity information
-   - Interactive event maps
-
-3. **Community Features**
-   - Community chat system
-   - User profiles and badges
-   - Achievement system
-   - Social interactions
-
-4. **Shopping & Payment**
-   - E-commerce functionality
-   - Shopping cart management
-   - Multiple payment methods
-   - Order tracking
-
-5. **User Management**
-   - User registration and login
-   - Profile management
-   - Session management
-   - Badge and achievement tracking
-
-### Technical Features
-- **Multi-language Support**: English and Italian
-- **Offline Capability**: Local SQLite database
-- **Content Filtering**: Bad words filter with whitelist
-- **Responsive Design**: Adaptive UI for different screen sizes
-- **Smooth Animations**: Custom tab bar animations
-- **Data Migration**: Automatic database schema updates
-
-## 🛠️ Setup & Installation
+## Getting Started
 
 ### Prerequisites
-- Flutter SDK3.81 higher
-- Dart SDK
-- Android Studio / VS Code
-- Git
 
-### Installation Steps
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)
+- Dart SDK (usually included with Flutter)
+- Android Studio/Xcode for mobile development
+- Node.js (for some web features, optional)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd app
+### Installation
+
+1. Clone the repository:
+
+   ``` sh
+   git clone <repo-url>
+   cd MUFANT-app/app
+
    ```
 
-2. **Install dependencies**
-   ```bash
+2. Install dependencies:
+
+   ```sh
    flutter pub get
-   ```3. **Run the app**
-   ```bash
-   flutter run
    ```
 
-### Database Setup
-The app automatically handles database initialization and migrations:
-- Database file: `mufant_museum.db`
-- Schema version: 8
-- Automatic migration from old schemas
-- Sample data initialization
+3. (Optional) Set up platform-specific dependencies (see Flutter docs for [Android](https://docs.flutter.dev/development/platform-integration/android), [iOS](https://docs.flutter.dev/development/platform-integration/ios), [Web](https://docs.flutter.dev/development/platform-integration/web), etc.)
 
-## 📦 Dependencies
+## Running the App
 
-### Core Dependencies
-```yaml
-# Database & Storage
-sqflite: ^2.4.2
-shared_preferences: ^2.5.3I & Styling
-google_fonts: ^60.1.0
-skeletonizer: ^2.00.1
-flutter_staggered_animations: ^1.1.1 Localization
-easy_localization: ^3.00.7+1
+- **Android/iOS:**
 
-# Utilities
-ulid: ^2.0.0ey2: ^6.00.2to: ^3.00.6
-logging: ^10.3# Features
-barcode: ^2.20.9
-barcode_widget: ^2.0.4ticket_material: ^03.1ntroduction_screen: ^3.1.17
-```
+  ```sh
 
-### Development Dependencies
-```yaml
-flutter_test: sdk: flutter
-mockito: ^50.4.4
-build_runner: ^2.4.8er: ^2.10
-flutter_lints: ^6.00## 🎨 UI/UX Design
+  flutter run
+  ```
 
-### Design System
-- **Primary Colors**: Black (`#00000`) and Pink (`#FF7CA3
-- **Typography**: Google Fonts (Exo 2)
-- **Theme**: Dark theme with custom color scheme
-- **Animations**: Smooth transitions and micro-interactions
+- **Web:**
 
-### Key UI Components
-1. **Custom Tab Bar**: Animated bottom navigation with smooth transitions
-2**Splash Screen**: Branded loading screen with fade animations3*Introduction Screens**:3ge onboarding flow
-4. **Responsive Layouts**: Adaptive design for different screen sizes
+  ```sh
+  flutter run -d chrome
+  ```
 
-## 🔧 Configuration
+- **Windows/macOS/Linux:**
 
-### Environment Setup
-1. **Database Configuration**: Automatic in `lib/main.dart`2 **Localization**: Configured in `main()` function
-3. **Logging**: Initialized via `AppLogger.init()`
-4. **Bad Words Filter**: Whitelist and sensitivity settings
+  ```sh
+  flutter run -d windows  # or macos/linux
+  ```
 
-### Build Configuration
-- **Android**: Configured in `android/app/build.gradle.kts`
-- **iOS**: Configured in `ios/Runner/Info.plist`
-- **Icons**: Generated via `flutter_launcher_icons.yaml`
+## Scripts
 
-## 🧪 Testing
+- Database and migration scripts are in the `scripts/` directory:
+  - `check_database_status.py`
+  - `check_db_schema.py`
+  - `complete_migration.ps1`
+  - etc.
 
-### Test Structure
-```
-test/
-├── model/                    # Model tests
-├── models/                   # UI model tests
-├── tabBarPages/             # Page-specific tests
-└── ticket_service_test.dart # Service tests
-```
+## Assets
 
-### Running Tests
-```bash
-# Run all tests
-flutter test
+- App icons, images, and translations are in the `assets/` directory.
+- Update or add new assets as needed, and reference them in your Dart code.
 
-# Run specific test file
-flutter test test/ticket_service_test.dart
+## Contributing
 
-# Run with coverage
-flutter test --coverage
-```
-
-## 📱 App Flow
-
-### Navigation Structure
-```
-SplashScreen
-    ↓
-OnboardingScreen (3ges)
-    ↓
-AppMain (TabBar)
-├── HomePage
-├── ShopPage
-└── ProfilePage
-```
-
-### Key Screens
-1**Splash Screen**: App initialization and branding
-2oarding**: Feature introduction for new users
-3. **Home**: Events, activities, and community content
-4. **Shop**: Ticket purchasing and e-commerce
-5. **Profile**: User management and settings
-
-## 🔒 Security Features
-
-### Content Filtering
-- **Bad Words Filter**: Real-time content filtering
-- **Whitelist System**: Prevents false positives
-- **Fuzzy Matching**: Typo-resistant detection
-- **Multi-language Support**: Italian and English filtering
-
-### Data Protection
-- **Password Hashing**: SHA-256yption
-- **Session Management**: Secure user sessions
-- **Database Security**: SQLite with proper access controls
-
-## 🚀 Performance Optimizations
-
-### Database
-- **Lazy Loading**: Database initialization in background
-- **Connection Pooling**: Efficient database connections
-- **Migration System**: Automatic schema updates
-
-### UI Performance
-- **Widget Rebuilding**: Optimized with UniqueKey
-- **Animation Controllers**: Proper disposal and management
-- **Image Caching**: Efficient asset loading
-
-## 🔄 Data Migration
-
-### Migration System
-- **Automatic Detection**: Version-based migration triggers
-- **Data Preservation**: Safe migration of existing data
-- **Rollback Support**: Database version management
-
-### Migration Scripts
-- `complete_migration.ps1`: PowerShell migration script
-- `check_database_status.py`: Database health checks
-- `check_db_schema.py`: Schema validation
-
-## 🐛 Debugging & Logging
-
-### Logging System
-- **Structured Logging**: Using `logging` package
-- **App Logger**: Centralized logging utility
-- **Error Tracking**: Comprehensive error handling
-
-### Debug Tools
-- **Flutter Inspector**: UI debugging
-- **Database Inspector**: SQLite debugging
-- **Performance Profiler**: App performance monitoring
-
-## 📋 Development Guidelines
-
-### Code Style
-- **Dart Conventions**: Follow official Dart style guide
-- **Flutter Lints**: Enabled via `flutter_lints`
-- **Documentation**: Comprehensive code comments
-
-### Best Practices
-1ration of Concerns**: Clear layer separation
-2. **Error Handling**: Comprehensive try-catch blocks
-3. **Resource Management**: Proper disposal of controllers
-4. **Testing**: Unit tests for critical functionality
-
-### Git Workflow
-- **Feature Branches**: Develop new features in separate branches
-- **Pull Requests**: Code review process
-- **Commit Messages**: Descriptive commit messages
-
-## 🔮 Future Enhancements
-
-### Planned Features
-- [ ] Push notifications
-- [ ] Biometric authentication
-- [ ] Offline mode improvements
-- [ ] Advanced analytics
-- [ ] Social media integration
-
-### Technical Improvements
-- [ ] State management migration (Provider/Bloc)
-- [ ] API integration for real-time data
-- [ ] Enhanced caching strategies
-- [ ] Performance monitoring
-
-## 📞 Support & Contributing
-
-### Getting Help
-- Check existing issues in the repository
-- Review the code documentation
-- Contact the development team
-
-### Contributing
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
 
-## 📄 License
+## License
 
-This project is proprietary software. All rights reserved.
-
----
-
-**Version**: 1.0.0+1
-**Last Updated**: 2024  
-**Flutter Version**: 3.8.1+  
-**Dart Version**: 3.8.1+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

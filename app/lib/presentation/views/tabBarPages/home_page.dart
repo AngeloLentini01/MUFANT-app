@@ -181,8 +181,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   String highlightText = searchTerm;
 
                                   // Debug logging
-                                  print('DEBUG: Found text: "$foundText"');
-                                  print('DEBUG: Search term: "$searchTerm"');
+                                  _logger.info(
+                                    'DEBUG: Found text: "$foundText"',
+                                  );
+                                  _logger.info(
+                                    'DEBUG: Search term: "$searchTerm"',
+                                  );
 
                                   // Try to find the best matching substring (case-insensitive)
                                   final foundTextLower = foundText
@@ -195,7 +199,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   )) {
                                     // Use the search term as is
                                     highlightText = searchTerm;
-                                    print(
+                                    _logger.info(
                                       'DEBUG: Found exact match, highlighting: "$highlightText"',
                                     );
                                   } else {
@@ -211,7 +215,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           wordIndex,
                                           wordIndex + word.length,
                                         );
-                                        print(
+                                        _logger.info(
                                           'DEBUG: Found word match, highlighting: "$highlightText"',
                                         );
                                         break;
@@ -219,7 +223,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     }
                                   }
 
-                                  print(
+                                  _logger.info(
                                     'DEBUG: Final highlight text: "$highlightText"',
                                   );
 

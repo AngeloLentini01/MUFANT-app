@@ -818,7 +818,6 @@ final List<String> badWords = [
   'macaca',
   'mad',
   'mafia',
-  'magicwand',
   'mams',
   'manhater',
   'manpaste',

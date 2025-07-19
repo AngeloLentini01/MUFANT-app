@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:logging/logging.dart';
 import 'package:app/presentation/services/badWords/bad_words.dart';
 
 class BadWordsFilterService {
@@ -7,6 +8,8 @@ class BadWordsFilterService {
       BadWordsFilterService._internal();
   factory BadWordsFilterService() => _instance;
   BadWordsFilterService._internal();
+
+  static final _logger = Logger('BadWordsFilterService');
 
   // Simple whitelist for common legitimate words
   static final Set<String> _whitelist = {
@@ -138,7 +141,7 @@ class BadWordsFilterService {
         }
         if (isPartOfWhitelistedWord) continue;
 
-        print('DEBUG: Flagged word $normBad in text$normalizedText');
+        _logger.info('DEBUG: Flagged word $normBad in text $normalizedText');
         return true;
       }
 
@@ -154,7 +157,7 @@ class BadWordsFilterService {
         // More conservative distance calculation - only allow 1 character difference for longer words
         final maxDistance = word.length > 8 ? 1 : (word.length / 5).floor();
         if (distance <= maxDistance) {
-          print(
+          _logger.info(
             'DEBUG: Fuzzy matched word "$word" to bad word "$normBad" with distance $distance',
           );
           return true;
