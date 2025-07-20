@@ -1,5 +1,6 @@
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CartSummary extends StatelessWidget {
   final double totalAmount;
@@ -41,11 +42,11 @@ class CartSummary extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Total to pay',
+                    'total_to_pay'.tr(),
                     style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
                   Text(
-                    '€${totalAmount.toStringAsFixed(2)}',//.replaceAll('.00', ''),
+                    '€${totalAmount.toStringAsFixed(2)}', //.replaceAll('.00', ''),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -53,7 +54,12 @@ class CartSummary extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '$totalItems item${totalItems > 1 ? 's' : ''}',
+                    'item_count'.tr(
+                      namedArgs: {
+                        'count': totalItems.toString(),
+                        'plural': totalItems > 1 ? 'item_plural'.tr() : '',
+                      },
+                    ),
                     style: TextStyle(color: Colors.grey[400], fontSize: 12),
                   ),
                 ],
@@ -76,8 +82,8 @@ class CartSummary extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
-                      child: const Text(
-                        'Clear',
+                      child: Text(
+                        'clear'.tr(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -102,7 +108,7 @@ class CartSummary extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        checkoutText,
+                        'checkout'.tr(),
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

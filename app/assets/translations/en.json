@@ -244,5 +244,7 @@
     "just_now": "Just now",
     "minutes_ago": "{minutes} min ago",
     "hours_ago": "{hours}h ago",
-    "days_ago": "{days}d ago"
+    "days_ago": "{days}d ago",
+    "item_count": "{count} item{plural}",
+    "item_plural": "s"
 }

@@ -816,11 +816,12 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                 ],
               ),
-              if (totalItems > 0)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
+              AnimatedSlide(
+                offset: totalItems > 0 ? Offset(0, 0) : Offset(0, 1),
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
                   child: CartSummary(
                     totalAmount: totalAmount,
                     totalItems: totalItems,
@@ -828,6 +829,7 @@ class _ShopPageState extends State<ShopPage> {
                     onCheckout: _goToCheckout,
                   ),
                 ),
+              ),
             ],
           ),
         ),
