@@ -246,5 +246,6 @@
     "hours_ago": "{hours}h ago",
     "days_ago": "{days}d ago",
     "item_count": "{count} item{plural}",
-    "item_plural": "s"
+    "item_plural": "s",
+    "search_placeholder": "Type here to search..."
 }

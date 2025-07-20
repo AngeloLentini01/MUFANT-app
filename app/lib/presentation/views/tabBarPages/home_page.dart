@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       autofocus: true,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Type here to search...',
+                        hintText: 'search_placeholder'.tr(),
                         hintStyle: TextStyle(color: Colors.white54),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white54),
@@ -253,7 +253,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Close',
+                    'close'.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

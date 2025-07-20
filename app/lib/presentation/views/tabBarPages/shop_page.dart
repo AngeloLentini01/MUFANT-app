@@ -134,10 +134,10 @@ class _ShopPageState extends State<ShopPage> {
     showDialog(
       context: context,
       builder: (context) => SearchDialog<SearchableItem>(
-        title: 'Shop Search',
+        title: 'search_title'.tr(),
         items: shopSearchableItems,
         searchService: _searchService,
-        hintText: 'Search tickets and tours...',
+        hintText: 'search_placeholder'.tr(),
         onItemSelected: (item, matchedText) {
           _onSearchItemSelected(item, matchedText);
         },

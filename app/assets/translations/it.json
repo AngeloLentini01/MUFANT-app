@@ -260,5 +260,6 @@
     "hours_ago": "{hours}h fa",
     "days_ago": "{days}g fa",
     "yesterday": "Ieri",
-    "shop_title": "Acquista"
+    "shop_title": "Acquista",
+    "search_placeholder": "Scrivi qui per cercare..."
 }
