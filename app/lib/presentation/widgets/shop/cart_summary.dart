@@ -57,7 +57,9 @@ class CartSummary extends StatelessWidget {
                     'item_count'.tr(
                       namedArgs: {
                         'count': totalItems.toString(),
-                        'plural': totalItems > 1 ? 'item_plural'.tr() : '',
+                        'plural': totalItems > 1
+                            ? (context.locale.languageCode == 'it' ? 'i' : 's')
+                            : (context.locale.languageCode == 'it' ? 'o' : ''),
                       },
                     ),
                     style: TextStyle(color: Colors.grey[400], fontSize: 12),
@@ -171,8 +173,14 @@ class CartSummaryOverlay extends StatelessWidget {
               ],
             ),
             Text(
-              '$totalItems item${totalItems > 1 ? 's' : ''}',
-              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+              'item_count'.tr(
+                namedArgs: {
+                  'count': totalItems.toString(),
+                  'plural': totalItems > 1
+                      ? (context.locale.languageCode == 'it' ? 'i' : 's')
+                      : (context.locale.languageCode == 'it' ? 'o' : ''),
+                },
+              ),
             ),
           ],
         ),

@@ -17,13 +17,26 @@ class SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   AnimationController? _controller;
   Animation<double>? _fadeAnimation;
+  static bool _didHotReload = false;
+
+  SplashScreenState() {
+    // Reset hot reload flag on hot restart (constructor is called on restart)
+    _didHotReload = false;
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    // This method is called on hot reload
+    _didHotReload = true;
+  }
 
   @override
   void initState() {
     super.initState();
 
-    // Skip splash screen in debug mode for faster development
-    if (kDebugMode) {
+    // Only skip splash in debug mode AND on hot reload
+    if (kDebugMode && _didHotReload) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _checkAuthenticationAndNavigate();
       });
@@ -63,8 +76,8 @@ class SplashScreenState extends State<SplashScreen>
   Future<void> _checkAuthenticationAndNavigate() async {
     if (!mounted) return;
 
-    // In debug mode, go directly to main app for faster development
-    if (kDebugMode) {
+    // On hot reload, always go directly to main app, skipping login/onboarding
+    if (kDebugMode && _didHotReload) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => AppMain(key: appMainKey)),
@@ -104,7 +117,7 @@ class SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     // In debug mode, show a minimal splash or skip entirely
-    if (kDebugMode) {
+    if (kDebugMode && _didHotReload) {
       return Scaffold(
         backgroundColor: kBlackColor,
         body: Center(child: Image.asset('assets/images/logo.png', width: 250)),

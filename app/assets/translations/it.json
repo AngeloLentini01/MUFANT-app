@@ -226,8 +226,7 @@
     "total_to_pay": "Totale",
     "clear": "Svuota",
     "checkout": "Acquista",
-    "item_count": "{count} articolo{plural}",
-    "item_plural": "i",
+    "item_count": "{count} articol{plural}",
     "wallpaper": "Sfondo",
     "welcome_adventurer": "Benvenuto, avventuriero!",
     "event_sailor_anniversary": "30 anni di Sailor",
@@ -261,5 +260,7 @@
     "days_ago": "{days}g fa",
     "yesterday": "Ieri",
     "shop_title": "Acquista",
-    "search_placeholder": "Scrivi qui per cercare..."
+    "search_placeholder": "Scrivi qui per cercare...",
+    "ticket_count": "{count} bigliett{plural}",
+    "ticket_plural": "i"
 }

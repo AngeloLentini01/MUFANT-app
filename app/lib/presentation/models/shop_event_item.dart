@@ -13,6 +13,7 @@ class ShopEventItem implements SearchableItem {
   @override
   final String category;
   final String imageAsset;
+  final String originalName;
 
   ShopEventItem({
     required this.id,
@@ -21,6 +22,7 @@ class ShopEventItem implements SearchableItem {
     required this.price,
     required this.category,
     required this.imageAsset,
+    required this.originalName,
   });
 
   static String getEventTitleKey(String dbName) {
@@ -85,9 +87,10 @@ class ShopEventItem implements SearchableItem {
       price: price,
       category: 'events'.tr(),
       imageAsset: model.imageUrlOrPath ?? '',
+      originalName: model.originalName ?? model.name,
     );
   }
 
   @override
-  String get searchableText => '$title $subtitle $category';
+  String get searchableText => '$title $subtitle $category $originalName';
 }

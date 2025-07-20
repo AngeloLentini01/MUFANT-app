@@ -89,11 +89,14 @@ class _ShopPageState extends State<ShopPage> {
   Future<void> _onSearchPressed() async {
     if (!mounted) return;
 
-    // Get only shop-specific searchable items (museum tickets and tours only)
+    // Get only shop-specific searchable items (museum tickets, tours, and events)
     final shopSearchableItems = <SearchableItem>[];
 
     // Add museum ticket items
     shopSearchableItems.addAll(items);
+
+    // Add event items (ShopEventItem)
+    shopSearchableItems.addAll(eventItems);
 
     // Add tour items
     shopSearchableItems.addAll([
@@ -317,38 +320,37 @@ class _ShopPageState extends State<ShopPage> {
           imageAsset: e.imageAsset,
         ),
       ),
-      // Add tour items
+      // Add tour items (localized)
       ShopItem(
         id: 'tour_group',
-        title: 'Guided Tour (1-5 participants)',
-        subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+        title: 'guided_tour_group'.tr(),
+        subtitle: 'guided_tour_group_subtitle'.tr(),
         price: tourGroupPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_adult',
-        title: 'Guided Tour (Adult, 6+ participants)',
-        subtitle: 'Per adult, 90 min. tour (reservation required)',
+        title: 'guided_tour_adult'.tr(),
+        subtitle: 'guided_tour_adult_subtitle'.tr(),
         price: tourAdultPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_reduced',
-        title: 'Guided Tour (Disabled, 6+ participants)',
-        subtitle:
-            'Per disabled participant, 90 min. tour (reservation required)',
+        title: 'guided_tour_disabled'.tr(),
+        subtitle: 'guided_tour_disabled_subtitle'.tr(),
         price: tourReducedPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_kid',
-        title: 'Guided Tour (Kids 4-10, 6+ participants)',
-        subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+        title: 'guided_tour_kid'.tr(),
+        subtitle: 'guided_tour_kid_subtitle'.tr(),
         price: tourKidsPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
     ];

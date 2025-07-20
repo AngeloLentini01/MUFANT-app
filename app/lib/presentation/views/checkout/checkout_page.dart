@@ -298,18 +298,51 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: kPinkColor),
+                      color: kBlackColor,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: kPinkColor, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         TextField(
                           controller: _cardNumberController,
+                          style: TextStyle(color: kWhiteColor, fontSize: 18),
                           decoration: InputDecoration(
                             labelText: "card_number".tr(),
-                            border: OutlineInputBorder(),
+                            labelStyle: TextStyle(
+                              color: kWhiteColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            fillColor: kBlackColor,
+                            filled: true,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: kPinkColor,
+                                width: 1.5,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: kWhiteColor,
+                                width: 1.2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: kPinkColor,
+                                width: 2,
+                              ),
+                            ),
                             errorText:
                                 _showValidationError && _cardNumberError != null
                                 ? _cardNumberError
@@ -325,19 +358,52 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
                               _cardNumberError!,
-                              style: const TextStyle(color: Colors.red),
+                              style: const TextStyle(
+                                color: kPinkColor,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        cardOtherDistance,
+                        SizedBox(height: 18),
                         Row(
                           children: [
                             Expanded(
                               child: TextField(
                                 controller: _dueDateController,
+                                style: TextStyle(
+                                  color: kWhiteColor,
+                                  fontSize: 18,
+                                ),
                                 decoration: InputDecoration(
                                   labelText: "due_date".tr(),
+                                  labelStyle: TextStyle(
+                                    color: kWhiteColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                   hintText: "MM/YY",
-                                  border: OutlineInputBorder(),
+                                  hintStyle: TextStyle(color: Colors.white54),
+                                  fillColor: kBlackColor,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kPinkColor,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kWhiteColor,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kPinkColor,
+                                      width: 2,
+                                    ),
+                                  ),
                                   errorText:
                                       _showValidationError &&
                                           _dueDateError != null
@@ -350,13 +416,42 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 },
                               ),
                             ),
-                            dateCvvDistance,
+                            SizedBox(width: 16),
                             Expanded(
                               child: TextField(
                                 controller: _cvvController,
+                                style: TextStyle(
+                                  color: kWhiteColor,
+                                  fontSize: 18,
+                                  letterSpacing: 2,
+                                ),
                                 decoration: InputDecoration(
                                   labelText: "cvv".tr(),
-                                  border: OutlineInputBorder(),
+                                  labelStyle: TextStyle(
+                                    color: kWhiteColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  fillColor: kBlackColor,
+                                  filled: true,
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kPinkColor,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kWhiteColor,
+                                      width: 1.2,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: kPinkColor,
+                                      width: 2,
+                                    ),
+                                  ),
                                   errorText:
                                       _showValidationError && _cvvError != null
                                       ? _cvvError
@@ -376,16 +471,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (_dueDateError != null)
                                   Text(
                                     _dueDateError!,
-                                    style: const TextStyle(color: Colors.red),
+                                    style: const TextStyle(
+                                      color: kPinkColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 if (_cvvError != null)
                                   Text(
                                     _cvvError!,
-                                    style: const TextStyle(color: Colors.red),
+                                    style: const TextStyle(
+                                      color: kPinkColor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                               ],
                             ),
