@@ -669,7 +669,7 @@ class _ShopPageState extends State<ShopPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Shop',
+                            'shop_title'.tr(),
                             style: TextStyle(
                               color: kWhiteColor,
                               fontSize: 16,
