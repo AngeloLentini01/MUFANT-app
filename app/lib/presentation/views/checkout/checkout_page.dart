@@ -144,11 +144,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
+          backgroundColor: kBlackColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
           title: Center(
             child: Text(
               'payment_cannot_proceed'.tr(),
               style: TextStyle(
-                color: kPinkColor,
+                color: kWhiteColor,
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -158,7 +162,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           content: Text(
             'payment_validation_message'.tr(),
             style: TextStyle(
-              color: Colors.black87,
+              color: kWhiteColor,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
@@ -169,7 +173,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPinkColor,
-                  foregroundColor: Colors.black,
+                  foregroundColor: kBlackColor,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32,
                     vertical: 12,
@@ -387,18 +391,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             if (_showValidationError) setState(() {});
                           },
                         ),
-                        if (_showValidationError && _cardNumberError != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              _cardNumberError!,
-                              style: const TextStyle(
-                                color: kPinkColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
+                        // Only show errorText in the input, no extra duplicate
                         SizedBox(height: 18),
                         Row(
                           children: [
@@ -500,34 +493,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                           ],
                         ),
-                        if (_showValidationError &&
-                            (_dueDateError != null || _cvvError != null))
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (_dueDateError != null)
-                                  Text(
-                                    _dueDateError!,
-                                    style: const TextStyle(
-                                      color: kPinkColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                if (_cvvError != null)
-                                  Text(
-                                    _cvvError!,
-                                    style: const TextStyle(
-                                      color: kPinkColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
+                        // Only show errorText in the input, no extra duplicate
                       ],
                     ),
                   ),

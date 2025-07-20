@@ -116,7 +116,11 @@ class ConfirmationCard extends StatelessWidget {
                   ),
                   if (quantity > 1)
                     Text(
-                      '€${item.price.toStringAsFixed(2)} each',
+                      'each_price'.tr(
+                        namedArgs: {
+                          'price': '€${item.price.toStringAsFixed(2)}',
+                        },
+                      ),
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[400],

@@ -262,5 +262,6 @@
     "shop_title": "Acquista",
     "search_placeholder": "Scrivi qui per cercare...",
     "ticket_count": "{count} bigliett{plural}",
-    "ticket_plural": "i"
+    "ticket_plural": "i",
+    "each_price": "{price} ciascuno"
 }

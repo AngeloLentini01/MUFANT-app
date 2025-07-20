@@ -248,5 +248,6 @@
     "item_count": "{count} item{plural}",
     "search_placeholder": "Type here to search...",
     "ticket_count": "{count} ticket{plural}",
-    "ticket_plural": "s"
+    "ticket_plural": "s",
+    "each_price": "{price} each"
 }
