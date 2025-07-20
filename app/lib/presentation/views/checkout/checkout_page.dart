@@ -144,14 +144,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Cannot proceed'),
-          content: const Text(
-            'Please select a payment method and fill all required fields correctly.',
-          ),
+          title: Text('payment_cannot_proceed'.tr()),
+          content: Text('payment_validation_message'.tr()),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: Text('ok'.tr()),
             ),
           ],
         ),

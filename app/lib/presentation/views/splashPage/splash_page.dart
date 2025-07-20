@@ -4,6 +4,7 @@ import 'package:app/main.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/data/services/user_session_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,12 +15,20 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
+  AnimationController? _controller;
+  Animation<double>? _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    // Skip splash screen in debug mode for faster development
+    if (kDebugMode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkAuthenticationAndNavigate();
+      });
+      return;
+    }
 
     _controller = AnimationController(
       vsync: this,
@@ -29,15 +38,15 @@ class SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    ).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOut));
 
     // Avvia il fade-out 2.2 secondi dopo l'avvio
     Future.delayed(const Duration(milliseconds: 2200), () {
-      if (mounted) _controller.forward();
+      if (mounted) _controller?.forward();
     });
 
     // Naviga all'OnboardingScreen al termine del fade-out
-    _controller.addStatusListener((status) {
+    _controller!.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
         _checkAuthenticationAndNavigate();
       }
@@ -46,13 +55,22 @@ class SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   /// Check if user is logged in and navigate accordingly
   Future<void> _checkAuthenticationAndNavigate() async {
     if (!mounted) return;
+
+    // In debug mode, go directly to main app for faster development
+    if (kDebugMode) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AppMain(key: appMainKey)),
+      );
+      return;
+    }
 
     try {
       // Check if user is logged in
@@ -85,13 +103,23 @@ class SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // In debug mode, show a minimal splash or skip entirely
+    if (kDebugMode) {
+      return Scaffold(
+        backgroundColor: kBlackColor,
+        body: Center(child: Image.asset('assets/images/logo.png', width: 250)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: kBlackColor,
       body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Image.asset('assets/images/logo.png', width: 250),
-        ),
+        child: _fadeAnimation != null
+            ? FadeTransition(
+                opacity: _fadeAnimation!,
+                child: Image.asset('assets/images/logo.png', width: 250),
+              )
+            : Image.asset('assets/images/logo.png', width: 250),
       ),
     );
   }

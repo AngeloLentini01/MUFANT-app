@@ -11,11 +11,13 @@ import 'package:ulid/ulid.dart';
 /// @property createdAt When this entity was created, defaults to current time
 /// @property updatedAt When this entity was last updated
 class DetailsModel extends BaseEntityModel {
+  final String? originalName;
   Map<String, dynamic> toJson() => {
     'name': name,
     'description': description,
     'notes': notes,
     'imageUrlOrPath': imageUrlOrPath,
+    'originalName': originalName,
     'id': id?.toString(),
     'createdAt': createdAt?.toIso8601String(),
     'updatedAt': updatedAt?.toIso8601String(),
@@ -26,6 +28,7 @@ class DetailsModel extends BaseEntityModel {
     description: json['description'] as String?,
     notes: json['notes'] as String?,
     imageUrlOrPath: json['imageUrlOrPath'] as String?,
+    originalName: json['originalName'] as String?,
     id: json['id'] != null ? Ulid.parse(json['id'] as String) : null,
     createdAt: json['createdAt'] != null
         ? DateTime.parse(json['createdAt'] as String)
@@ -44,6 +47,7 @@ class DetailsModel extends BaseEntityModel {
     this.description,
     this.notes,
     this.imageUrlOrPath,
+    this.originalName,
     super.id,
     super.createdAt,
     super.updatedAt,
@@ -57,6 +61,7 @@ class DetailsModel extends BaseEntityModel {
           description == other.description &&
           notes == other.notes &&
           imageUrlOrPath == other.imageUrlOrPath &&
+          originalName == other.originalName &&
           createdAt == other.createdAt &&
           updatedAt == other.updatedAt;
 
@@ -66,13 +71,14 @@ class DetailsModel extends BaseEntityModel {
       description.hashCode ^
       notes.hashCode ^
       (imageUrlOrPath?.hashCode ?? 0) ^
+      (originalName?.hashCode ?? 0) ^
       createdAt.hashCode ^
       updatedAt.hashCode;
 
   @override
   String toString() =>
       'DetailsModel(name: $name, description: $description, '
-      'notes: $notes, imageUrlOrPath: $imageUrlOrPath, '
+      'notes: $notes, imageUrlOrPath: $imageUrlOrPath, originalName: $originalName, '
       'createdAt: $createdAt, updatedAt: $updatedAt)';
 
   /// Creates a copy of this DetailsModel with the given fields replaced with the new values
@@ -81,6 +87,7 @@ class DetailsModel extends BaseEntityModel {
     String? description,
     String? notes,
     Object? imageUrlOrPath = const Object(),
+    String? originalName,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -92,6 +99,7 @@ class DetailsModel extends BaseEntityModel {
       imageUrlOrPath: imageUrlOrPath != const Object()
           ? (imageUrlOrPath as String?)
           : this.imageUrlOrPath,
+      originalName: originalName ?? this.originalName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

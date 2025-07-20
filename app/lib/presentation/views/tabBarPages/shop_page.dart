@@ -474,9 +474,9 @@ class _ShopPageState extends State<ShopPage> {
             children: [
               Icon(Icons.warning_amber_rounded, color: kPinkColor, size: 28),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Too Many Tickets',
+                  'too_many_tickets'.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -499,7 +499,7 @@ class _ShopPageState extends State<ShopPage> {
                 _clearCart(); // Clear all tickets when dismissing checkout
               },
               child: Text(
-                'Dismiss checkout',
+                'dismiss_checkout'.tr(),
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             ),
@@ -515,8 +515,8 @@ class _ShopPageState extends State<ShopPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Remove Lastly added tickets',
+              child: Text(
+                'remove_lastly_added_tickets'.tr(),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -575,8 +575,8 @@ class _ShopPageState extends State<ShopPage> {
               children: [
                 Icon(Icons.lock, color: kPinkColor, size: 24),
                 const SizedBox(width: 12),
-                const Text(
-                  'Login Required',
+                Text(
+                  'login_required'.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -585,15 +585,15 @@ class _ShopPageState extends State<ShopPage> {
                 ),
               ],
             ),
-            content: const Text(
-              'User has to be logged in before purchasing tickets',
+            content: Text(
+              'user_login_required_message'.tr(),
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text(
-                  'Got it!',
+                child: Text(
+                  'got_it'.tr(),
                   style: TextStyle(
                     color: kPinkColor,
                     fontSize: 16,

@@ -16,6 +16,24 @@ import 'package:app/presentation/styles/colors/generic.dart';
 
 import 'package:ulid/ulid.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+String getLocalizedTimestamp(DateTime? messageTime) {
+  if (messageTime == null) return '';
+  final now = DateTime.now();
+  final diff = now.difference(messageTime);
+  if (diff.inMinutes < 1) {
+    return 'just_now'.tr();
+  } else if (diff.inMinutes < 60) {
+    return 'minutes_ago'.tr(namedArgs: {'minutes': diff.inMinutes.toString()});
+  } else if (diff.inHours < 24) {
+    return 'hours_ago'.tr(namedArgs: {'hours': diff.inHours.toString()});
+  } else if (diff.inDays == 1) {
+    return 'yesterday'.tr();
+  } else {
+    return 'days_ago'.tr(namedArgs: {'days': diff.inDays.toString()});
+  }
+}
 
 class CommunityChatPage extends StatefulWidget {
   final CommunityChatModel community;
@@ -169,7 +187,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to send message: $e'),
+              content: Text('${'failed_to_send_message'.tr()}: $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -189,7 +207,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
           icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
         title: Text(
-          widget.community.details.name,
+          'chat_title'.tr(),
           style: const TextStyle(
             color: kWhiteColor,
             fontWeight: FontWeight.bold,
@@ -294,7 +312,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    _formatTime(message.createdAt ?? DateTime.now()),
+                    getLocalizedTimestamp(message.createdAt),
                     style: TextStyle(fontSize: 10, color: Colors.grey[400]),
                   ),
                 ),
@@ -406,7 +424,7 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
                 child: FilteredTextField(
                   controller: _messageController,
                   decoration: InputDecoration(
-                    hintText: 'Share your thoughts about the museum...',
+                    hintText: 'chat_input_placeholder'.tr(),
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -448,20 +466,5 @@ class _CommunityChatPageState extends State<CommunityChatPage> {
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
   }
 }

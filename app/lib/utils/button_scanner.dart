@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Represents a button found in the widget tree
 class ButtonInfo {
@@ -31,7 +32,6 @@ class ButtonInfo {
 
 /// Utility class to scan the widget tree for buttons and detect unimplemented onPressed events
 class ButtonScanner {
-
   /// Scans the widget tree and returns all buttons found
   static List<ButtonInfo> scanWidgetTree(Widget widget, String location) {
     final List<ButtonInfo> buttons = [];
@@ -195,14 +195,14 @@ class ButtonScanner {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Feature Coming Soon'),
+          title: Text('feature_coming_soon'.tr()),
           content: Text(
             'The $buttonType at $location will be implemented soon!',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: Text('ok'.tr()),
             ),
           ],
         );

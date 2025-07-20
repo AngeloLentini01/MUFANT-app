@@ -9,6 +9,7 @@ import 'package:app/presentation/views/community/community_chat_page.dart';
 import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:ulid/ulid.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CommunityChatsListPage extends StatefulWidget {
   const CommunityChatsListPage({super.key});
@@ -130,9 +131,10 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios, color: kWhiteColor, size: 24),
         ),
-        title: const Text(
-          'Community Chats',
-          style: TextStyle(color: kWhiteColor, fontWeight: FontWeight.bold),
+        title: Text(
+          tr('community_chats_title') != 'community_chats_title'
+              ? tr('community_chats_title')
+              : 'Community Chats',
         ),
         backgroundColor: kBlackColor,
         foregroundColor: kWhiteColor,
@@ -164,14 +166,46 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
           itemCount: _communityChats.length,
           itemBuilder: (context, index) {
             final chat = _communityChats[index];
-            return _buildChatCard(context, chat);
+            String titleKey = '';
+            String descKey = '';
+            switch (chat.details.name) {
+              case '🎨 Art Discussion':
+                titleKey = 'art_discussion_title';
+                descKey = 'art_discussion_desc';
+                break;
+              case '🏛️ History & Artifacts':
+                titleKey = 'history_artifacts_title';
+                descKey = 'history_artifacts_desc';
+                break;
+              case '🔬 Science & Discovery':
+                titleKey = 'science_discovery_title';
+                descKey = 'science_discovery_desc';
+                break;
+              case '📅 Events & Workshops':
+                titleKey = 'events_workshops_title';
+                descKey = 'events_workshops_desc';
+                break;
+              case '💬 General Chat':
+                titleKey = 'general_chat_title';
+                descKey = 'general_chat_desc';
+                break;
+              default:
+                titleKey = chat.details.name;
+                descKey = chat.details.description ?? '';
+            }
+            return _buildChatCard(context, chat, titleKey, descKey);
           },
         ),
       ),
     );
   }
 
-  Widget _buildChatCard(BuildContext context, CommunityChatModel chat) {
+  Widget _buildChatCard(
+    BuildContext context,
+    CommunityChatModel chat,
+    String titleKey,
+    String descKey,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 8,
@@ -218,7 +252,7 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
             ),
           ),
           title: Text(
-            chat.details.name,
+            tr(titleKey) != titleKey ? tr(titleKey) : chat.details.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -230,7 +264,9 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
             children: [
               const SizedBox(height: 8),
               Text(
-                chat.details.description ?? 'No description available',
+                tr(descKey) != descKey
+                    ? tr(descKey)
+                    : (chat.details.description ?? 'No description available'),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[300],
@@ -245,7 +281,24 @@ class _CommunityChatsListPageState extends State<CommunityChatsListPage> {
                   Icon(Icons.people_outline, size: 16, color: kPinkColor),
                   const SizedBox(width: 4),
                   Text(
-                    _getParticipantCount(chat),
+                    tr(
+                              'members',
+                              namedArgs: {
+                                'count': _getParticipantCount(
+                                  chat,
+                                ).replaceAll(' members', ''),
+                              },
+                            ) !=
+                            'members'
+                        ? tr(
+                            'members',
+                            namedArgs: {
+                              'count': _getParticipantCount(
+                                chat,
+                              ).replaceAll(' members', ''),
+                            },
+                          )
+                        : _getParticipantCount(chat),
                     style: TextStyle(
                       fontSize: 12,
                       color: kPinkColor,

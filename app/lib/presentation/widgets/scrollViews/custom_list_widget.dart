@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/typography/section.dart';
 import 'package:app/presentation/styles/spacing/section.dart';
 import 'package:app/presentation/widgets/scrollViews/items/event_card.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CustomListWidget extends StatelessWidget {
   const CustomListWidget({
@@ -33,8 +34,13 @@ class CustomListWidget extends StatelessWidget {
                 .map(
                   (event) => EventCard(
                     imagePath: event.imageUrlOrPath ?? '',
-                    title: event.name,
-                    info: event.notes ?? '',
+                    title: event.name.isNotEmpty ? event.name.tr() : '',
+                    info: (event.description ?? '').isNotEmpty
+                        ? event.description!.tr()
+                        : '',
+                    overlay: (event.notes ?? '').isNotEmpty
+                        ? event.notes!.tr()
+                        : '',
                     onTap: onItemTap != null ? () => onItemTap!(event) : null,
                   ),
                 )
