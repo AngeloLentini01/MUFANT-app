@@ -144,12 +144,46 @@ class _CheckoutPageState extends State<CheckoutPage> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('payment_cannot_proceed'.tr()),
-          content: Text('payment_validation_message'.tr()),
+          title: Center(
+            child: Text(
+              'payment_cannot_proceed'.tr(),
+              style: TextStyle(
+                color: kPinkColor,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          content: Text(
+            'payment_validation_message'.tr(),
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('ok'.tr()),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kPinkColor,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'ok'.tr(),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
             ),
           ],
         ),

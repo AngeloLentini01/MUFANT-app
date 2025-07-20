@@ -268,7 +268,26 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  String get homePageMessage => 'welcome_adventurer'.tr();
+  String get homePageMessage {
+    final user = UserSessionManager.currentUser;
+    String name = 'User';
+    if (user != null) {
+      if (user.firstName != null && user.firstName!.isNotEmpty) {
+        name = user.firstName!;
+      } else if (user.username.isNotEmpty) {
+        // Fallback to first part of username if no firstName
+        List<String> nameParts = user.username.split('_');
+        if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
+          name =
+              nameParts[0][0].toUpperCase() +
+              nameParts[0].substring(1).toLowerCase();
+        } else {
+          name = user.username;
+        }
+      }
+    }
+    return 'greeting_hello'.tr(namedArgs: {'name': name});
+  }
 
   String getEventTitleKey(String dbName) {
     switch (dbName.trim().toLowerCase()) {
