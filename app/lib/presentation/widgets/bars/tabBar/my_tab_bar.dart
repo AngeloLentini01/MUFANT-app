@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:app/presentation/styles/typography/tab_bar.dart';
 import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar_buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MyTabBar extends StatefulWidget {
   const MyTabBar({
@@ -121,11 +122,11 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
   String _getTabLabel(int index) {
     switch (index) {
       case 0:
-        return 'Home';
+        return 'home'.tr();
       case 1:
-        return 'Shop';
+        return 'shop'.tr();
       case 2:
-        return 'Profile';
+        return 'profile'.tr();
       default:
         return '';
     }
