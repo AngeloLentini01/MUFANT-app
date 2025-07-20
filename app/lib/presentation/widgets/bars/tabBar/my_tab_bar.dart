@@ -65,7 +65,27 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
   @override
   void didUpdateWidget(covariant MyTabBar oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // The animation is now handled in _onTabTapped
+    if (widget.currentIndex != _currentTabIndex) {
+      final tabCount = tabBarButtons(widget.currentIndex).length;
+      final tabBarWidth = MediaQuery.of(context).size.width;
+      final tabWidth = tabBarWidth / tabCount;
+      final rectWidth = tabWidth * 0.4;
+      final newTarget =
+          tabWidth * widget.currentIndex + (tabWidth - rectWidth) / 2;
+      _rectAnimation = Tween<double>(begin: _rectTarget, end: newTarget)
+          .animate(
+            CurvedAnimation(
+              parent: _rectController,
+              curve: Curves.easeInOutCubic,
+            ),
+          );
+      _rectController.forward(from: 0);
+      _rectTarget = newTarget;
+      setState(() {
+        _currentTabIndex = widget.currentIndex;
+      });
+    }
+    // The animation is now handled in _onTabTapped and here
   }
 
   @override

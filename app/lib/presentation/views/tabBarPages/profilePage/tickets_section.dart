@@ -10,7 +10,7 @@ import 'package:barcode/barcode.dart';
 import 'package:app/utils/app_logger.dart';
 import 'package:logging/logging.dart';
 import 'package:easy_localization/easy_localization.dart';
-
+import 'package:app/main.dart' show appMainKey;
 
 /// Custom painter for creating a barcode using the barcode library
 class BarcodePainter extends CustomPainter {
@@ -475,11 +475,12 @@ class _TicketsSectionState extends State<TicketsSection> {
           children: [
             Text('my_tickets'.tr(), style: kSectionTitleTextStyle),
             TextButton(
-              onPressed: () {
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => TicketListPage()),
                 );
+                appMainKey.currentState?.setTab(2);
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -553,7 +554,7 @@ class _TicketsSectionState extends State<TicketsSection> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                   'tickets_empty_state'.tr(),
+                  'tickets_empty_state'.tr(),
                   style: TextStyle(
                     color: Colors.grey.withValues(alpha: 0.7),
                     fontSize: 16,

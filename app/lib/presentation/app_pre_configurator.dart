@@ -3,6 +3,7 @@ import 'package:app/presentation/views/splashPage/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/presentation/app_main.dart' show routeObserver;
 
 class AppPreConfigurator extends StatelessWidget {
   const AppPreConfigurator({super.key});
@@ -32,6 +33,7 @@ class AppPreConfigurator extends StatelessWidget {
           secondary: kPinkColor,
         ),
       ),
+      navigatorObservers: [routeObserver],
       home: const SplashScreen(),
     );
   }

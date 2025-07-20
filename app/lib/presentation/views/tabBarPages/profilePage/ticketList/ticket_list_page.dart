@@ -4,6 +4,7 @@ import 'package:app/presentation/views/tabBarPages/profilePage/tickets_section.d
 import 'package:app/model/items/ticket/ticket_display_data.dart';
 import 'package:app/data/services/ticket_service.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:app/main.dart' show appMainKey;
 
 /// Extended ticket widget with expired ticket support and tap handling
 class ExpiredTicketWidget extends StatelessWidget {
@@ -321,134 +322,147 @@ class TicketListPageState extends State<TicketListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [kBlackColor, Colors.grey[900]!],
+    return PopScope(
+      canPop: true,
+onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) return;
+        WidgetsBinding.instance.addPostFrameCallback((result) {
+          appMainKey.currentState?.setTab(2);
+        });
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [kBlackColor, Colors.grey[900]!],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Custom AppBar
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: kWhiteColor,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'my_tickets'.tr(),
-                      style: const TextStyle(
-                        color: kWhiteColor,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: _refreshTickets,
-                      icon: const Icon(
-                        Icons.refresh,
-                        color: kWhiteColor,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Tickets count info
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.confirmation_number,
-                      color: kWhiteColor,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'tickets_in_total'.tr(
-                        namedArgs: {'count': _tickets.length.toString()},
-                      ),
-                      style: const TextStyle(
-                        color: kWhiteColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      'active_tickets'.tr(
-                        namedArgs: {
-                          'count': _tickets
-                              .where((t) => !t.isExpired)
-                              .length
-                              .toString(),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Custom AppBar
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          appMainKey.currentState?.setTab(2);
+                          Navigator.of(context).pop();
                         },
-                      ),
-                      style: TextStyle(
-                        color: kWhiteColor.withValues(alpha: 0.7),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Tickets List
-              Expanded(
-                child: _tickets.isEmpty
-                    ? _buildEmptyState()
-                    : RefreshIndicator(
-                        onRefresh: _refreshTickets,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          itemCount: _tickets.length,
-                          itemBuilder: (context, index) {
-                            final ticket = _tickets[index];
-                            final isFirstExpired =
-                                ticket.isExpired &&
-                                (index == 0 || !_tickets[index - 1].isExpired);
-
-                            return Column(
-                              children: [
-                                // Add divider before first expired ticket
-                                if (isFirstExpired) _buildSectionDivider(),
-                                _buildTicketItem(ticket, index),
-                              ],
-                            );
-                          },
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: kWhiteColor,
+                          size: 24,
                         ),
                       ),
-              ),
-            ],
+                      const SizedBox(width: 8),
+                      Text(
+                        'my_tickets'.tr(),
+                        style: const TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: _refreshTickets,
+                        icon: const Icon(
+                          Icons.refresh,
+                          color: kWhiteColor,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Tickets count info
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.confirmation_number,
+                        color: kWhiteColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'tickets_in_total'.tr(
+                          namedArgs: {'count': _tickets.length.toString()},
+                        ),
+                        style: const TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        'active_tickets'.tr(
+                          namedArgs: {
+                            'count': _tickets
+                                .where((t) => !t.isExpired)
+                                .length
+                                .toString(),
+                          },
+                        ),
+                        style: TextStyle(
+                          color: kWhiteColor.withValues(alpha: 0.7),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Tickets List
+                Expanded(
+                  child: _tickets.isEmpty
+                      ? _buildEmptyState()
+                      : RefreshIndicator(
+                          onRefresh: _refreshTickets,
+                          child: ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _tickets.length,
+                            itemBuilder: (context, index) {
+                              final ticket = _tickets[index];
+                              final isFirstExpired =
+                                  ticket.isExpired &&
+                                  (index == 0 ||
+                                      !_tickets[index - 1].isExpired);
+
+                              return Column(
+                                children: [
+                                  // Add divider before first expired ticket
+                                  if (isFirstExpired) _buildSectionDivider(),
+                                  _buildTicketItem(ticket, index),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
