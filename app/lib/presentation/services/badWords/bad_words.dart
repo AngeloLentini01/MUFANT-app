@@ -934,6 +934,9 @@ final List<String> badWords = [
   'nipplering',
   'nittit',
   'nlgger',
+  'n1gg@',
+  'n1gg3r',
+  'n1gg4'
   'nlggor',
   'nofuckingway',
   'nook',

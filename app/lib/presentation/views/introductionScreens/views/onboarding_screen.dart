@@ -8,6 +8,7 @@ import 'package:app/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:logging/logging.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Onboarding screen with 3 pages using introduction_screen package
 /// Appears after splash screen and navigates to home page
@@ -53,10 +54,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               nextFlex: 0,
               scrollPhysics: const ClampingScrollPhysics(),
               skip: Text(
-                'Skip',
+                'skip'.tr(),
                 style: TextStyle(
                   color: kPinkColor,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
               next: Icon(Icons.arrow_forward, color: kPinkColor),
@@ -202,8 +204,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   borderRadius: BorderRadius.circular(28),
                 ),
               ),
-              child: const Text(
-                'Sign up',
+              child: Text(
+                'sign_up'.tr(),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -235,11 +237,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             },
             child: RichText(
               text: TextSpan(
-                text: 'Already have an account? ',
+                text: '${'already_have_account'.tr()} ',
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
                 children: [
                   TextSpan(
-                    text: 'Sign in',
+                    text: 'sign_in'.tr(),
                     style: TextStyle(
                       color: kPinkColor,
                       fontSize: 16,
@@ -256,7 +258,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
           // "or" text only
           Text(
-            'or',
+            'or'.tr(),
             style: TextStyle(
               color: Colors.grey[400],
               fontSize: 14,
@@ -295,7 +297,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   Icon(Icons.person_outline, size: 18, color: Colors.grey[300]),
                   const SizedBox(width: 8),
                   Text(
-                    'Continue as Guest',
+                    'continue_as_guest'.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,

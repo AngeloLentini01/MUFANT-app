@@ -531,7 +531,9 @@ class DatabaseHelper {
     );
 
     // Always clear and reload sample data for debugging
-    _logger.fine('DEBUG: Clearing all existing data and reloading sample data...');
+    _logger.fine(
+      'DEBUG: Clearing all existing data and reloading sample data...',
+    );
 
     // Clear all existing data
     await db.delete('MuseumActivity');
@@ -542,7 +544,9 @@ class DatabaseHelper {
     await db.delete('TypeOfMuseumActivity');
     await db.delete('MuseumActivityDetails');
 
-    _logger.fine('DEBUG: Existing data cleared, inserting fresh sample data...');
+    _logger.fine(
+      'DEBUG: Existing data cleared, inserting fresh sample data...',
+    );
 
     // Start a transaction with error handling
     await db.transaction((txn) async {
@@ -721,7 +725,7 @@ class DatabaseHelper {
           'location': 'MUFANT Museum - Main Hall',
           'image_path': 'assets/images/locandine/ufo-pop.png',
           'price': 15.0,
-          'notes': '01-28 nov•MUFANT Museum\nStarting from 5€',
+          'notes': 'starting_from 5',
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
@@ -742,7 +746,9 @@ class DatabaseHelper {
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        _logger.fine('DEBUG: Successfully inserted Artificial Prophecies event');
+        _logger.fine(
+          'DEBUG: Successfully inserted Artificial Prophecies event',
+        );
 
         _logger.fine('DEBUG: Inserting Sailor Moon Anniversary event...');
         await txn.insert('MuseumActivity', {
@@ -760,7 +766,9 @@ class DatabaseHelper {
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
         });
-        _logger.fine('DEBUG: Successfully inserted Sailor Moon Anniversary event');
+        _logger.fine(
+          'DEBUG: Successfully inserted Sailor Moon Anniversary event',
+        );
 
         _logger.fine('DEBUG: Inserting Library room...');
         await txn.insert('MuseumActivity', {
@@ -814,7 +822,9 @@ class DatabaseHelper {
         });
         _logger.fine('DEBUG: Successfully inserted Superheroes room');
 
-        _logger.fine('DEBUG: All MuseumActivity insertions completed successfully');
+        _logger.fine(
+          'DEBUG: All MuseumActivity insertions completed successfully',
+        );
       } catch (e) {
         _logger.fine('DEBUG: Error during transaction: $e');
         rethrow;

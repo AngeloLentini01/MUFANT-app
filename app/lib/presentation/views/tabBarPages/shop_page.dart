@@ -240,6 +240,7 @@ class _ShopPageState extends State<ShopPage> {
 
   Future<void> _loadEventsForShop() async {
     final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
+    if (!mounted) return;
     setState(() {
       eventItems = events
           .map((e) => ShopEventItem.fromDetailsModel(e))

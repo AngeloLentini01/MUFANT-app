@@ -3,6 +3,7 @@ import 'package:app/presentation/styles/typography/tab_bar.dart';
 import 'package:app/presentation/widgets/bars/tabBar/my_tab_bar_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:logging/logging.dart';
 
 class MyTabBar extends StatefulWidget {
   const MyTabBar({
@@ -21,97 +22,83 @@ class MyTabBar extends StatefulWidget {
 }
 
 class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late AnimationController _scaleController;
+  static final Logger _logger = Logger('MyTabBar');
   late AnimationController _rectController;
-  late Animation<double> _rectAnimation;
-  int _currentTabIndex = 0;
-  double _rectTarget = 0;
+  late Animation<double> _rectAnimation = AlwaysStoppedAnimation(0.0);
+  double _rectCurrent = 0.0;
+  double _rectTarget = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-
     _rectController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _rectAnimation = AlwaysStoppedAnimation(0);
-    _currentTabIndex = widget.currentIndex;
+    _rectController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _rectCurrent = _rectTarget;
+        _logger.fine(
+          'Animation completed. _rectCurrent updated to $_rectCurrent',
+        );
+      }
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Initialize rectangle position for the initially selected tab
     final tabCount = tabBarButtons(widget.currentIndex).length;
     final tabBarWidth = MediaQuery.of(context).size.width;
     final tabWidth = tabBarWidth / tabCount;
     final rectWidth = tabWidth * 0.4;
-    _rectTarget = tabWidth * widget.currentIndex + (tabWidth - rectWidth) / 2;
-    _rectAnimation = AlwaysStoppedAnimation(_rectTarget);
-  }
-
-  @override
-  void didUpdateWidget(covariant MyTabBar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.currentIndex != _currentTabIndex) {
-      final tabCount = tabBarButtons(widget.currentIndex).length;
-      final tabBarWidth = MediaQuery.of(context).size.width;
-      final tabWidth = tabBarWidth / tabCount;
-      final rectWidth = tabWidth * 0.4;
-      final newTarget =
-          tabWidth * widget.currentIndex + (tabWidth - rectWidth) / 2;
-      _rectAnimation = Tween<double>(begin: _rectTarget, end: newTarget)
-          .animate(
-            CurvedAnimation(
-              parent: _rectController,
-              curve: Curves.easeInOutCubic,
-            ),
-          );
-      _rectController.forward(from: 0);
-      _rectTarget = newTarget;
-      setState(() {
-        _currentTabIndex = widget.currentIndex;
-      });
-    }
-    // The animation is now handled in _onTabTapped and here
+    final initialTarget =
+        tabWidth * widget.currentIndex + (tabWidth - rectWidth) / 2;
+    _rectCurrent = initialTarget;
+    _rectTarget = initialTarget;
+    _rectAnimation = AlwaysStoppedAnimation(initialTarget);
+    _logger.info(
+      'didChangeDependencies: Set initial highlight position to $initialTarget for index ${widget.currentIndex}',
+    );
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _scaleController.dispose();
     _rectController.dispose();
     super.dispose();
   }
 
   void _onTabTapped(int index) {
-    if (index == _currentTabIndex) return;
+    _logger.info(
+      'Tab tapped: $index, widget.currentIndex=${widget.currentIndex}',
+    );
+    if (index == widget.currentIndex) return;
+    widget.onTap?.call(index);
+  }
+
+  void _animateHighlight(int newIndex) {
     final tabCount = tabBarButtons(widget.currentIndex).length;
     final tabBarWidth = MediaQuery.of(context).size.width;
     final tabWidth = tabBarWidth / tabCount;
     final rectWidth = tabWidth * 0.4;
-    final newTarget = tabWidth * index + (tabWidth - rectWidth) / 2;
-    _rectAnimation = Tween<double>(begin: _rectTarget, end: newTarget).animate(
+    final newTarget = tabWidth * newIndex + (tabWidth - rectWidth) / 2;
+    _logger.fine('Animating highlight from $_rectCurrent to $newTarget');
+    _rectTarget = newTarget;
+    _rectAnimation = Tween<double>(begin: _rectCurrent, end: newTarget).animate(
       CurvedAnimation(parent: _rectController, curve: Curves.easeInOutCubic),
     );
     _rectController.forward(from: 0);
-    _rectTarget = newTarget;
-    setState(() {
-      _currentTabIndex = index;
-    });
-    widget.onTap?.call(index);
+  }
+
+  @override
+  void didUpdateWidget(covariant MyTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentIndex != oldWidget.currentIndex) {
+      _logger.info(
+        'didUpdateWidget: currentIndex changed from ${oldWidget.currentIndex} to ${widget.currentIndex}',
+      );
+      _animateHighlight(widget.currentIndex);
+    }
   }
 
   Widget _buildTabIcon(int index, bool isSelected) {
@@ -154,12 +141,15 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final items = tabBarButtons(_currentTabIndex);
+    final items = tabBarButtons(widget.currentIndex);
     final tabCount = items.length;
     final tabBarHeight = 100.0;
     final tabBarWidth = MediaQuery.of(context).size.width;
     final tabWidth = tabBarWidth / tabCount;
     final rectWidth = tabWidth * 0.4;
+    _logger.fine(
+      'build: highlight at ${_rectAnimation.value}, selected index: ${widget.currentIndex}',
+    );
     return SizedBox(
       width: tabBarWidth,
       height: tabBarHeight,
@@ -168,11 +158,12 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
           AnimatedBuilder(
             animation: _rectAnimation,
             builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(_rectAnimation.value, 13),
+              return Positioned(
+                left: _rectAnimation.value,
+                top: 13,
+                width: rectWidth,
+                height: 32,
                 child: Container(
-                  width: rectWidth,
-                  height: 32,
                   decoration: BoxDecoration(
                     color: kPinkColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -181,10 +172,9 @@ class _MyTabBarState extends State<MyTabBar> with TickerProviderStateMixin {
               );
             },
           ),
-          // Tab items - full tappable area
           Row(
             children: List.generate(tabCount, (index) {
-              final isSelected = index == _currentTabIndex;
+              final isSelected = index == widget.currentIndex;
               return Expanded(
                 child: Material(
                   color: Colors.transparent,

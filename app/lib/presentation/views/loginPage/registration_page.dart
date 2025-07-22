@@ -451,7 +451,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               Icons.lock,
                               color: Colors.white70,
                             ),
-                            hintText: 'Repeat password',
+                            hintText: 'repeat_password'.tr(),
                             hintStyle: const TextStyle(color: Colors.white54),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.symmetric(
@@ -502,7 +502,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                   color: Colors.white,
                                 )
                               : Text(
-                                  'Sign up',
+                                  'sign_up'.tr(),
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -524,7 +524,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             ),
                           ),
                           Text(
-                            'or continue with',
+                            'or_continue_with'.tr(),
                             style: GoogleFonts.montserrat(
                               color: const Color(0xFFFF7CA3),
                               fontSize: 15,
@@ -562,7 +562,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "already_have_account".tr(),
+                            'already_have_account'.tr(),
                             style: GoogleFonts.montserrat(
                               color: Colors.white70,
                               fontSize: 15,
@@ -590,7 +590,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                               }
                             },
                             child: Text(
-                              'Sign in',
+                              'sign_in'.tr(),
                               style: GoogleFonts.montserrat(
                                 color: const Color(0xFFFF7CA3),
                                 fontSize: 15,

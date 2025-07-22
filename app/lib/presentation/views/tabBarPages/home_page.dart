@@ -29,7 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _showContent = false;
-  String _username = 'User'; // Default fallback username
+  String _username = 'Avventurierə'; // Default fallback username
   List<DetailsModel> _events = [];
   List<DetailsModel> _rooms = [];
   List<dynamic> _eventsOriginal = [];
@@ -270,7 +270,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   String get homePageMessage {
     final user = UserSessionManager.currentUser;
-    String name = 'User';
+    String name = context.locale.languageCode == 'it'
+        ? 'Avventurierə'
+        : 'Adventurer';
     if (user != null) {
       if (user.firstName != null && user.firstName!.isNotEmpty) {
         name = user.firstName!;
@@ -377,6 +379,17 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     ).format(startDate);
     final dateStr = '$startDay-$endDay $month';
     return 'event_date_location'.tr(namedArgs: {'date': dateStr});
+  }
+
+  // Helper per estrarre il prezzo da DetailsModel (es. parsing da notes)
+  double getEventPrice(DetailsModel event) {
+    // Cerca pattern tipo '€5', '€ 5', '€5.00' nelle note
+    final notes = event.notes ?? '';
+    final priceMatch = RegExp(r'€\s?(\d+[\.,]?\d*)').firstMatch(notes);
+    if (priceMatch != null && priceMatch.group(1) != null) {
+      return double.tryParse(priceMatch.group(1)!.replaceAll(',', '.')) ?? 0.0;
+    }
+    return 0.0;
   }
 
   // Note: Database is read-only, so we can't update user details
@@ -705,6 +718,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     originalName: _events[i].name,
                                   );
                                 }),
+                                getEventPrice: getEventPrice,
                               ),
                               kSpaceBetweenSections,
                               CustomListWidget(

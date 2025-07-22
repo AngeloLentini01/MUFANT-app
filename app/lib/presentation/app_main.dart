@@ -67,7 +67,7 @@ class MainAppState extends State<AppMain>
 
   void setTab(int index) {
     _logger.info(
-      'setTab called with index: ${index}, currentIndex: ${currentIndex}',
+      'setTab called with index: $index, currentIndex: $currentIndex',
     );
     if (index == currentIndex) return;
 
@@ -75,7 +75,7 @@ class MainAppState extends State<AppMain>
 
     setState(() {
       _logger.info(
-        'setTab setState: changing currentIndex from ${currentIndex} to ${index}',
+        'setTab setState: changing currentIndex from $currentIndex to $index',
       );
       currentIndex = index;
       if (index == 0) {
@@ -112,7 +112,7 @@ class MainAppState extends State<AppMain>
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
           _logger.info(
-            'PageView onPageChanged: index=${index}, previous currentIndex=${currentIndex}',
+            'PageView onPageChanged: index=$index, previous currentIndex=$currentIndex',
           );
           setState(() {
             currentIndex = index;
@@ -121,7 +121,7 @@ class MainAppState extends State<AppMain>
             }
           });
           _logger.info(
-            'PageView onPageChanged: new currentIndex=${currentIndex}',
+            'PageView onPageChanged: new currentIndex=$currentIndex',
           );
         },
         children: tabBarPages,
@@ -132,7 +132,7 @@ class MainAppState extends State<AppMain>
         onTap: (index) {
           int previousIndex = currentIndex;
           _logger.info(
-            'TabBar onTap: switching from ${previousIndex} to ${index}',
+            'TabBar onTap: switching from $previousIndex to $index',
           );
           setTab(index);
         },

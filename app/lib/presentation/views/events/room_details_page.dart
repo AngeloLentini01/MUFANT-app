@@ -562,7 +562,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
             ],
           ),
         ),
-        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+        // bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
       );
     } catch (e) {
       AppLogger.error(_logger, 'Error building room details page', e);
