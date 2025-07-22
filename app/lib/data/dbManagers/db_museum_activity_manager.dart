@@ -41,8 +41,6 @@ class DBMuseumActivityManager {
     }
   }
 
-  
-
   // Get activities by type (event or room)
   static Future<List<Map<String, dynamic>>> getActivitiesByType(
     String type,
@@ -462,6 +460,7 @@ class DBMuseumActivityManager {
       updatedAt: activity['updated_at'] != null
           ? DateTime.tryParse(activity['updated_at'])
           : null,
+      originalName: activity['name'],
     );
   }
 

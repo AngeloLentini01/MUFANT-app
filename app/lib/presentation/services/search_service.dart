@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app/presentation/widgets/all.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Abstract interface for searchable items
 abstract class SearchableItem {
@@ -225,7 +226,7 @@ class _SearchDialogState<T extends SearchableItem>
               autofocus: true,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: widget.hintText ?? 'Type here to search...',
+                hintText: widget.hintText ?? 'search_placeholder'.tr(),
                 hintStyle: const TextStyle(color: Colors.white54),
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white54),
@@ -292,6 +293,15 @@ class _SearchDialogState<T extends SearchableItem>
           ],
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(
+            'close'.tr(),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 }

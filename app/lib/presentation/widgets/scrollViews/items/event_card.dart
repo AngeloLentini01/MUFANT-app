@@ -7,45 +7,28 @@ class EventCard extends StatelessWidget {
     required this.imagePath,
     required this.title,
     required this.info,
+    this.overlay = '',
     this.onTap,
   });
 
   final String imagePath;
   final String title;
   final String info;
+  final String overlay;
   final VoidCallback? onTap;
-
-  /// Extract text after the second carriage return/line feed
-  String _extractBadgeText() {
-    // Regex to match text after the first \r\n or \n
-    final regex = RegExp(r'(?:\r?\n)(.*?)(?:\r?\n|$)', dotAll: true);
-    final match = regex.firstMatch(info);
-
-    if (match != null && match.group(1) != null) {
-      return match.group(1)!.trim();
-    }
-
-    // Fallback: if no line break found, check for "Ingresso gratuito"
-    if (info.toLowerCase().contains('ingresso gratuito')) {
-      return 'Ingresso gratuito';
-    }
-
-    return '';
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 172, // Slightly wider to accommodate text
+        width: 172,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image container
             Container(
               width: 160,
-              height: 160, // Maintain poster aspect ratio
+              height: 160,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
@@ -62,8 +45,7 @@ class EventCard extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  // Check if there's badge text to show overlay
-                  if (_extractBadgeText().isNotEmpty)
+                  if (overlay.isNotEmpty)
                     Positioned(
                       top: 8,
                       left: 8,
@@ -77,7 +59,7 @@ class EventCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          _extractBadgeText(),
+                          overlay,
                           style: const TextStyle(
                             color: kWhiteColor,
                             fontSize: 12,
@@ -89,7 +71,6 @@ class EventCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Title below the image
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: RichText(
@@ -106,11 +87,7 @@ class EventCard extends StatelessWidget {
                     if (info.isNotEmpty) ...[
                       const TextSpan(text: '\n'),
                       TextSpan(
-                        text: info
-                            .replaceAll(_extractBadgeText(), '')
-                            .replaceAll('Ingresso gratuito', '')
-                            .replaceAll('\n\n', '\n')
-                            .trim(),
+                        text: info.trim(),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,

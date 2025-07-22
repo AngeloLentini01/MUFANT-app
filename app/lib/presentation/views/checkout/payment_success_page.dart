@@ -55,8 +55,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage> {
                         ).popUntil((route) => route.isFirst);
                         // Switch to profile tab
                         await Future.delayed(const Duration(milliseconds: 100));
-                        appMainKey.currentState?.setTab(2);
-                        await Future.delayed(const Duration(milliseconds: 100));
+                        appMainKey.currentState?.setTab(2); // Profile tab
+                        await Future.delayed(const Duration(milliseconds: 200));
                         // Push TicketListPage
                         if (mounted && context.mounted) {
                           Navigator.of(context, rootNavigator: true).push(

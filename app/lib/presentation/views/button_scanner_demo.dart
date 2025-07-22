@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app/utils/button_scanner.dart';
 import 'package:app/presentation/styles/all.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Demo page showing how to use the ButtonScanner
 class ButtonScannerDemo extends StatefulWidget {
@@ -84,7 +85,7 @@ class _ButtonScannerDemoState extends State<ButtonScannerDemo>
           child: ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('This button is implemented!')),
+                SnackBar(content: Text('button_implemented'.tr())),
               );
             },
             style: ElevatedButton.styleFrom(

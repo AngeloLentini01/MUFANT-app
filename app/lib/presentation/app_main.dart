@@ -7,6 +7,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:logging/logging.dart';
 
 final _logger = Logger('AppMain');
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class AppMain extends StatefulWidget {
   const AppMain({super.key});
@@ -15,7 +16,8 @@ class AppMain extends StatefulWidget {
   State<AppMain> createState() => MainAppState();
 }
 
-class MainAppState extends State<AppMain> with TickerProviderStateMixin {
+class MainAppState extends State<AppMain>
+    with TickerProviderStateMixin, RouteAware {
   int currentIndex = 0;
   Key homePageKey = UniqueKey(); // Force rebuild when needed
   late final PageController _pageController;
@@ -32,18 +34,49 @@ class MainAppState extends State<AppMain> with TickerProviderStateMixin {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final ModalRoute? route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _pageController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _logger.info(
+      'didPopNext called. PageController page: ${_pageController.page}',
+    );
+    // If the profile page is visible, set the tab to Profile
+    if (_pageController.hasClients && _pageController.page?.round() == 2) {
+      _logger.info(
+        'Profile page is visible after pop. Setting tab to 2 (Profile).',
+      );
+      setTab(2);
+    }
+  }
+
   void setTab(int index) {
+    _logger.info(
+      'setTab called with index: $index, currentIndex: $currentIndex',
+    );
     if (index == currentIndex) return;
 
     final distance = (index - currentIndex).abs();
 
     setState(() {
+      _logger.info(
+        'setTab setState: changing currentIndex from $currentIndex to $index',
+      );
       currentIndex = index;
       if (index == 0) {
         homePageKey = UniqueKey();
@@ -78,12 +111,18 @@ class MainAppState extends State<AppMain> with TickerProviderStateMixin {
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
+          _logger.info(
+            'PageView onPageChanged: index=$index, previous currentIndex=$currentIndex',
+          );
           setState(() {
             currentIndex = index;
             if (index == 0) {
               homePageKey = UniqueKey();
             }
           });
+          _logger.info(
+            'PageView onPageChanged: new currentIndex=$currentIndex',
+          );
         },
         children: tabBarPages,
       ),
@@ -92,7 +131,9 @@ class MainAppState extends State<AppMain> with TickerProviderStateMixin {
         currentIndex: currentIndex,
         onTap: (index) {
           int previousIndex = currentIndex;
-          _logger.info('Tab switched from $previousIndex to $index');
+          _logger.info(
+            'TabBar onTap: switching from $previousIndex to $index',
+          );
           setTab(index);
         },
       ),

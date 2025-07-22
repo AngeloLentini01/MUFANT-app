@@ -121,7 +121,7 @@ class _CartConfirmationPageState extends State<CartConfirmationPage> {
           ),
           centerTitle: true,
           title: Image.asset(
-            'assets/images/logo.png',
+            'assets/images/logo_senza_scritta.png',
             height: 40,
             color: Colors.white,
           ),

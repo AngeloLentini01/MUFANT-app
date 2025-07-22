@@ -14,7 +14,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _notificationsEnabled = true;
   bool _darkModeEnabled = true;
   bool _soundEnabled = true;
-  double _textSize = 16.0;
+  final double _textSize = 16.0;
   Locale _currentLocale = const Locale('en');
 
   @override
@@ -221,8 +221,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       _buildSettingsTile(
                         icon: Icons.volume_up_outlined,
-                        title: 'Sound Effects',
-                        subtitle: 'Enable app sounds',
+                        title: 'sound_effects'.tr(),
+                        subtitle: 'enable_sounds'.tr(),
                         trailing: Switch(
                           value: _soundEnabled,
                           onChanged: (value) {
@@ -239,7 +239,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SizedBox(height: 24),
 
                       // Display Section
-                      _buildSectionHeader('Display'),
+                      _buildSectionHeader('display'.tr()),
                       const SizedBox(height: 12),
 
                       // Text Size Setting - Custom layout
@@ -258,85 +258,49 @@ class _SettingsPageState extends State<SettingsPage> {
                             horizontal: 20,
                             vertical: 16,
                           ),
-                          child: Column(
+                          child: Row(
                             children: [
-                              // Title row
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: kPinkColor.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.text_fields_outlined,
-                                      color: kPinkColor,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Text Size',
-                                          style: TextStyle(
-                                            color: kWhiteColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Adjust text size',
-                                          style: TextStyle(
-                                            color: Colors.grey[400],
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Text(
-                                    '${_textSize.round()}sp',
-                                    style: const TextStyle(
-                                      color: kPinkColor,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Slider
-                              SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  activeTrackColor: kPinkColor,
-                                  inactiveTrackColor: Colors.grey[800],
-                                  thumbColor: kPinkColor,
-                                  overlayColor: kPinkColor.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  trackHeight: 4,
-                                  thumbShape: const RoundSliderThumbShape(
-                                    enabledThumbRadius: 10,
-                                  ),
-                                  overlayShape: const RoundSliderOverlayShape(
-                                    overlayRadius: 20,
-                                  ),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: kPinkColor.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Slider(
-                                  value: _textSize,
-                                  min: 12.0,
-                                  max: 24.0,
-                                  divisions: 12,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _textSize = value;
-                                    });
-                                  },
+                                child: const Icon(
+                                  Icons.text_fields,
+                                  color: kPinkColor,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'text_size'.tr(),
+                                      style: const TextStyle(
+                                        color: kWhiteColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'adjust_text_size'.tr(),
+                                      style: TextStyle(
+                                        color: Colors.grey[400],
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '${_textSize.round()}sp',
+                                style: const TextStyle(
+                                  color: kPinkColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
@@ -347,13 +311,13 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SizedBox(height: 24),
 
                       // Account Section
-                      _buildSectionHeader('Account'),
+                      _buildSectionHeader('account'.tr()),
                       const SizedBox(height: 12),
 
                       _buildSettingsTile(
                         icon: Icons.person_outline,
-                        title: 'Profile Settings',
-                        subtitle: 'Manage your profile',
+                        title: 'profile_settings'.tr(),
+                        subtitle: 'manage_profile'.tr(),
                         trailing: const Icon(
                           Icons.chevron_right,
                           color: Colors.grey,
@@ -366,8 +330,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       _buildSettingsTile(
                         icon: Icons.security_outlined,
-                        title: 'Privacy & Security',
-                        subtitle: 'Manage your privacy settings',
+                        title: 'privacy_security'.tr(),
+                        subtitle: 'manage_privacy'.tr(),
                         trailing: const Icon(
                           Icons.chevron_right,
                           color: Colors.grey,
@@ -381,13 +345,13 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SizedBox(height: 24),
 
                       // About Section
-                      _buildSectionHeader('About'),
+                      _buildSectionHeader('about'.tr()),
                       const SizedBox(height: 12),
 
                       _buildSettingsTile(
                         icon: Icons.help_outline,
-                        title: 'Help & Support',
-                        subtitle: 'Get help with the app',
+                        title: 'help_support'.tr(),
+                        subtitle: 'get_help'.tr(),
                         trailing: const Icon(
                           Icons.chevron_right,
                           color: Colors.grey,
@@ -399,8 +363,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       _buildSettingsTile(
                         icon: Icons.info_outline,
-                        title: 'About App',
-                        subtitle: 'Version 1.0.0',
+                        title: 'about_app'.tr(),
+                        subtitle: 'version'.tr(namedArgs: {'version': '1.0.0'}),
                         trailing: const Icon(
                           Icons.chevron_right,
                           color: Colors.grey,
@@ -412,8 +376,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       _buildSettingsTile(
                         icon: Icons.rate_review_outlined,
-                        title: 'Rate App',
-                        subtitle: 'Rate us on the store',
+                        title: 'rate_app'.tr(),
+                        subtitle: 'rate_us'.tr(),
                         trailing: const Icon(
                           Icons.chevron_right,
                           color: Colors.grey,

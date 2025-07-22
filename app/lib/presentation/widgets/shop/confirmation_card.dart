@@ -1,6 +1,7 @@
 import "package:app/presentation/styles/all.dart";
 import "package:app/presentation/views/tabBarPages/shop_page.dart";
 import "package:flutter/material.dart";
+import "package:easy_localization/easy_localization.dart";
 
 class ConfirmationCard extends StatelessWidget {
   final ShopItem item;
@@ -81,7 +82,16 @@ class ConfirmationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$quantity tickets',
+                      'ticket_count'.tr(
+                        namedArgs: {
+                          'count': quantity.toString(),
+                          'plural': quantity > 1
+                              ? 'ticket_plural'.tr()
+                              : (context.locale.languageCode == 'it'
+                                    ? 'o'
+                                    : ''),
+                        },
+                      ),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[400],
@@ -106,7 +116,11 @@ class ConfirmationCard extends StatelessWidget {
                   ),
                   if (quantity > 1)
                     Text(
-                      '€${item.price.toStringAsFixed(2)} each',
+                      'each_price'.tr(
+                        namedArgs: {
+                          'price': '€${item.price.toStringAsFixed(2)}',
+                        },
+                      ),
                       style: TextStyle(
                         fontSize: 10,
                         color: Colors.grey[400],

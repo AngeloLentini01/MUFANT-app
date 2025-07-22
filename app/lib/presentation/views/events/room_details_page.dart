@@ -139,11 +139,11 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
   String _getDetailedDescription() {
     final roomName = roomData?['name']?.toLowerCase() ?? '';
     if (roomName.contains('star wars')) {
-      return "This room is a tribute to the legendary Star Wars universe, the saga created by George Lucas in 1977 that revolutionized science fiction and captured the hearts of generations. Here you'll find a treasure trove of pure passion: vintage collectible action figures, original movie posters, artist illustrations, iconic models, costumes created by Basile Net, and as a true gem for fans — the 1:1 scale prop of Han Solo frozen in carbonite, a rare piece by Sideshow.\n\nA journey through myth, collecting, and nostalgic wonder.";
+      return "room_star_wars_desc".tr();
     } else if (roomName.contains('library')) {
-      return "Step into Riccardo Valla's extraordinary library, a specialized collection dedicated to science fiction and fantasy literature. This room houses rare editions, first prints, and manuscripts from the greatest authors of speculative fiction. From Asimov to Le Guin, from Tolkien to Philip K. Dick, explore the literary foundations that shaped our imagination of the future and fantastical worlds.";
+      return "room_library_desc".tr();
     } else if (roomName.contains('superhero')) {
-      return "Enter the realm of legendary superheroes! This exhibition celebrates the greatest champions of comic books and cinema. From the Golden Age of comics to modern cinematic universes, discover original artwork, rare comic issues, movie props, and costumes from your favorite heroes. Marvel at the evolution of superhero storytelling and the cultural impact these characters have had on our society.";
+      return "room_superheroes_desc".tr();
     }
     return roomData?['description'] ??
         'Explore this fascinating exhibition and discover its unique treasures and stories.';
@@ -163,9 +163,21 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
   }
 
   Widget _buildHighlightedText(String text) {
+    // Provo a mappare il nome stanza a una chiave localizzata
+    final lower = text.toLowerCase();
+    String localized;
+    if (lower.contains('superhero')) {
+      localized = 'room_superheroes'.tr();
+    } else if (lower.contains('library')) {
+      localized = 'room_library'.tr();
+    } else if (lower.contains('star wars')) {
+      localized = 'room_star_wars'.tr();
+    } else {
+      localized = text.tr();
+    }
     if (widget.highlightText == null || widget.highlightText!.isEmpty) {
       return Text(
-        text.toUpperCase(),
+        localized.toUpperCase(),
         style: TextStyle(
           color: kPinkColor,
           fontSize: 18,
@@ -176,12 +188,12 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
     }
 
     final highlightText = widget.highlightText!.toLowerCase();
-    final textLower = text.toLowerCase();
+    final textLower = localized.toLowerCase();
     final index = textLower.indexOf(highlightText);
 
     if (index == -1) {
       return Text(
-        text.toUpperCase(),
+        localized.toUpperCase(),
         style: TextStyle(
           color: kPinkColor,
           fontSize: 18,
@@ -194,7 +206,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
     // If no animation controller, return normal text
     if (_highlightAnimation == null) {
       return Text(
-        text.toUpperCase(),
+        localized.toUpperCase(),
         style: TextStyle(
           color: kPinkColor,
           fontSize: 18,
@@ -225,7 +237,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
           text: TextSpan(
             children: [
               TextSpan(
-                text: text.substring(0, index).toUpperCase(),
+                text: localized.substring(0, index).toUpperCase(),
                 style: TextStyle(
                   color: kPinkColor,
                   fontSize: 18,
@@ -234,7 +246,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
                 ),
               ),
               TextSpan(
-                text: text
+                text: localized
                     .substring(index, index + highlightText.length)
                     .toUpperCase(),
                 style: TextStyle(
@@ -256,7 +268,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
                 ),
               ),
               TextSpan(
-                text: text
+                text: localized
                     .substring(index + highlightText.length)
                     .toUpperCase(),
                 style: TextStyle(
@@ -562,7 +574,7 @@ class _RoomDetailsPageState extends State<RoomDetailsPage>
             ],
           ),
         ),
-        bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
+        // bottomNavigationBar: MyTabBar(backgroundColor: kBlackColor),
       );
     } catch (e) {
       AppLogger.error(_logger, 'Error building room details page', e);

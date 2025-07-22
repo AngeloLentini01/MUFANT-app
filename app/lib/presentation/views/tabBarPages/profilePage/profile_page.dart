@@ -136,114 +136,146 @@ class _ProfilePageState extends State<ProfilePage> {
             colors: [kBlackColor, Colors.grey[900]!],
           ),
         ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.account_circle_outlined,
-                  size: 120,
-                  color: pinkColor.withValues(alpha: 0.7),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'profile_welcome'.tr(),
-                  style: const TextStyle(
-                    color: kWhiteColor,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.none,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'profile_login_prompt'.tr(),
-                  style: const TextStyle(
-                    color: lightGreyColor,
-                    fontSize: 16,
-                    height: 1.5,
-                    decoration: TextDecoration.none,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Navigate to login page
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const LoginPage(shouldNavigateToMain: false),
-                      ),
-                    );
-
-                    // If login was successful, refresh the authentication status
-                    if (result == true) {
-                      _checkAuthenticationStatus();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: pinkColor,
-                    foregroundColor: kWhiteColor,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+        child: Column(
+          children: [
+            // Settings button at the top
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.settings,
+                      color: pinkColor,
+                      size: 28,
                     ),
                   ),
-                  child: Text(
-                    'log_in'.tr(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OutlinedButton(
-                  onPressed: () async {
-                    // Navigate to registration page
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const RegistrationPage(shouldNavigateToMain: false),
-                      ),
-                    );
-
-                    // If registration was successful, refresh the authentication status
-                    if (result == true) {
-                      _checkAuthenticationStatus();
-                    }
-                  },
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: pinkColor,
-                    side: const BorderSide(color: pinkColor),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  child: Text(
-                    'sign_up'.tr(),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            // Main content centered
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.account_circle_outlined,
+                        size: 120,
+                        color: pinkColor.withValues(alpha: 0.7),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'profile_welcome'.tr(),
+                        style: const TextStyle(
+                          color: kWhiteColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'profile_login_prompt'.tr(),
+                        style: const TextStyle(
+                          color: lightGreyColor,
+                          fontSize: 16,
+                          height: 1.5,
+                          decoration: TextDecoration.none,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Navigate to login page
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const LoginPage(shouldNavigateToMain: false),
+                            ),
+                          );
+
+                          // If login was successful, refresh the authentication status
+                          if (result == true) {
+                            _checkAuthenticationStatus();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: pinkColor,
+                          foregroundColor: kWhiteColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 48,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        child: Text(
+                          'log_in'.tr(),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton(
+                        onPressed: () async {
+                          // Navigate to registration page
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const RegistrationPage(
+                                shouldNavigateToMain: false,
+                              ),
+                            ),
+                          );
+
+                          // If registration was successful, refresh the authentication status
+                          if (result == true) {
+                            _checkAuthenticationStatus();
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: pinkColor,
+                          side: const BorderSide(color: pinkColor),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 48,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        child: Text(
+                          'sign_up'.tr(),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

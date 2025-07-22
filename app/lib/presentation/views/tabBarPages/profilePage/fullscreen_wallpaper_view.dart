@@ -2,6 +2,7 @@ import 'package:app/presentation/styles/colors/generic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gal/gal.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class FullscreenWallpaperView extends StatefulWidget {
   const FullscreenWallpaperView({
@@ -73,7 +74,7 @@ class _FullscreenWallpaperViewState extends State<FullscreenWallpaperView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ Download failed: ${e.toString()}'),
+            content: Text('❌ ${'download_failed'.tr()}: ${e.toString()}'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 3),

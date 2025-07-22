@@ -1,5 +1,6 @@
 import 'package:app/model/generic/details_model.dart';
 import 'package:app/presentation/services/search_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ShopEventItem implements SearchableItem {
   @override
@@ -12,6 +13,7 @@ class ShopEventItem implements SearchableItem {
   @override
   final String category;
   final String imageAsset;
+  final String originalName;
 
   ShopEventItem({
     required this.id,
@@ -20,7 +22,24 @@ class ShopEventItem implements SearchableItem {
     required this.price,
     required this.category,
     required this.imageAsset,
+    required this.originalName,
   });
+
+  static String getEventTitleKey(String dbName) {
+    switch (dbName.trim().toLowerCase()) {
+      case "sailor moon's anniversary":
+      case "30 anni di sailor":
+        return 'event_sailor_anniversary';
+      case "artificial prophecies":
+      case "profezie artificiali":
+        return 'event_artificial_prophecies';
+      case "ufo pop":
+        return 'event_ufo_pop';
+      // Add more mappings as needed
+      default:
+        return dbName; // fallback to raw name if no mapping exists
+    }
+  }
 
   factory ShopEventItem.fromDetailsModel(DetailsModel model) {
     double price = 0.0;
@@ -60,16 +79,18 @@ class ShopEventItem implements SearchableItem {
         (model.id?.toString() != null && model.id.toString().isNotEmpty)
         ? model.id.toString()
         : 'event_${model.name}';
+    final titleKey = getEventTitleKey(model.name);
     return ShopEventItem(
       id: eventId,
-      title: model.name,
+      title: titleKey == model.name ? model.name : titleKey.tr(),
       subtitle: model.description ?? '',
       price: price,
-      category: 'Events',
+      category: 'events'.tr(),
       imageAsset: model.imageUrlOrPath ?? '',
+      originalName: model.originalName ?? model.name,
     );
   }
 
   @override
-  String get searchableText => '$title $subtitle $category';
+  String get searchableText => '$title $subtitle $category $originalName';
 }

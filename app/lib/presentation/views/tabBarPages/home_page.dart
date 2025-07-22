@@ -29,9 +29,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _showContent = false;
-  String _username = 'User'; // Default fallback username
+  String _username = 'Avventurierə'; // Default fallback username
   List<DetailsModel> _events = [];
   List<DetailsModel> _rooms = [];
+  List<dynamic> _eventsOriginal = [];
 
   Future<void> _onSearchPressed() async {
     final TextEditingController controller = TextEditingController();
@@ -66,7 +67,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                       autofocus: true,
                       style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: 'Type here to search...',
+                        hintText: 'search_placeholder'.tr(),
                         hintStyle: TextStyle(color: Colors.white54),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.white54),
@@ -181,8 +182,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   String highlightText = searchTerm;
 
                                   // Debug logging
-                                  print('DEBUG: Found text: "$foundText"');
-                                  print('DEBUG: Search term: "$searchTerm"');
+                                  _logger.info(
+                                    'DEBUG: Found text: "$foundText"',
+                                  );
+                                  _logger.info(
+                                    'DEBUG: Search term: "$searchTerm"',
+                                  );
 
                                   // Try to find the best matching substring (case-insensitive)
                                   final foundTextLower = foundText
@@ -195,7 +200,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                   )) {
                                     // Use the search term as is
                                     highlightText = searchTerm;
-                                    print(
+                                    _logger.info(
                                       'DEBUG: Found exact match, highlighting: "$highlightText"',
                                     );
                                   } else {
@@ -211,7 +216,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                           wordIndex,
                                           wordIndex + word.length,
                                         );
-                                        print(
+                                        _logger.info(
                                           'DEBUG: Found word match, highlighting: "$highlightText"',
                                         );
                                         break;
@@ -219,7 +224,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                     }
                                   }
 
-                                  print(
+                                  _logger.info(
                                     'DEBUG: Final highlight text: "$highlightText"',
                                   );
 
@@ -248,7 +253,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Close',
+                    'close'.tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -263,10 +268,129 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
-  // ...existing code...
+  String get homePageMessage {
+    final user = UserSessionManager.currentUser;
+    String name = context.locale.languageCode == 'it'
+        ? 'Avventurierə'
+        : 'Adventurer';
+    if (user != null) {
+      if (user.firstName != null && user.firstName!.isNotEmpty) {
+        name = user.firstName!;
+      } else if (user.username.isNotEmpty) {
+        // Fallback to first part of username if no firstName
+        List<String> nameParts = user.username.split('_');
+        if (nameParts.isNotEmpty && nameParts[0].isNotEmpty) {
+          name =
+              nameParts[0][0].toUpperCase() +
+              nameParts[0].substring(1).toLowerCase();
+        } else {
+          name = user.username;
+        }
+      }
+    }
+    return 'greeting_hello'.tr(namedArgs: {'name': name});
+  }
 
-  String get homePageMessage =>
-      'greeting_hello'.tr(namedArgs: {'name': _username});
+  String getEventTitleKey(String dbName) {
+    switch (dbName.trim().toLowerCase()) {
+      case "sailor moon's anniversary":
+      case "30 anni di sailor":
+        return 'event_sailor_anniversary';
+      case "artificial prophecies":
+      case "profezie artificiali":
+        return 'event_artificial_prophecies';
+      case "ufo pop":
+        return 'event_ufo_pop';
+      default:
+        return dbName;
+    }
+  }
+
+  String getEventDescriptionKey(String dbName) {
+    switch (dbName.trim().toLowerCase()) {
+      case "sailor moon's anniversary":
+      case "30 anni di sailor":
+        return 'event_sailor_anniversary_desc';
+      case "artificial prophecies":
+      case "profezie artificiali":
+        return 'event_artificial_prophecies_desc';
+      case "ufo pop":
+        return 'event_ufo_pop_desc';
+      default:
+        return '';
+    }
+  }
+
+  String getRoomTitleKey(String dbName) {
+    switch (dbName.trim().toLowerCase()) {
+      case "superheroes":
+      case "supereroi":
+        return 'room_superheroes';
+      case "star wars":
+        return 'room_star_wars';
+      case "riccardo valla's library":
+      case "biblioteca riccardo valla":
+        return 'room_library';
+      default:
+        return dbName;
+    }
+  }
+
+  String getRoomDescriptionKey(String dbName) {
+    switch (dbName.trim().toLowerCase()) {
+      case "superheroes":
+      case "supereroi":
+        return 'room_superheroes_desc';
+      case "star wars":
+        return 'room_star_wars_desc';
+      case "riccardo valla's library":
+      case "biblioteca riccardo valla":
+        return 'room_library_desc';
+      default:
+        return '';
+    }
+  }
+
+  String getOverlayKey(String notes) {
+    final lower = notes.trim().toLowerCase();
+    if (lower.contains('free entry') || lower.contains('ingresso gratuito')) {
+      return 'free_entry';
+    }
+    if (lower.contains('coming soon') || lower.contains('prossimamente')) {
+      return 'coming_soon';
+    }
+    if (lower.contains('starting from')) {
+      return 'starting_from_price';
+    }
+    return notes;
+  }
+
+  String getEventDateLocation(
+    DateTime? startDate,
+    DateTime? endDate,
+    BuildContext context,
+  ) {
+    if (startDate == null || endDate == null) return '';
+    final startDay = DateFormat('dd').format(startDate);
+    final endDay = DateFormat('dd').format(endDate);
+    final month = DateFormat(
+      'MMM',
+      context.locale.toString(),
+    ).format(startDate);
+    final dateStr = '$startDay-$endDay $month';
+    return 'event_date_location'.tr(namedArgs: {'date': dateStr});
+  }
+
+  // Helper per estrarre il prezzo da DetailsModel (es. parsing da notes)
+  double getEventPrice(DetailsModel event) {
+    // Cerca pattern tipo '€5', '€ 5', '€5.00' nelle note
+    final notes = event.notes ?? '';
+    final priceMatch = RegExp(r'€\s?(\d+[\.,]?\d*)').firstMatch(notes);
+    if (priceMatch != null && priceMatch.group(1) != null) {
+      return double.tryParse(priceMatch.group(1)!.replaceAll(',', '.')) ?? 0.0;
+    }
+    return 0.0;
+  }
 
   // Note: Database is read-only, so we can't update user details
   // The fallback logic in User.fromMap should handle the name extraction
@@ -457,19 +581,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       await DBMuseumActivityManager.debugListAllActivities();
       final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
       final rooms = await DBMuseumActivityManager.getRoomsAsDetailsModels();
-      _logger.finest(
-        'Loaded ${events.length} events and ${rooms.length} rooms',
-      );
-      // Log events and rooms for debugging
-      for (final event in events) {
-        _logger.finer('Event: ${event.name}');
-      }
-      for (final room in rooms) {
-        _logger.finer('Room: ${room.name}');
-      }
+      final eventsRaw =
+          await DBMuseumActivityManager.getAllEvents(); // or your actual DB fetch method
       if (mounted) {
         setState(() {
           _events = events;
+          _eventsOriginal = eventsRaw;
           _rooms = rooms;
         });
       }
@@ -484,7 +601,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EventPage(eventTitle: event.name),
+        builder: (context) =>
+            EventPage(eventTitle: event.originalName ?? event.id.toString()),
       ),
     );
   }
@@ -493,7 +611,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RoomDetailsPage(title: room.name),
+        builder: (context) =>
+            RoomDetailsPage(title: room.originalName ?? room.id.toString()),
       ),
     );
   }
@@ -566,34 +685,64 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 title: "our_events".tr(),
                                 textColor: kPinkColor,
                                 onItemTap: _navigateToEventDetails,
-                                activities: _events.isNotEmpty
-                                    ? _events
-                                    : [
-                                        DetailsModel(
-                                          name: "loading_events".tr(),
-                                          description:
-                                              "loading_events_description".tr(),
-                                          imageUrlOrPath:
-                                              'assets/images/logo.png',
-                                        ),
-                                      ],
+                                activities: List.generate(_events.length, (i) {
+                                  final raw =
+                                      (i < _eventsOriginal.length &&
+                                          _eventsOriginal[i] != null)
+                                      ? _eventsOriginal[i]
+                                      : {};
+                                  final startDateStr = raw['start_date'];
+                                  final endDateStr = raw['end_date'];
+                                  final startDate = startDateStr != null
+                                      ? DateTime.tryParse(startDateStr)
+                                      : null;
+                                  final endDate = endDateStr != null
+                                      ? DateTime.tryParse(endDateStr)
+                                      : null;
+                                  final description =
+                                      (startDate != null && endDate != null)
+                                      ? getEventDateLocation(
+                                          startDate,
+                                          endDate,
+                                          context,
+                                        )
+                                      : '';
+                                  return DetailsModel(
+                                    id: _events[i].id,
+                                    name: getEventTitleKey(_events[i].name),
+                                    description: description,
+                                    notes: getOverlayKey(
+                                      _events[i].notes ?? '',
+                                    ),
+                                    imageUrlOrPath: _events[i].imageUrlOrPath,
+                                    originalName: _events[i].name,
+                                  );
+                                }),
+                                getEventPrice: getEventPrice,
                               ),
                               kSpaceBetweenSections,
                               CustomListWidget(
                                 title: "discover_rooms".tr(),
                                 textColor: kPinkColor,
                                 onItemTap: _navigateToRoomDetails,
-                                activities: _rooms.isNotEmpty
-                                    ? _rooms
-                                    : [
-                                        DetailsModel(
-                                          name: "loading_rooms".tr(),
-                                          description:
-                                              "loading_rooms_description".tr(),
-                                          imageUrlOrPath:
-                                              'assets/images/logo.png',
-                                        ),
-                                      ],
+                                activities: _rooms
+                                    .map(
+                                      (room) => DetailsModel(
+                                        id: room.id,
+                                        name: getRoomTitleKey(room.name),
+                                        description:
+                                            (room.notes ?? '').isNotEmpty
+                                            ? room.notes!
+                                            : getRoomDescriptionKey(
+                                                room.name,
+                                              ), // Floor info as subtitle
+                                        notes: '', // No overlay badge for rooms
+                                        imageUrlOrPath: room.imageUrlOrPath,
+                                        originalName:
+                                            room.name, // Store original DB name
+                                      ),
+                                    )
+                                    .toList(),
                               ),
                               kSpaceBetweenSections,
                               CommunityChatSectionWidget(),

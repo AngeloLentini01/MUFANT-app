@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:app/utils/button_scanner.dart';
 
 /// Wrapper widget that automatically scans for unimplemented buttons
@@ -18,6 +19,7 @@ class ButtonScannerWrapper extends StatefulWidget {
 }
 
 class _ButtonScannerWrapperState extends State<ButtonScannerWrapper> {
+  static final _logger = Logger('ButtonScannerWrapper');
   List<ButtonInfo> _unimplementedButtons = [];
 
   @override
@@ -40,7 +42,7 @@ class _ButtonScannerWrapperState extends State<ButtonScannerWrapper> {
     // Log found unimplemented buttons
     if (unimplemented.isNotEmpty) {
       for (final button in unimplemented) {
-        print(
+        _logger.warning(
           '⚠️ Unimplemented button found: ${button.buttonType} at ${button.widgetLocation}',
         );
       }

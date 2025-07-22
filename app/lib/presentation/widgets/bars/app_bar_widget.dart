@@ -15,7 +15,8 @@ class AppBarWidget extends StatelessWidget {
     this.showAppBarCTAButton = true, // Default to true, hide only on shop page
     this.additionalContent, // Optional additional content below the title
     this.backButtonColor,
-    this.forceHideBackButton = false, // Default to false, set to true for home page
+    this.forceHideBackButton =
+        false, // Default to false, set to true for home page
   });
 
   final Color textColor;

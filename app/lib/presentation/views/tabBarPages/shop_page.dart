@@ -89,11 +89,14 @@ class _ShopPageState extends State<ShopPage> {
   Future<void> _onSearchPressed() async {
     if (!mounted) return;
 
-    // Get only shop-specific searchable items (museum tickets and tours only)
+    // Get only shop-specific searchable items (museum tickets, tours, and events)
     final shopSearchableItems = <SearchableItem>[];
 
     // Add museum ticket items
     shopSearchableItems.addAll(items);
+
+    // Add event items (ShopEventItem)
+    shopSearchableItems.addAll(eventItems);
 
     // Add tour items
     shopSearchableItems.addAll([
@@ -134,10 +137,10 @@ class _ShopPageState extends State<ShopPage> {
     showDialog(
       context: context,
       builder: (context) => SearchDialog<SearchableItem>(
-        title: 'Shop Search',
+        title: 'search_title'.tr(),
         items: shopSearchableItems,
         searchService: _searchService,
-        hintText: 'Search tickets and tours...',
+        hintText: 'search_placeholder'.tr(),
         onItemSelected: (item, matchedText) {
           _onSearchItemSelected(item, matchedText);
         },
@@ -156,9 +159,9 @@ class _ShopPageState extends State<ShopPage> {
     // Switch to the appropriate tab based on category
     int targetTabIndex = 0; // Default to museum tab
 
-    if (item.category == 'Events') {
+    if (item.category == 'events'.tr()) {
       targetTabIndex = 1;
-    } else if (item.category == 'Tours') {
+    } else if (item.category == 'tours'.tr()) {
       targetTabIndex = 2;
     }
 
@@ -237,6 +240,7 @@ class _ShopPageState extends State<ShopPage> {
 
   Future<void> _loadEventsForShop() async {
     final events = await DBMuseumActivityManager.getEventsAsDetailsModels();
+    if (!mounted) return;
     setState(() {
       eventItems = events
           .map((e) => ShopEventItem.fromDetailsModel(e))
@@ -317,38 +321,37 @@ class _ShopPageState extends State<ShopPage> {
           imageAsset: e.imageAsset,
         ),
       ),
-      // Add tour items
+      // Add tour items (localized)
       ShopItem(
         id: 'tour_group',
-        title: 'Guided Tour (1-5 participants)',
-        subtitle: '90 min. tour for 1 to 5 people (reservation required)',
+        title: 'guided_tour_group'.tr(),
+        subtitle: 'guided_tour_group_subtitle'.tr(),
         price: tourGroupPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_adult',
-        title: 'Guided Tour (Adult, 6+ participants)',
-        subtitle: 'Per adult, 90 min. tour (reservation required)',
+        title: 'guided_tour_adult'.tr(),
+        subtitle: 'guided_tour_adult_subtitle'.tr(),
         price: tourAdultPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_reduced',
-        title: 'Guided Tour (Disabled, 6+ participants)',
-        subtitle:
-            'Per disabled participant, 90 min. tour (reservation required)',
+        title: 'guided_tour_disabled'.tr(),
+        subtitle: 'guided_tour_disabled_subtitle'.tr(),
         price: tourReducedPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
       ShopItem(
         id: 'tour_kid',
-        title: 'Guided Tour (Kids 4-10, 6+ participants)',
-        subtitle: 'Per kid (4-10 years), 90 min. tour (reservation required)',
+        title: 'guided_tour_kid'.tr(),
+        subtitle: 'guided_tour_kid_subtitle'.tr(),
         price: tourKidsPrice,
-        category: 'Tours',
+        category: 'tours'.tr(),
         imageAsset: 'assets/images/logo.png',
       ),
     ];
@@ -474,9 +477,9 @@ class _ShopPageState extends State<ShopPage> {
             children: [
               Icon(Icons.warning_amber_rounded, color: kPinkColor, size: 28),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Too Many Tickets',
+                  'too_many_tickets'.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -499,7 +502,7 @@ class _ShopPageState extends State<ShopPage> {
                 _clearCart(); // Clear all tickets when dismissing checkout
               },
               child: Text(
-                'Dismiss checkout',
+                'dismiss_checkout'.tr(),
                 style: TextStyle(color: Colors.grey[400], fontSize: 16),
               ),
             ),
@@ -515,8 +518,8 @@ class _ShopPageState extends State<ShopPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Remove Lastly added tickets',
+              child: Text(
+                'remove_lastly_added_tickets'.tr(),
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -575,8 +578,8 @@ class _ShopPageState extends State<ShopPage> {
               children: [
                 Icon(Icons.lock, color: kPinkColor, size: 24),
                 const SizedBox(width: 12),
-                const Text(
-                  'Login Required',
+                Text(
+                  'login_required'.tr(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -585,15 +588,15 @@ class _ShopPageState extends State<ShopPage> {
                 ),
               ],
             ),
-            content: const Text(
-              'User has to be logged in before purchasing tickets',
+            content: Text(
+              'user_login_required_message'.tr(),
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text(
-                  'Got it!',
+                child: Text(
+                  'got_it'.tr(),
                   style: TextStyle(
                     color: kPinkColor,
                     fontSize: 16,
@@ -669,7 +672,7 @@ class _ShopPageState extends State<ShopPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            'Shop',
+                            'shop_title'.tr(),
                             style: TextStyle(
                               color: kWhiteColor,
                               fontSize: 16,
@@ -707,13 +710,13 @@ class _ShopPageState extends State<ShopPage> {
                       },
                       itemBuilder: (context, pageIndex) {
                         if (!_eventsLoaded &&
-                            categories[pageIndex] == 'Events') {
+                            categories[pageIndex] == 'events'.tr()) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
                         }
                         final itemsForPage = () {
-                          if (categories[pageIndex] == 'Events') {
+                          if (categories[pageIndex] == 'events'.tr()) {
                             return eventItems
                                 .map(
                                   (e) => ShopItem(
@@ -726,44 +729,38 @@ class _ShopPageState extends State<ShopPage> {
                                   ),
                                 )
                                 .toList();
-                          } else if (categories[pageIndex] == 'Tours') {
+                          } else if (categories[pageIndex] == 'tours'.tr()) {
                             return [
                               ShopItem(
                                 id: 'tour_group',
-                                title: 'Guided Tour (1-5 participants)',
-                                subtitle:
-                                    '90 min. tour for 1 to 5 people (reservation required)',
+                                title: 'guided_tour_group'.tr(),
+                                subtitle: 'guided_tour_group_subtitle'.tr(),
                                 price: tourGroupPrice,
-                                category: 'Tours',
+                                category: 'tours'.tr(),
                                 imageAsset: 'assets/images/logo.png',
                               ),
                               ShopItem(
                                 id: 'tour_adult',
-                                title: 'Guided Tour (Adult, 6+ participants)',
-                                subtitle:
-                                    'Per adult, 90 min. tour (reservation required)',
+                                title: 'guided_tour_adult'.tr(),
+                                subtitle: 'guided_tour_adult_subtitle'.tr(),
                                 price: tourAdultPrice,
-                                category: 'Tours',
+                                category: 'tours'.tr(),
                                 imageAsset: 'assets/images/logo.png',
                               ),
                               ShopItem(
                                 id: 'tour_reduced',
-                                title:
-                                    'Guided Tour (Disabled, 6+ participants)',
-                                subtitle:
-                                    'Per disabled participant, 90 min. tour (reservation required)',
+                                title: 'guided_tour_disabled'.tr(),
+                                subtitle: 'guided_tour_disabled_subtitle'.tr(),
                                 price: tourReducedPrice,
-                                category: 'Tours',
+                                category: 'tours'.tr(),
                                 imageAsset: 'assets/images/logo.png',
                               ),
                               ShopItem(
                                 id: 'tour_kid',
-                                title:
-                                    'Guided Tour (Kids 4-10, 6+ participants)',
-                                subtitle:
-                                    'Per kid (4-10 years), 90 min. tour (reservation required)',
+                                title: 'guided_tour_kid'.tr(),
+                                subtitle: 'guided_tour_kid_subtitle'.tr(),
                                 price: tourKidsPrice,
-                                category: 'Tours',
+                                category: 'tours'.tr(),
                                 imageAsset: 'assets/images/logo.png',
                               ),
                             ];
@@ -816,11 +813,12 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                 ],
               ),
-              if (totalItems > 0)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
+              AnimatedSlide(
+                offset: totalItems > 0 ? Offset(0, 0) : Offset(0, 1),
+                duration: Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
                   child: CartSummary(
                     totalAmount: totalAmount,
                     totalItems: totalItems,
@@ -828,6 +826,7 @@ class _ShopPageState extends State<ShopPage> {
                     onCheckout: _goToCheckout,
                   ),
                 ),
+              ),
             ],
           ),
         ),
