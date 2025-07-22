@@ -234,8 +234,10 @@
     "event_artificial_prophecies": "Profezie artificiali",
     "event_ufo_pop": "Ufo Pop",
     "room_superheroes": "Supereroi",
-    "room_star_wars": "Star Wars",
+    "room_superheroes_desc": "Entra nella sala dei leggendari supereroi! Questa esposizione celebra i più grandi campioni del fumetto e del cinema. Dall'età d'oro dei comics ai moderni universi cinematografici, scopri tavole originali, numeri rari, props cinematografici e costumi dei tuoi eroi preferiti. Ammira l'evoluzione dello storytelling supereroistico e l'impatto culturale di questi personaggi.",
     "room_library": "Biblioteca Riccardo Valla",
+    "room_library_desc": "Entra nell'eccezionale biblioteca di Riccardo Valla, una collezione specializzata dedicata alla letteratura di fantascienza e fantasy. Qui troverai edizioni rare, prime stampe e manoscritti dei più grandi autori della speculative fiction. Da Asimov a Le Guin, da Tolkien a Philip K. Dick, esplora le fondamenta letterarie che hanno plasmato l'immaginario del futuro e dei mondi fantastici.",
+    "room_star_wars_desc": "Questa sala è un tributo al leggendario universo di Star Wars, la saga creata da George Lucas nel 1977 che ha rivoluzionato la fantascienza e conquistato il cuore di generazioni. Qui troverai una collezione di pura passione: action figure vintage, poster originali, illustrazioni d'artista, modelli iconici, costumi creati da Basile Net e, come vera gemma per i fan, il prop in scala 1:1 di Han Solo ibernato nella carbonite, un pezzo raro by Sideshow.\n\nUn viaggio tra mito, collezionismo e meraviglia nostalgica.",
     "free_entry": "Ingresso gratuito",
     "coming_soon": "Prossimamente",
     "starting_from_price": "A partire da {price}",
@@ -275,5 +277,6 @@
     "rate_app": "Valuta l'app",
     "rate_us": "Valutaci sullo store",
     "sound_effects": "Effetti sonori",
-    "enable_sounds": "Abilita i suoni dell'app"
+    "enable_sounds": "Abilita i suoni dell'app",
+    "room_star_wars": "Star Wars"
 }
