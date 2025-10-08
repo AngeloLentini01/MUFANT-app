@@ -196,7 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               _notificationsEnabled = value;
                             });
                           },
-                          activeColor: kPinkColor,
+                          activeThumbColor: kPinkColor,
                           inactiveThumbColor: Colors.grey[600],
                           inactiveTrackColor: Colors.grey[800],
                         ),
@@ -213,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               _darkModeEnabled = value;
                             });
                           },
-                          activeColor: kPinkColor,
+                          activeThumbColor: kPinkColor,
                           inactiveThumbColor: Colors.grey[600],
                           inactiveTrackColor: Colors.grey[800],
                         ),
@@ -230,7 +230,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               _soundEnabled = value;
                             });
                           },
-                          activeColor: kPinkColor,
+                          activeThumbColor: kPinkColor,
                           inactiveThumbColor: Colors.grey[600],
                           inactiveTrackColor: Colors.grey[800],
                         ),
